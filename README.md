@@ -8,7 +8,11 @@ Página estática, sem cadastro, sem servidor e sem armazenamento. Tudo fica na 
 - **Glicosímetro (USB)**: leitura dos Accu-Chek Guide, Instant e família pelo cabo micro-USB
   (Chrome ou Edge), com resumo, gráfico, tabela, exportação em CSV e impressão ou PDF.
 - **Gestante → Idade gestacional:** IG e DPP pela DUM, por ultrassonografia (com regra de
-  redatação), pela DPP ou por FIV; IG em qualquer data e quando completa uma IG.
+  redatação), pela DPP ou por FIV; IG em qualquer data e quando completa uma IG. Em cada IG,
+  mostra a frequência de consultas, os exames e vacinas a pedir agora, o que já deveria ter
+  sido feito e o que vem a seguir.
+- **Gestante → Consultas e exames:** calendário de consultas, exames por trimestre e vacinas
+  (Caderneta Brasileira da Gestante 2026).
 
 ## Rodar
 
@@ -40,4 +44,5 @@ Ver `THIRD_PARTY_NOTICES.md` (dados de risco CV vindos dos pacotes `preventr` e
 - `docs/glargina-regras.md`: regras da consulta e suas fontes.
 - `docs/risco-cv.md`: escalas de risco cardiovascular, implementação e verificação.
 - `docs/gestante-ig.md`: idade gestacional, regras e fontes.
+- `docs/gestante-prenatal.md`: consultas, exames e vacinas do pré-natal.
 - `docs/accu-chek.md`: o protocolo, os modelos e o que falta testar com um aparelho real.

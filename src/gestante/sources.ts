@@ -11,3 +11,15 @@ export const ACOG_700 = {
     'ACOG/AIUM/SMFM. Committee Opinion nº 700 — Methods for Estimating the Due Date (2017, reafirmada em 2022), Tabela 1',
   url: 'https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2017/05/methods-for-estimating-the-due-date',
 }
+
+export const CADERNETA = {
+  titulo:
+    'Ministério da Saúde. Caderneta Brasileira da Gestante (2026), itens 4.1.2, 4.1.4, 4.2.1, 4.2.2 e 4.3',
+  url: 'https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-mulher/publicacoes/caderneta-brasileira-da-gestante.pdf',
+}
+
+export const C3 = {
+  titulo:
+    'Ministério da Saúde/SAPS. Nota metodológica C3 — Cuidado na gestação e puerpério (boas práticas A a K)',
+  url: 'https://www.gov.br/saude/pt-br/composicao/saps/publicacoes/fichas-tecnicas/equipe-de-atencao-primaria-e-saude-da-familia/nota-metodologica-c3-cuidado-na-gestacao-e-puerperio',
+}

@@ -20,7 +20,11 @@ separadas (sem estado compartilhado): **Diabetes** e **Gestante**.
 1. **Idade gestacional**: IG e DPP pela DUM (certa ou só o período do mês), por
    ultrassonografia (com a regra de redatação da ACOG), pela DPP ou por FIV; IG em qualquer
    data e data em que completa uma IG. Regras do Caderno de Atenção Básica 32 (MS) e da ACOG
-   CO 700, em `docs/gestante-ig.md`.
+   CO 700, em `docs/gestante-ig.md`. Ao datar, mostra o pré-natal naquela IG: frequência de
+   consultas, o que solicitar agora, o que já deveria ter sido feito e os próximos itens.
+2. **Consultas e exames**: referência do calendário de consultas, dos exames por trimestre e
+   das vacinas (Caderneta Brasileira da Gestante 2026 e nota C3 do MS), em
+   `docs/gestante-prenatal.md`.
 
 Stack igual à do `smedic/apps/web` (React 19 + TS strict + Vite + Vitest, mesmas versões), para
 a absorção ser só mover módulos. Em runtime, as únicas dependências são `react` e `react-dom`.
@@ -52,7 +56,9 @@ Gráfico, CSV, PDF (impressão do navegador) e protocolo USB são código própr
 - `src/glicosimetro/`: `phdc/` (protocolo: bytes MDER, APDUs, segmentos, MDS, sessão, simulador),
   `usbTransport.ts` (WebUSB), `analysis.ts` (estatística e CSV), telas e gráfico SVG.
 - `src/gestante/`: `datas.ts` (datas de calendário como número de dias, sem fuso), `ig.ts`
-  (regras puras + testes), `GestantePage.tsx` (barra de módulos) e `IdadeGestacional.tsx`.
+  e `prenatal.ts` (regras puras + testes), `GestantePage.tsx` (barra de módulos),
+  `IdadeGestacional.tsx` e `PrenatalView.tsx` (não chamar de `Prenatal.tsx`: no Windows colide
+  com `prenatal.ts`).
 - `src/shared/`: campos de formulário (número, data), componentes de resultado (`ui.tsx`) e
   download.
 

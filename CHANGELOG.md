@@ -2,6 +2,15 @@
 
 ## Não lançado
 
+- Gestante, pré-natal na idade gestacional: ao datar a gestação, um cartão mostra para a data
+  escolhida a frequência de consultas e a próxima consulta sugerida, o que solicitar agora, o que
+  já deveria ter sido feito (para conferir) e os próximos exames e vacinas, com a data em que
+  cada janela abre. A caixa "1ª consulta" põe os exames iniciais em "agora", troca a glicemia
+  pelo TOTG depois de 24 semanas e avisa da captação depois da 12ª semana.
+- Gestante, novo módulo "Consultas e exames": calendário de consultas, exames de rotina por
+  trimestre, no parto, com indicação clínica e de alto risco, e vacinas.
+- Fontes: Caderneta Brasileira da Gestante 2026 e nota metodológica C3 (MS).
+
 - Nova área **Gestante**, separada da de diabetes (o cabeçalho passa a ter as áreas Diabetes e
   Gestante). Primeiro módulo, **Idade gestacional**:
   - datação pela DUM (certa ou só o período do mês: dias 5, 15 e 25), por ultrassonografia,

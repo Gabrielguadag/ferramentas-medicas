@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { IdadeGestacionalSection } from './IdadeGestacional'
+import { ConsultasExamesSection } from './PrenatalView'
 
 const MODULOS = [
   {
@@ -7,6 +8,12 @@ const MODULOS = [
     label: 'Idade gestacional',
     hint: 'DUM, ultrassonografia, DPP ou FIV',
     Component: IdadeGestacionalSection,
+  },
+  {
+    id: 'exames',
+    label: 'Consultas e exames',
+    hint: 'Calendário, exames e vacinas',
+    Component: ConsultasExamesSection,
   },
 ] as const
 

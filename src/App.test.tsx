@@ -80,6 +80,18 @@ describe('App', () => {
       within(panel).getByText('Data provável do parto', { selector: '.result-label' })
         .parentElement,
     ).toHaveTextContent('08/10/2026')
+    // Pré-natal com 24s 2d: TOTG agora, exames do 1º trimestre a conferir, 3º trimestre em 16/07
+    const pn = within(panel).getByRole('heading', { name: 'Pré-natal com 24s 2d' }).closest('.card')
+    expect(pn).not.toBeNull()
+    const card = within(pn as HTMLElement)
+    expect(
+      card.getByRole('heading', { name: 'Solicitar agora' }).nextElementSibling,
+    ).toHaveTextContent('TOTG 75 g')
+    expect(
+      card.getByText('Confira o resultado', { exact: false }).nextElementSibling,
+    ).toHaveTextContent('Hepatite C')
+    expect(card.getByText(/A partir de 28s 0d: 16\/07\/2026/)).toBeInTheDocument()
+    expect(card.getByText('mensal')).toBeInTheDocument()
     // USG em 26/02 (8s 0d pela DUM) com laudo de 9s 0d: 7 dias > 5 → redata
     await user.click(within(panel).getByRole('radio', { name: 'Ultrassonografia' }))
     set('Data da ultrassonografia', '2026-02-26')

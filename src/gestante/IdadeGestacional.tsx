@@ -23,6 +23,7 @@ import {
   trimestre,
   situacao,
 } from './ig'
+import { PrenatalNaIg } from './PrenatalView'
 import { ACOG_700, CAB_32 } from './sources'
 
 type Metodo = 'dum' | 'usg' | 'dpp' | 'fiv'
@@ -353,6 +354,8 @@ export function IdadeGestacionalSection() {
           </>
         )}
       </Card>
+
+      {dumEq !== null && refDia !== null ? <PrenatalNaIg dum={dumEq} data={refDia} /> : null}
 
       <Card title="Quando ela terá…" subtitle="Data em que completa uma idade gestacional.">
         <div className="fields">
