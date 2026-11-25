@@ -33,6 +33,8 @@ export interface Item {
   janela?: { de: number; ate: number | null }
   /** Texto da janela como está na fonte (ex.: "idealmente entre 7 e 12 semanas"). */
   quando?: string
+  /** Rotina do MS que o município não oferece: vai para o fim da lista, com esta descrição. */
+  semOferta?: string
 }
 
 const T1 = { de: 0, ate: igDias(13, 6) }
@@ -53,8 +55,8 @@ const RH_NEG = 'se Rh negativo e Coombs negativo no 1º trimestre'
 const TOXO = 'se IgG não reagente: suscetível'
 const MALARIA = 'em região endêmica'
 
-/** Caderneta Brasileira da Gestante 2026, 4.2.1 e 4.3. */
-export const ITENS: readonly Item[] = [
+/** Lista nacional: Caderneta Brasileira da Gestante 2026, 4.2.1 e 4.3. */
+export const ITENS_MS: readonly Item[] = [
   // 1º trimestre ou 1ª consulta
   { id: 't1-trgrav', tipo: 'exame', periodo: 't1', nome: 'Teste rápido de gravidez' },
   { id: 't1-hemo', tipo: 'exame', periodo: 't1', nome: 'Hemograma (hemoglobina e hematócrito)' },
@@ -188,6 +190,75 @@ export const ITENS: readonly Item[] = [
   },
 ]
 
+// ---------- Protocolo do município ----------
+//
+// A Caderneta 2026 diz que a solicitação "pode seguir protocolos locais". O município do usuário
+// (informado por ele em 2026-11-25) não oferece HTLV, eletroforese de hemoglobina, Chagas e
+// malária, e faz duas ultrassonografias obstétricas: 1º trimestre de 11 a 13 semanas e 2º
+// trimestre de 20 a 24 semanas (no lugar da única "idealmente entre 7 e 12 semanas" do MS).
+// HTLV e eletroforese são rotina do MS para todas as gestantes: ficam na lista, no fim, com a
+// descrição de que o município não oferece. Chagas e malária (só em casos suspeitos ou região
+// endêmica) saem. O teste rápido de gravidez sai porque, no pré-natal, já foi feito.
+
+export const PROTOCOLO_LOCAL = {
+  remover: [
+    't1-trgrav',
+    't1-chagas',
+    't1-malaria',
+    't2-malaria',
+    't3-malaria',
+  ] as readonly string[],
+  semOferta: ['t1-htlv', 't1-eletro'] as readonly string[],
+  semOfertaTexto: 'rotina do MS para todas as gestantes, mas não disponível na rede do município',
+  ultrassons: [
+    {
+      id: 't1-usg',
+      tipo: 'exame',
+      periodo: 't1',
+      nome: 'Ultrassonografia obstétrica de 1º trimestre',
+      janela: { de: igDias(11, 0), ate: igDias(13, 6) },
+      quando: 'de 11 a 13 semanas',
+    },
+    {
+      id: 't2-usg',
+      tipo: 'exame',
+      periodo: 't2',
+      nome: 'Ultrassonografia obstétrica de 2º trimestre',
+      janela: { de: igDias(20, 0), ate: igDias(24, 6) },
+      quando: 'de 20 a 24 semanas',
+    },
+  ] as readonly Item[],
+  resumo:
+    'Ajustado ao protocolo do município: HTLV e eletroforese de hemoglobina aparecem no fim da lista, sem oferta local; sem Chagas e malária; ultrassonografia obstétrica de 11 a 13 e de 20 a 24 semanas (a Caderneta do MS indica uma, idealmente entre 7 e 12 semanas).',
+}
+
+function aplicarProtocolo(base: readonly Item[]): Item[] {
+  const usg = new Map(PROTOCOLO_LOCAL.ultrassons.map((u) => [u.id, u]))
+  const out: Item[] = []
+  for (const i of base) {
+    if (PROTOCOLO_LOCAL.remover.includes(i.id)) continue
+    if (PROTOCOLO_LOCAL.semOferta.includes(i.id)) {
+      out.push({ ...i, semOferta: PROTOCOLO_LOCAL.semOfertaTexto })
+      continue
+    }
+    out.push(usg.get(i.id) ?? i)
+    usg.delete(i.id)
+    // USG de 2º trimestre logo depois do TOTG
+    if (i.id === 't2-totg') {
+      const t2 = usg.get('t2-usg')
+      if (t2) {
+        out.push(t2)
+        usg.delete('t2-usg')
+      }
+    }
+  }
+  // Rotina sem oferta local vai para o fim (a ordenação é estável).
+  return out.sort((a, b) => Number(Boolean(a.semOferta)) - Number(Boolean(b.semOferta)))
+}
+
+/** Lista em uso: a do MS com o ajuste do município. */
+export const ITENS: readonly Item[] = aplicarProtocolo(ITENS_MS)
+
 /** Exames que dependem de indicação clínica (Caderneta 2026, 4.2.1). */
 export const COM_INDICACAO: readonly string[] = [
   'Teste para tuberculose',
@@ -248,26 +319,28 @@ export interface ItemNaIg {
  * - agora: a janela está aberta;
  * - atrasado: a janela já fechou (conferir se foi feito);
  * - proximo: a janela ainda vai abrir.
- * Na 1ª consulta, todos os exames do 1º trimestre/1ª consulta entram em "agora"
- * (a Caderneta os lista para "1º trimestre ou 1ª consulta"); com mais de 24 semanas, a
- * glicemia de jejum é trocada pelo TOTG 75 g.
+ * Na 1ª consulta, os exames do 1º trimestre/1ª consulta entram em "agora" (a Caderneta os
+ * lista para "1º trimestre ou 1ª consulta"), menos a ultrassonografia, que segue a sua janela;
+ * com mais de 24 semanas, a glicemia de jejum é trocada pelo TOTG 75 g.
  */
+function situar(totalDias: number, j: { de: number; ate: number | null }): Status {
+  if (totalDias < j.de) return 'proximo'
+  if (j.ate !== null && totalDias > j.ate) return 'atrasado'
+  return 'agora'
+}
+
 export function situacaoItens(totalDias: number, primeiraConsulta: boolean): ItemNaIg[] {
   const out: ItemNaIg[] = []
   for (const item of ITENS) {
-    // O teste de gravidez é o diagnóstico: não faz sentido como pendência numa IG.
-    if (item.id === 't1-trgrav') continue
     const j = janelaDe(item)
     if (!j) continue
     let status: Status
     if (primeiraConsulta && item.periodo === 't1') {
       if (item.id === 't1-gj' && totalDias > igDias(24, 0)) continue
-      if (item.id === 't1-usg') {
-        status = totalDias < j.de ? 'proximo' : 'agora'
-      } else status = 'agora'
-    } else if (totalDias < j.de) status = 'proximo'
-    else if (j.ate !== null && totalDias > j.ate) status = 'atrasado'
-    else status = 'agora'
+      // A ultrassonografia tem janela própria (medidas do 1º trimestre): segue a janela.
+      if (item.id === 't1-usg') status = situar(totalDias, j)
+      else status = 'agora'
+    } else status = situar(totalDias, j)
     out.push({ item, status, abreEm: j.de })
   }
   if (primeiraConsulta && totalDias > igDias(24, 0)) {

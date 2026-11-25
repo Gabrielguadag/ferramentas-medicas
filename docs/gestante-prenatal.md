@@ -44,20 +44,38 @@ O Caderno de Atenção Básica 32 (2012) ficou desatualizado nestes pontos. Ele 
 6 consultas, pedia o TOTG só com glicemia > 85 mg/dL ou fator de risco, não incluía hepatite C
 nem HTLV e não tinha as vacinas de VSR e covid-19. Por isso o módulo segue a Caderneta 2026.
 
+## Protocolo do município
+
+A Caderneta diz que a solicitação "pode seguir protocolos locais". Em 2026-11-25 o usuário
+informou como o município dele faz, e isso virou o ajuste `PROTOCOLO_LOCAL` em `prenatal.ts`.
+A lista nacional continua no código como `ITENS_MS`.
+
+| Item                        | MS (Caderneta 2026)                  | No município                                                                                                |
+| --------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| HTLV                        | rotina, 1º trimestre, para todas     | fica no fim da lista, com a nota "não disponível na rede do município"                                      |
+| Eletroforese de hemoglobina | rotina, 1º trimestre, para todas     | fica no fim da lista, com a mesma nota                                                                      |
+| Chagas                      | só em casos suspeitos                | sai                                                                                                         |
+| Malária                     | só em região endêmica                | sai                                                                                                         |
+| Teste rápido de gravidez    | 1º trimestre                         | sai (no pré-natal, já foi feito)                                                                            |
+| Ultrassonografia obstétrica | uma, idealmente entre 7 e 12 semanas | duas: 1º trimestre de 11 a 13 semanas (11s 0d a 13s 6d) e 2º trimestre de 20 a 24 semanas (20s 0d a 24s 6d) |
+
+A tela mostra esse resumo nos dois cartões. Na 1ª consulta, a ultrassonografia de 1º
+trimestre segue a sua janela e não entra em "agora" fora dela.
+
 ## Regras implementadas
 
 ### Janelas, em dias de IG e inclusivas
 
-| Período ou item                      | Janela                                                      |
-| ------------------------------------ | ----------------------------------------------------------- |
-| 1º trimestre ou 1ª consulta          | 0 a 13s 6d                                                  |
-| 2º trimestre                         | 14s 0d a 27s 6d                                             |
-| 3º trimestre                         | 28s 0d até o parto                                          |
-| Ultrassonografia obstétrica          | 7s 0d a 12s 6d ("idealmente entre 7 e 12 semanas")          |
-| TOTG 75 g                            | 24s 0d a 28s 6d ("preferencialmente entre 24 e 28 semanas") |
-| dTpa                                 | a partir de 20s 0d                                          |
-| VSR                                  | a partir de 28s 0d                                          |
-| Influenza, hepatite B, dT e covid-19 | qualquer fase, com a condição de cada uma                   |
+| Período ou item                      | Janela                                                                                  |
+| ------------------------------------ | --------------------------------------------------------------------------------------- |
+| 1º trimestre ou 1ª consulta          | 0 a 13s 6d                                                                              |
+| 2º trimestre                         | 14s 0d a 27s 6d                                                                         |
+| 3º trimestre                         | 28s 0d até o parto                                                                      |
+| Ultrassonografia obstétrica          | no município, 11s 0d a 13s 6d e 20s 0d a 24s 6d (MS: "idealmente entre 7 e 12 semanas") |
+| TOTG 75 g                            | 24s 0d a 28s 6d ("preferencialmente entre 24 e 28 semanas")                             |
+| dTpa                                 | a partir de 20s 0d                                                                      |
+| VSR                                  | a partir de 28s 0d                                                                      |
+| Influenza, hepatite B, dT e covid-19 | qualquer fase, com a condição de cada uma                                               |
 
 Os trimestres seguem os mesmos limites do módulo de idade gestacional (ACOG CO 700).
 
@@ -77,7 +95,7 @@ Há uma caixa "Esta é a 1ª consulta de pré-natal". Quando marcada:
 
 - Todos os exames do "1º trimestre ou 1ª consulta" entram em "solicitar agora", em qualquer IG.
   A Caderneta os lista para "1º trimestre ou 1ª consulta".
-- A ultrassonografia só entra em "solicitar agora" a partir de 7 semanas.
+- Exceção: a ultrassonografia de 1º trimestre segue a sua janela (11s 0d a 13s 6d).
 - Com mais de 24 semanas, a glicemia de jejum sai e o TOTG 75 g entra em "solicitar agora". A
   Caderneta diz: "Glicemia em jejum (ou TOTG 75 g, se IG > 24 semanas)".
 - Com mais de 12s 6d, a tela avisa que o pré-natal deveria ter começado até a 12ª semana.

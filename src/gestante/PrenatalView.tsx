@@ -10,6 +10,7 @@ import {
   type ItemNaIg,
   MINIMO_CONSULTAS,
   PERIODO_ROTULO,
+  PROTOCOLO_LOCAL,
   type Periodo,
   frequencia,
   proximaConsulta,
@@ -23,6 +24,7 @@ function ItemTexto({ item }: { item: Item }) {
       {item.nome}
       {item.condicao ? <span className="muted"> ({item.condicao})</span> : null}
       {item.quando ? <span className="muted"> · {item.quando}</span> : null}
+      {item.semOferta ? <span className="sem-oferta"> · {item.semOferta}</span> : null}
     </>
   )
 }
@@ -121,6 +123,7 @@ export function PrenatalNaIg(props: { dum: Dia; data: Dia }) {
         Pré-natal de risco habitual. Exames com indicação clínica e de alto risco estão em
         &ldquo;Consultas e exames&rdquo;.
       </p>
+      <p className="hint-inline">{PROTOCOLO_LOCAL.resumo}</p>
     </Card>
   )
 }
@@ -172,6 +175,7 @@ export function ConsultasExamesSection() {
       </Card>
 
       <Card title="Exames de rotina" subtitle="Pré-natal de risco habitual.">
+        <p className="hint-inline">{PROTOCOLO_LOCAL.resumo}</p>
         <div className="grid2">
           {PERIODOS.map((p) => (
             <div key={p}>

@@ -754,3 +754,7 @@ tr.past td {
   font-weight: 600;
   font-size: 0.9rem;
 }
+.sem-oferta {
+  color: var(--muted);
+  font-style: italic;
+}

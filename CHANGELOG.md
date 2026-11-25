@@ -2,6 +2,14 @@
 
 ## Não lançado
 
+- Gestante, protocolo do município sobre a lista do MS:
+  - HTLV e eletroforese de hemoglobina ficam no fim da lista, descritos como rotina do MS sem
+    oferta local;
+  - saem Chagas, malária e o teste rápido de gravidez;
+  - ultrassonografia obstétrica de 1º trimestre (11 a 13 semanas) e de 2º trimestre (20 a 24
+    semanas);
+  - a lista nacional continua no código (`ITENS_MS`).
+
 - Gestante, pré-natal na idade gestacional: ao datar a gestação, um cartão mostra para a data
   escolhida a frequência de consultas e a próxima consulta sugerida, o que solicitar agora, o que
   já deveria ter sido feito (para conferir) e os próximos exames e vacinas, com a data em que

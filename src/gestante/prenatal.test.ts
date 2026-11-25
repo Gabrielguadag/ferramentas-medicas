@@ -1,5 +1,5 @@
 import { igDias } from './ig'
-import { ITENS, frequencia, proximaConsulta, situacaoItens } from './prenatal'
+import { ITENS, ITENS_MS, frequencia, proximaConsulta, situacaoItens } from './prenatal'
 
 const st = (dias: number, primeira = false) =>
   Object.fromEntries(situacaoItens(dias, primeira).map((x) => [x.item.id, x.status]))
@@ -16,20 +16,49 @@ describe('pré-natal (Caderneta Brasileira da Gestante 2026)', () => {
     expect(frequencia(igDias(36, 0)).texto).toBe('semanal')
   })
 
-  it('10 semanas: exames do 1º trimestre agora; USG na janela; TOTG e dTpa depois', () => {
+  it('protocolo do município: sem Chagas, malária e teste de gravidez', () => {
+    const ids = ITENS.map((i) => i.id)
+    for (const id of ['t1-chagas', 't1-malaria', 't2-malaria', 't3-malaria', 't1-trgrav'])
+      expect(ids).not.toContain(id)
+    // a lista nacional continua registrada
+    expect(ITENS_MS.map((i) => i.id)).toContain('t1-htlv')
+    expect(ITENS_MS.find((i) => i.id === 't1-usg')?.quando).toBe('idealmente entre 7 e 12 semanas')
+  })
+
+  it('HTLV e eletroforese ficam no fim da lista, descritas como sem oferta local', () => {
+    const fim = ITENS.slice(-2)
+    expect(fim.map((i) => i.id).sort()).toEqual(['t1-eletro', 't1-htlv'])
+    expect(fim.every((i) => i.semOferta?.includes('não disponível'))).toBe(true)
+    // e continuam aparecendo na IG
+    const a = situacaoItens(igDias(10, 0), false).filter((x) => x.status === 'agora')
+    expect(
+      a
+        .slice(-2)
+        .map((x) => x.item.id)
+        .sort(),
+    ).toEqual(['t1-eletro', 't1-htlv'])
+  })
+
+  it('USG do município: 1º trimestre 11s 0d a 13s 6d; 2º trimestre 20s 0d a 24s 6d', () => {
+    expect(st(igDias(10, 6))['t1-usg']).toBe('proximo')
+    expect(st(igDias(11, 0))['t1-usg']).toBe('agora')
+    expect(st(igDias(13, 6))['t1-usg']).toBe('agora')
+    expect(st(igDias(14, 0))['t1-usg']).toBe('atrasado')
+    expect(st(igDias(19, 6))['t2-usg']).toBe('proximo')
+    expect(st(igDias(20, 0))['t2-usg']).toBe('agora')
+    expect(st(igDias(24, 6))['t2-usg']).toBe('agora')
+    expect(st(igDias(25, 0))['t2-usg']).toBe('atrasado')
+  })
+
+  it('10 semanas: exames do 1º trimestre agora; USG, TOTG e dTpa depois', () => {
     const s = st(igDias(10, 0))
     expect(s['t1-hemo']).toBe('agora')
     expect(s['t1-hcv']).toBe('agora')
-    expect(s['t1-usg']).toBe('agora')
+    expect(s['t1-usg']).toBe('proximo')
     expect(s['t2-totg']).toBe('proximo')
     expect(s['t3-hiv']).toBe('proximo')
     expect(s['v-dtpa']).toBe('proximo')
     expect(s['v-flu']).toBe('agora')
-  })
-
-  it('USG ideal fecha depois de 12s 6d', () => {
-    expect(st(igDias(12, 6))['t1-usg']).toBe('agora')
-    expect(st(igDias(13, 0))['t1-usg']).toBe('atrasado')
   })
 
   it('25 semanas: 1º trimestre já deveria ter sido feito; TOTG e dTpa agora', () => {
@@ -58,7 +87,7 @@ describe('pré-natal (Caderneta Brasileira da Gestante 2026)', () => {
   it('1ª consulta tardia (30 semanas): exames da 1ª consulta agora, TOTG no lugar da glicemia', () => {
     const s = st(igDias(30, 0), true)
     expect(s['t1-hemo']).toBe('agora')
-    expect(s['t1-usg']).toBe('agora')
+    expect(s['t1-usg']).toBe('atrasado') // a USG segue a janela, mesmo na 1ª consulta
     expect(s['t1-gj']).toBeUndefined()
     expect(s['t2-totg']).toBe('agora')
     // 1ª consulta com 20 semanas: glicemia de jejum normal, TOTG ainda por vir
@@ -74,9 +103,5 @@ describe('pré-natal (Caderneta Brasileira da Gestante 2026)', () => {
     expect(proximaConsulta(igDias(30, 0))).toBe(igDias(32, 0))
     expect(proximaConsulta(igDias(35, 0))).toBe(igDias(36, 0))
     expect(proximaConsulta(igDias(37, 0))).toBe(igDias(38, 0))
-  })
-
-  it('teste de gravidez não aparece como pendência', () => {
-    expect(st(igDias(20, 0))['t1-trgrav']).toBeUndefined()
   })
 })
