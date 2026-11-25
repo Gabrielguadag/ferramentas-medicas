@@ -758,3 +758,13 @@ tr.past td {
   color: var(--muted);
   font-style: italic;
 }
+.periodo {
+  border-top: 1px solid var(--grid);
+  margin-top: 12px;
+}
+.col-title {
+  font-size: 0.85rem;
+  color: var(--ink-2);
+  font-weight: 600;
+  margin: 0 0 6px;
+}

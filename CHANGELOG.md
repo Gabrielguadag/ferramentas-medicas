@@ -6,6 +6,11 @@
   - HTLV e eletroforese de hemoglobina ficam no fim da lista, descritos como rotina do MS sem
     oferta local;
   - saem Chagas, malária e o teste rápido de gravidez;
+  - toxoplasmose só no 1º e no 3º trimestre;
+  - cultura para estreptococo do grupo B de 35 a 37 semanas (não está na lista do MS);
+  - saem os exames do parto e pós-parto imediato;
+  - em "Consultas e exames", trimestres um abaixo do outro, cada um com duas colunas: para
+    todas e feitos no município × condicionais ou sem oferta local;
   - ultrassonografia obstétrica de 1º trimestre (11 a 13 semanas) e de 2º trimestre (20 a 24
     semanas);
   - a lista nacional continua no código (`ITENS_MS`).

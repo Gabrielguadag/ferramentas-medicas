@@ -198,12 +198,20 @@ export const ITENS_MS: readonly Item[] = [
 // trimestre de 20 a 24 semanas (no lugar da única "idealmente entre 7 e 12 semanas" do MS).
 // HTLV e eletroforese são rotina do MS para todas as gestantes: ficam na lista, no fim, com a
 // descrição de que o município não oferece. Chagas e malária (só em casos suspeitos ou região
-// endêmica) saem. O teste rápido de gravidez sai porque, no pré-natal, já foi feito.
+// endêmica) saem. Toxoplasmose só no 1º e no 3º trimestre (sai a do 2º). Os exames do parto
+// saem (não são usados pela equipe). Entra a cultura para estreptococo do grupo B de 35 a 37
+// semanas, que não está na lista do MS. O teste rápido de gravidez sai porque, no pré-natal, já foi feito.
 
 export const PROTOCOLO_LOCAL = {
   remover: [
     't1-trgrav',
     't1-chagas',
+    't2-toxo',
+    // exames do parto: não são usados pela equipe
+    'p-hiv',
+    'p-sifilis',
+    'p-hbv',
+    'p-hcv',
     't1-malaria',
     't2-malaria',
     't3-malaria',
@@ -228,8 +236,22 @@ export const PROTOCOLO_LOCAL = {
       quando: 'de 20 a 24 semanas',
     },
   ] as readonly Item[],
+  /** Itens do município que não estão na lista do MS, inseridos depois do item indicado. */
+  extras: [
+    {
+      depoisDe: 't3-urina',
+      item: {
+        id: 't3-gbs',
+        tipo: 'exame',
+        periodo: 't3',
+        nome: 'Cultura para estreptococo do grupo B (swab vaginal e retal)',
+        janela: { de: igDias(35, 0), ate: igDias(37, 6) },
+        quando: 'de 35 a 37 semanas',
+      } as Item,
+    },
+  ],
   resumo:
-    'Ajustado ao protocolo do município: HTLV e eletroforese de hemoglobina aparecem no fim da lista, sem oferta local; sem Chagas e malária; ultrassonografia obstétrica de 11 a 13 e de 20 a 24 semanas (a Caderneta do MS indica uma, idealmente entre 7 e 12 semanas).',
+    'Ajustado ao protocolo do município: HTLV e eletroforese de hemoglobina aparecem no fim da lista, sem oferta local; sem Chagas e malária; toxoplasmose só no 1º e no 3º trimestre; estreptococo do grupo B de 35 a 37 semanas (não está na lista do MS); sem os exames do parto; ultrassonografia obstétrica de 11 a 13 e de 20 a 24 semanas (a Caderneta do MS indica uma, idealmente entre 7 e 12 semanas).',
 }
 
 function aplicarProtocolo(base: readonly Item[]): Item[] {
@@ -243,6 +265,7 @@ function aplicarProtocolo(base: readonly Item[]): Item[] {
     }
     out.push(usg.get(i.id) ?? i)
     usg.delete(i.id)
+    for (const e of PROTOCOLO_LOCAL.extras) if (e.depoisDe === i.id) out.push(e.item)
     // USG de 2º trimestre logo depois do TOTG
     if (i.id === 't2-totg') {
       const t2 = usg.get('t2-usg')

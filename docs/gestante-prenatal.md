@@ -50,16 +50,22 @@ A Caderneta diz que a solicitação "pode seguir protocolos locais". Em 2026-11-
 informou como o município dele faz, e isso virou o ajuste `PROTOCOLO_LOCAL` em `prenatal.ts`.
 A lista nacional continua no código como `ITENS_MS`.
 
-| Item                        | MS (Caderneta 2026)                  | No município                                                                                                |
-| --------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| HTLV                        | rotina, 1º trimestre, para todas     | fica no fim da lista, com a nota "não disponível na rede do município"                                      |
-| Eletroforese de hemoglobina | rotina, 1º trimestre, para todas     | fica no fim da lista, com a mesma nota                                                                      |
-| Chagas                      | só em casos suspeitos                | sai                                                                                                         |
-| Malária                     | só em região endêmica                | sai                                                                                                         |
-| Teste rápido de gravidez    | 1º trimestre                         | sai (no pré-natal, já foi feito)                                                                            |
-| Ultrassonografia obstétrica | uma, idealmente entre 7 e 12 semanas | duas: 1º trimestre de 11 a 13 semanas (11s 0d a 13s 6d) e 2º trimestre de 20 a 24 semanas (20s 0d a 24s 6d) |
+| Item                                                    | MS (Caderneta 2026)                                                 | No município                                                                                                |
+| ------------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| HTLV                                                    | rotina, 1º trimestre, para todas                                    | fica no fim da lista, com a nota "não disponível na rede do município"                                      |
+| Eletroforese de hemoglobina                             | rotina, 1º trimestre, para todas                                    | fica no fim da lista, com a mesma nota                                                                      |
+| Chagas                                                  | só em casos suspeitos                                               | sai                                                                                                         |
+| Malária                                                 | só em região endêmica                                               | sai                                                                                                         |
+| Toxoplasmose                                            | 1º trimestre para todas; 2º e 3º se IgG não reagente                | só 1º e 3º trimestre (sai a do 2º)                                                                          |
+| Estreptococo do grupo B (cultura, swab vaginal e retal) | não está na lista (o Caderno 32 não recomendava rastreio de rotina) | 3º trimestre, de 35 a 37 semanas (35s 0d a 37s 6d)                                                          |
+| Exames no parto ou pós-parto imediato                   | HIV, sífilis e hepatites B e C (se não feitas)                      | saem: não são usados pela equipe                                                                            |
+| Teste rápido de gravidez                                | 1º trimestre                                                        | sai (no pré-natal, já foi feito)                                                                            |
+| Ultrassonografia obstétrica                             | uma, idealmente entre 7 e 12 semanas                                | duas: 1º trimestre de 11 a 13 semanas (11s 0d a 13s 6d) e 2º trimestre de 20 a 24 semanas (20s 0d a 24s 6d) |
 
-A tela mostra esse resumo nos dois cartões. Na 1ª consulta, a ultrassonografia de 1º
+A tela mostra esse resumo nos dois cartões. No módulo "Consultas e exames", cada trimestre
+vem em bloco próprio, um abaixo do outro, com duas colunas: na 1ª os exames para todas e
+feitos no município; na 2ª os condicionais (Rh negativo, IgG não reagente) e os sem oferta
+local. Na 1ª consulta, a ultrassonografia de 1º
 trimestre segue a sua janela e não entra em "agora" fora dela.
 
 ## Regras implementadas

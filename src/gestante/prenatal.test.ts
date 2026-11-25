@@ -18,7 +18,18 @@ describe('pré-natal (Caderneta Brasileira da Gestante 2026)', () => {
 
   it('protocolo do município: sem Chagas, malária e teste de gravidez', () => {
     const ids = ITENS.map((i) => i.id)
-    for (const id of ['t1-chagas', 't1-malaria', 't2-malaria', 't3-malaria', 't1-trgrav'])
+    for (const id of [
+      't1-chagas',
+      't1-malaria',
+      't2-malaria',
+      't3-malaria',
+      't1-trgrav',
+      't2-toxo',
+      'p-hiv',
+      'p-sifilis',
+      'p-hbv',
+      'p-hcv',
+    ])
       expect(ids).not.toContain(id)
     // a lista nacional continua registrada
     expect(ITENS_MS.map((i) => i.id)).toContain('t1-htlv')
@@ -37,6 +48,16 @@ describe('pré-natal (Caderneta Brasileira da Gestante 2026)', () => {
         .map((x) => x.item.id)
         .sort(),
     ).toEqual(['t1-eletro', 't1-htlv'])
+  })
+
+  it('estreptococo do grupo B: 35s 0d a 37s 6d, depois da urina do 3º trimestre', () => {
+    expect(st(igDias(34, 6))['t3-gbs']).toBe('proximo')
+    expect(st(igDias(35, 0))['t3-gbs']).toBe('agora')
+    expect(st(igDias(37, 6))['t3-gbs']).toBe('agora')
+    expect(st(igDias(38, 0))['t3-gbs']).toBe('atrasado')
+    const ids = ITENS.map((i) => i.id)
+    expect(ids.indexOf('t3-gbs')).toBe(ids.indexOf('t3-urina') + 1)
+    expect(ITENS_MS.map((i) => i.id)).not.toContain('t3-gbs')
   })
 
   it('USG do município: 1º trimestre 11s 0d a 13s 6d; 2º trimestre 20s 0d a 24s 6d', () => {
@@ -80,7 +101,9 @@ describe('pré-natal (Caderneta Brasileira da Gestante 2026)', () => {
     const s = st(igDias(30, 0))
     expect(s['t3-sifilis']).toBe('agora')
     expect(s['v-vsr']).toBe('agora')
-    expect(s['t2-toxo']).toBe('atrasado')
+    expect(s['t2-coombs']).toBe('atrasado')
+    expect(s['t2-toxo']).toBeUndefined() // município: toxo só no 1º e no 3º trimestre
+    expect(s['t3-toxo']).toBe('agora')
     expect(s['p-hiv']).toBeUndefined() // parto não entra na lista por IG
   })
 

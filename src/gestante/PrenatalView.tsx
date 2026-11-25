@@ -130,6 +130,19 @@ export function PrenatalNaIg(props: { dum: Dia; data: Dia }) {
 
 const PERIODOS: Periodo[] = ['t1', 't2', 't3', 'parto']
 
+function ColunaExames({ itens }: { itens: Item[] }) {
+  if (!itens.length) return <p className="empty">Nenhum.</p>
+  return (
+    <ul className="checklist">
+      {itens.map((i) => (
+        <li key={i.id}>
+          <ItemTexto item={i} />
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 /** Referência: calendário de consultas, exames por trimestre e vacinas. */
 export function ConsultasExamesSection() {
   const vacinas = ITENS.filter((i) => i.tipo === 'vacina')
@@ -176,31 +189,43 @@ export function ConsultasExamesSection() {
 
       <Card title="Exames de rotina" subtitle="Pré-natal de risco habitual.">
         <p className="hint-inline">{PROTOCOLO_LOCAL.resumo}</p>
-        <div className="grid2">
-          {PERIODOS.map((p) => (
-            <div key={p}>
+        {PERIODOS.map((p) => {
+          const exames = ITENS.filter((i) => i.tipo === 'exame' && i.periodo === p)
+          if (!exames.length) return null
+          // 1ª coluna: para todas e feitos no município; 2ª: condicionais ou sem oferta local.
+          const todas = exames.filter((i) => !i.condicao && !i.semOferta)
+          const outros = exames.filter((i) => i.condicao || i.semOferta)
+          return (
+            <section key={p} className="periodo" aria-label={PERIODO_ROTULO[p]}>
               <h4 className="list-title">{PERIODO_ROTULO[p]}</h4>
-              <ul className="checklist">
-                {ITENS.filter((i) => i.tipo === 'exame' && i.periodo === p).map((i) => (
-                  <li key={i.id}>
-                    <ItemTexto item={i} />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <h4 className="list-title">Com indicação clínica</h4>
-        <ul className="checklist">
-          {COM_INDICACAO.map((t) => (
-            <li key={t}>{t}</li>
-          ))}
-        </ul>
-        <h4 className="list-title">Alto risco (conforme critério clínico)</h4>
-        <p className="lead">
-          Plaquetas, proteinúria de 24 horas, ureia, creatinina e ácido úrico, eletrocardiograma,
-          ultrassonografia obstétrica com Doppler e cardiotocografia anteparto.
-        </p>
+              <div className="grid2">
+                <div>
+                  <p className="col-title">Para todas (feitos no município)</p>
+                  <ColunaExames itens={todas} />
+                </div>
+                <div>
+                  <p className="col-title">Condicionais ou sem oferta no município</p>
+                  <ColunaExames itens={outros} />
+                </div>
+              </div>
+            </section>
+          )
+        })}
+        <section className="periodo" aria-label="Com indicação clínica">
+          <h4 className="list-title">Com indicação clínica</h4>
+          <ul className="checklist">
+            {COM_INDICACAO.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
+        </section>
+        <section className="periodo" aria-label="Alto risco">
+          <h4 className="list-title">Alto risco (conforme critério clínico)</h4>
+          <p className="lead">
+            Plaquetas, proteinúria de 24 horas, ureia, creatinina e ácido úrico, eletrocardiograma,
+            ultrassonografia obstétrica com Doppler e cardiotocografia anteparto.
+          </p>
+        </section>
       </Card>
 
       <Card title="Vacinas">
