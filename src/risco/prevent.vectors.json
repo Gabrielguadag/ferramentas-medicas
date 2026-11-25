@@ -1,0 +1,1157 @@
+{
+  "_meta": {
+    "source": "testes do pacote preventr 0.12.2 (tests/testthat); entradas sintéticas"
+  },
+  "partial": [
+    {
+      "source": "tests/testthat/test-estimate_risk.R (estimate_risk_partial)",
+      "name": "base female",
+      "inputs": {
+        "age": 50,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35
+      },
+      "sex": "female",
+      "horizon_years": 10,
+      "model": "base",
+      "expected": {
+        "total_cvd": 0.147,
+        "ascvd": 0.092,
+        "heart_failure": 0.081,
+        "chd": 0.044,
+        "stroke": 0.054
+      },
+      "tolerance": "exact after round-half-up to 3 decimals"
+    },
+    {
+      "source": "tests/testthat/test-estimate_risk.R (estimate_risk_partial)",
+      "name": "base female",
+      "inputs": {
+        "age": 50,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35
+      },
+      "sex": "female",
+      "horizon_years": 30,
+      "model": "base",
+      "expected": {
+        "total_cvd": 0.53,
+        "ascvd": 0.354,
+        "heart_failure": 0.39,
+        "chd": 0.198,
+        "stroke": 0.221
+      },
+      "tolerance": "exact after round-half-up to 3 decimals"
+    },
+    {
+      "source": "tests/testthat/test-estimate_risk.R (estimate_risk_partial)",
+      "name": "hba1c 9.2 female",
+      "inputs": {
+        "age": 50,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 9.2
+      },
+      "sex": "female",
+      "horizon_years": 10,
+      "model": "hba1c",
+      "expected": {
+        "total_cvd": 0.181,
+        "ascvd": 0.112,
+        "heart_failure": 0.106,
+        "chd": 0.054,
+        "stroke": 0.067
+      },
+      "tolerance": "exact after round-half-up to 3 decimals",
+      "pre_erratum_values_in_test_comments": {
+        "total_cvd": 0.165,
+        "ascvd": 0.103,
+        "heart_failure": 0.107,
+        "chd": 0.055,
+        "stroke": 0.053
+      }
+    },
+    {
+      "source": "tests/testthat/test-estimate_risk.R (estimate_risk_partial)",
+      "name": "hba1c 9.2 female",
+      "inputs": {
+        "age": 50,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 9.2
+      },
+      "sex": "female",
+      "horizon_years": 30,
+      "model": "hba1c",
+      "expected": {
+        "total_cvd": 0.557,
+        "ascvd": 0.378,
+        "heart_failure": 0.433,
+        "chd": 0.214,
+        "stroke": 0.241
+      },
+      "tolerance": "exact after round-half-up to 3 decimals",
+      "pre_erratum_values_in_test_comments": {
+        "total_cvd": 0.541,
+        "ascvd": 0.356,
+        "heart_failure": 0.449,
+        "chd": 0.219,
+        "stroke": 0.2
+      }
+    },
+    {
+      "source": "tests/testthat/test-estimate_risk.R (estimate_risk_partial)",
+      "name": "uacr 92 female",
+      "inputs": {
+        "age": 50,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "uacr": 92
+      },
+      "sex": "female",
+      "horizon_years": 10,
+      "model": "uacr",
+      "expected": {
+        "total_cvd": 0.181,
+        "ascvd": 0.111,
+        "heart_failure": 0.105,
+        "chd": 0.055,
+        "stroke": 0.065
+      },
+      "tolerance": "exact after round-half-up to 3 decimals"
+    },
+    {
+      "source": "tests/testthat/test-estimate_risk.R (estimate_risk_partial)",
+      "name": "uacr 92 female",
+      "inputs": {
+        "age": 50,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "uacr": 92
+      },
+      "sex": "female",
+      "horizon_years": 30,
+      "model": "uacr",
+      "expected": {
+        "total_cvd": 0.565,
+        "ascvd": 0.381,
+        "heart_failure": 0.437,
+        "chd": 0.22,
+        "stroke": 0.241
+      },
+      "tolerance": "exact after round-half-up to 3 decimals"
+    },
+    {
+      "source": "tests/testthat/test-estimate_risk.R (estimate_risk_partial)",
+      "name": "base male",
+      "inputs": {
+        "age": 50,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35
+      },
+      "sex": "male",
+      "horizon_years": 10,
+      "model": "base",
+      "expected": {
+        "total_cvd": 0.163,
+        "ascvd": 0.102,
+        "heart_failure": 0.106,
+        "chd": 0.056,
+        "stroke": 0.052
+      },
+      "tolerance": "exact after round-half-up to 3 decimals"
+    },
+    {
+      "source": "tests/testthat/test-estimate_risk.R (estimate_risk_partial)",
+      "name": "base male",
+      "inputs": {
+        "age": 50,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35
+      },
+      "sex": "male",
+      "horizon_years": 30,
+      "model": "base",
+      "expected": {
+        "total_cvd": 0.514,
+        "ascvd": 0.349,
+        "heart_failure": 0.424,
+        "chd": 0.216,
+        "stroke": 0.197
+      },
+      "tolerance": "exact after round-half-up to 3 decimals"
+    },
+    {
+      "source": "tests/testthat/test-estimate_risk.R (estimate_risk_partial)",
+      "name": "hba1c 9.2 male",
+      "inputs": {
+        "age": 50,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 9.2
+      },
+      "sex": "male",
+      "horizon_years": 10,
+      "model": "hba1c",
+      "expected": {
+        "total_cvd": 0.185,
+        "ascvd": 0.117,
+        "heart_failure": 0.124,
+        "chd": 0.061,
+        "stroke": 0.063
+      },
+      "tolerance": "exact after round-half-up to 3 decimals",
+      "pre_erratum_values_in_test_comments": {
+        "total_cvd": 0.187,
+        "ascvd": 0.112,
+        "heart_failure": 0.13,
+        "chd": 0.063,
+        "stroke": 0.056
+      }
+    },
+    {
+      "source": "tests/testthat/test-estimate_risk.R (estimate_risk_partial)",
+      "name": "hba1c 9.2 male",
+      "inputs": {
+        "age": 50,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 9.2
+      },
+      "sex": "male",
+      "horizon_years": 30,
+      "model": "hba1c",
+      "expected": {
+        "total_cvd": 0.525,
+        "ascvd": 0.36,
+        "heart_failure": 0.442,
+        "chd": 0.212,
+        "stroke": 0.214
+      },
+      "tolerance": "exact after round-half-up to 3 decimals",
+      "pre_erratum_values_in_test_comments": {
+        "total_cvd": 0.524,
+        "ascvd": 0.34,
+        "heart_failure": 0.457,
+        "chd": 0.211,
+        "stroke": 0.188
+      }
+    },
+    {
+      "source": "tests/testthat/test-estimate_risk.R (estimate_risk_partial)",
+      "name": "uacr 92 male",
+      "inputs": {
+        "age": 50,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "uacr": 92
+      },
+      "sex": "male",
+      "horizon_years": 10,
+      "model": "uacr",
+      "expected": {
+        "total_cvd": 0.195,
+        "ascvd": 0.123,
+        "heart_failure": 0.13,
+        "chd": 0.066,
+        "stroke": 0.063
+      },
+      "tolerance": "exact after round-half-up to 3 decimals"
+    },
+    {
+      "source": "tests/testthat/test-estimate_risk.R (estimate_risk_partial)",
+      "name": "uacr 92 male",
+      "inputs": {
+        "age": 50,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "uacr": 92
+      },
+      "sex": "male",
+      "horizon_years": 30,
+      "model": "uacr",
+      "expected": {
+        "total_cvd": 0.535,
+        "ascvd": 0.368,
+        "heart_failure": 0.448,
+        "chd": 0.227,
+        "stroke": 0.213
+      },
+      "tolerance": "exact after round-half-up to 3 decimals"
+    }
+  ],
+  "snapshots": [
+    {
+      "call": "check_equations(age = 50, total_c = 200, hdl_c = 45, sbp = 160, dm = TRUE, smoking = 0, bmi = 35, egfr = 90, bp_tx = 1, statin = FALSE, time = \"10yr\")",
+      "inputs": {
+        "age": 50,
+        "total_c": 200,
+        "hdl_c": 45,
+        "sbp": 160,
+        "dm": true,
+        "smoking": 0,
+        "bmi": 35,
+        "egfr": 90,
+        "bp_tx": 1,
+        "statin": false,
+        "sdi": null
+      },
+      "time": "10yr",
+      "column": "female",
+      "model": "base",
+      "expected_pct": {
+        "total_cvd": 14.7,
+        "ascvd": 9.2,
+        "heart_failure": 8.1,
+        "chd": 4.4,
+        "stroke": 5.4
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations(age = 50, total_c = 200, hdl_c = 45, sbp = 160, dm = TRUE, smoking = 0, bmi = 35, egfr = 90, bp_tx = 1, statin = FALSE, time = \"10yr\")",
+      "inputs": {
+        "age": 50,
+        "total_c": 200,
+        "hdl_c": 45,
+        "sbp": 160,
+        "dm": true,
+        "smoking": 0,
+        "bmi": 35,
+        "egfr": 90,
+        "bp_tx": 1,
+        "statin": false,
+        "sdi": null
+      },
+      "time": "10yr",
+      "column": "male",
+      "model": "base",
+      "expected_pct": {
+        "total_cvd": 16.3,
+        "ascvd": 10.2,
+        "heart_failure": 10.6,
+        "chd": 5.6,
+        "stroke": 5.2
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations(age = 50, total_c = 200, hdl_c = 45, sbp = 160, dm = 1, smoking = FALSE, bmi = 35, egfr = 90, bp_tx = TRUE, statin = 0, uacr = 40, time = \"10yr\")",
+      "inputs": {
+        "age": 50,
+        "total_c": 200,
+        "hdl_c": 45,
+        "sbp": 160,
+        "dm": 1,
+        "smoking": false,
+        "bmi": 35,
+        "egfr": 90,
+        "bp_tx": true,
+        "statin": 0,
+        "uacr": 40,
+        "sdi": null
+      },
+      "time": "10yr",
+      "column": "female",
+      "model": "uacr",
+      "expected_pct": {
+        "total_cvd": 16,
+        "ascvd": 9.9,
+        "heart_failure": 8.9,
+        "chd": 4.8,
+        "stroke": 5.9
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations(age = 50, total_c = 200, hdl_c = 45, sbp = 160, dm = 1, smoking = FALSE, bmi = 35, egfr = 90, bp_tx = TRUE, statin = 0, uacr = 40, time = \"10yr\")",
+      "inputs": {
+        "age": 50,
+        "total_c": 200,
+        "hdl_c": 45,
+        "sbp": 160,
+        "dm": 1,
+        "smoking": false,
+        "bmi": 35,
+        "egfr": 90,
+        "bp_tx": true,
+        "statin": 0,
+        "uacr": 40,
+        "sdi": null
+      },
+      "time": "10yr",
+      "column": "male",
+      "model": "uacr",
+      "expected_pct": {
+        "total_cvd": 17.2,
+        "ascvd": 11,
+        "heart_failure": 11,
+        "chd": 5.9,
+        "stroke": 5.6
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations(age = 50, total_c = 200, hdl_c = 45, sbp = 160, dm = 1, smoking = FALSE, bmi = 35, egfr = 90, bp_tx = TRUE, statin = 0, hba1c = 7.5, time = \"10yr\")",
+      "inputs": {
+        "age": 50,
+        "total_c": 200,
+        "hdl_c": 45,
+        "sbp": 160,
+        "dm": 1,
+        "smoking": false,
+        "bmi": 35,
+        "egfr": 90,
+        "bp_tx": true,
+        "statin": 0,
+        "hba1c": 7.5,
+        "sdi": null
+      },
+      "time": "10yr",
+      "column": "female",
+      "model": "hba1c",
+      "expected_pct": {
+        "total_cvd": 14.3,
+        "ascvd": 8.8,
+        "heart_failure": 8,
+        "chd": 4,
+        "stroke": 5.2
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations(age = 50, total_c = 200, hdl_c = 45, sbp = 160, dm = 1, smoking = FALSE, bmi = 35, egfr = 90, bp_tx = TRUE, statin = 0, hba1c = 7.5, time = \"10yr\")",
+      "inputs": {
+        "age": 50,
+        "total_c": 200,
+        "hdl_c": 45,
+        "sbp": 160,
+        "dm": 1,
+        "smoking": false,
+        "bmi": 35,
+        "egfr": 90,
+        "bp_tx": true,
+        "statin": 0,
+        "hba1c": 7.5,
+        "sdi": null
+      },
+      "time": "10yr",
+      "column": "male",
+      "model": "hba1c",
+      "expected_pct": {
+        "total_cvd": 15.4,
+        "ascvd": 9.6,
+        "heart_failure": 9.8,
+        "chd": 5.1,
+        "stroke": 5
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations(age = 50, total_c = 200, hdl_c = 45, sbp = 160, dm = TRUE, smoking = 0, bmi = 35, egfr = 90, bp_tx = 1, statin = FALSE, time = \"30yr\")",
+      "inputs": {
+        "age": 50,
+        "total_c": 200,
+        "hdl_c": 45,
+        "sbp": 160,
+        "dm": true,
+        "smoking": 0,
+        "bmi": 35,
+        "egfr": 90,
+        "bp_tx": 1,
+        "statin": false,
+        "sdi": null
+      },
+      "time": "30yr",
+      "column": "female",
+      "model": "base",
+      "expected_pct": {
+        "total_cvd": 53,
+        "ascvd": 35.4,
+        "heart_failure": 39,
+        "chd": 19.8,
+        "stroke": 22.1
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations(age = 50, total_c = 200, hdl_c = 45, sbp = 160, dm = TRUE, smoking = 0, bmi = 35, egfr = 90, bp_tx = 1, statin = FALSE, time = \"30yr\")",
+      "inputs": {
+        "age": 50,
+        "total_c": 200,
+        "hdl_c": 45,
+        "sbp": 160,
+        "dm": true,
+        "smoking": 0,
+        "bmi": 35,
+        "egfr": 90,
+        "bp_tx": 1,
+        "statin": false,
+        "sdi": null
+      },
+      "time": "30yr",
+      "column": "male",
+      "model": "base",
+      "expected_pct": {
+        "total_cvd": 51.4,
+        "ascvd": 34.9,
+        "heart_failure": 42.4,
+        "chd": 21.6,
+        "stroke": 19.7
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations(age = 50, total_c = 200, hdl_c = 45, sbp = 160, dm = 1, smoking = FALSE, bmi = 35, egfr = 90, bp_tx = TRUE, statin = 0, uacr = 40, time = \"30yr\")",
+      "inputs": {
+        "age": 50,
+        "total_c": 200,
+        "hdl_c": 45,
+        "sbp": 160,
+        "dm": 1,
+        "smoking": false,
+        "bmi": 35,
+        "egfr": 90,
+        "bp_tx": true,
+        "statin": 0,
+        "uacr": 40,
+        "sdi": null
+      },
+      "time": "30yr",
+      "column": "female",
+      "model": "uacr",
+      "expected_pct": {
+        "total_cvd": 54.2,
+        "ascvd": 36.3,
+        "heart_failure": 40.7,
+        "chd": 20.6,
+        "stroke": 22.9
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations(age = 50, total_c = 200, hdl_c = 45, sbp = 160, dm = 1, smoking = FALSE, bmi = 35, egfr = 90, bp_tx = TRUE, statin = 0, uacr = 40, time = \"30yr\")",
+      "inputs": {
+        "age": 50,
+        "total_c": 200,
+        "hdl_c": 45,
+        "sbp": 160,
+        "dm": 1,
+        "smoking": false,
+        "bmi": 35,
+        "egfr": 90,
+        "bp_tx": true,
+        "statin": 0,
+        "uacr": 40,
+        "sdi": null
+      },
+      "time": "30yr",
+      "column": "male",
+      "model": "uacr",
+      "expected_pct": {
+        "total_cvd": 51.4,
+        "ascvd": 35.5,
+        "heart_failure": 42,
+        "chd": 21.8,
+        "stroke": 20.2
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations(age = 50, total_c = 200, hdl_c = 45, sbp = 160, dm = 1, smoking = FALSE, bmi = 35, egfr = 90, bp_tx = TRUE, statin = 0, hba1c = 7.5, time = \"30yr\")",
+      "inputs": {
+        "age": 50,
+        "total_c": 200,
+        "hdl_c": 45,
+        "sbp": 160,
+        "dm": 1,
+        "smoking": false,
+        "bmi": 35,
+        "egfr": 90,
+        "bp_tx": true,
+        "statin": 0,
+        "hba1c": 7.5,
+        "sdi": null
+      },
+      "time": "30yr",
+      "column": "female",
+      "model": "hba1c",
+      "expected_pct": {
+        "total_cvd": 51,
+        "ascvd": 33.5,
+        "heart_failure": 38,
+        "chd": 18,
+        "stroke": 20.9
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations(age = 50, total_c = 200, hdl_c = 45, sbp = 160, dm = 1, smoking = FALSE, bmi = 35, egfr = 90, bp_tx = TRUE, statin = 0, hba1c = 7.5, time = \"30yr\")",
+      "inputs": {
+        "age": 50,
+        "total_c": 200,
+        "hdl_c": 45,
+        "sbp": 160,
+        "dm": 1,
+        "smoking": false,
+        "bmi": 35,
+        "egfr": 90,
+        "bp_tx": true,
+        "statin": 0,
+        "hba1c": 7.5,
+        "sdi": null
+      },
+      "time": "30yr",
+      "column": "male",
+      "model": "hba1c",
+      "expected_pct": {
+        "total_cvd": 49.2,
+        "ascvd": 32.9,
+        "heart_failure": 40.3,
+        "chd": 19.2,
+        "stroke": 18.9
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 67, statin = FALSE, hba1c = 9)",
+      "inputs": {
+        "age": 67,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 9,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "female_10yr",
+      "model": "hba1c",
+      "expected_pct": {
+        "total_cvd": 28.7,
+        "ascvd": 17.6,
+        "heart_failure": 19.9,
+        "chd": 9.4,
+        "stroke": 10.1
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 67, statin = FALSE, hba1c = 9)",
+      "inputs": {
+        "age": 67,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 9,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "male_10yr",
+      "model": "hba1c",
+      "expected_pct": {
+        "total_cvd": 30.7,
+        "ascvd": 20.2,
+        "heart_failure": 23.6,
+        "chd": 10.9,
+        "stroke": 11.6
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 67, statin = FALSE, hba1c = 9)",
+      "inputs": {
+        "age": 67,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 9,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "female_30yr",
+      "model": "hba1c",
+      "expected_pct": {
+        "total_cvd": 55.1,
+        "ascvd": 36.4,
+        "heart_failure": 44.8,
+        "chd": 21.5,
+        "stroke": 22
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 67, statin = FALSE, hba1c = 9)",
+      "inputs": {
+        "age": 67,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 9,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "male_30yr",
+      "model": "hba1c",
+      "expected_pct": {
+        "total_cvd": 50.6,
+        "ascvd": 35,
+        "heart_failure": 43.7,
+        "chd": 20.4,
+        "stroke": 21.3
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 67, statin = TRUE, uacr = 1000)",
+      "inputs": {
+        "age": 67,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": true,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "uacr": 1000,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "female_10yr",
+      "model": "uacr",
+      "expected_pct": {
+        "total_cvd": 35.3,
+        "ascvd": 22.2,
+        "heart_failure": 28.9,
+        "chd": 12.7,
+        "stroke": 12.4
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 67, statin = TRUE, uacr = 1000)",
+      "inputs": {
+        "age": 67,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": true,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "uacr": 1000,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "male_10yr",
+      "model": "uacr",
+      "expected_pct": {
+        "total_cvd": 39.8,
+        "ascvd": 26,
+        "heart_failure": 34.9,
+        "chd": 15.5,
+        "stroke": 15.1
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 67, statin = TRUE, uacr = 1000)",
+      "inputs": {
+        "age": 67,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": true,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "uacr": 1000,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "female_30yr",
+      "model": "uacr",
+      "expected_pct": {
+        "total_cvd": 61.3,
+        "ascvd": 41.9,
+        "heart_failure": 53.4,
+        "chd": 26.5,
+        "stroke": 25.2
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 67, statin = TRUE, uacr = 1000)",
+      "inputs": {
+        "age": 67,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": true,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "uacr": 1000,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "male_30yr",
+      "model": "uacr",
+      "expected_pct": {
+        "total_cvd": 58.2,
+        "ascvd": 40.7,
+        "heart_failure": 52.2,
+        "chd": 26.2,
+        "stroke": 25
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 71, statin = TRUE, hba1c = 9, uacr = 1000)",
+      "inputs": {
+        "age": 71,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": true,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 9,
+        "uacr": 1000,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "female_10yr",
+      "model": "full",
+      "expected_pct": {
+        "total_cvd": 42.4,
+        "ascvd": 27.4,
+        "heart_failure": 37,
+        "chd": 16.7,
+        "stroke": 15.7
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 71, statin = TRUE, hba1c = 9, uacr = 1000)",
+      "inputs": {
+        "age": 71,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": true,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 9,
+        "uacr": 1000,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "male_10yr",
+      "model": "full",
+      "expected_pct": {
+        "total_cvd": 46.7,
+        "ascvd": 31,
+        "heart_failure": 42.4,
+        "chd": 18.1,
+        "stroke": 19
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 71, statin = TRUE, hba1c = 9, uacr = 1000)",
+      "inputs": {
+        "age": 71,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": true,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 9,
+        "uacr": 1000,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "female_30yr",
+      "model": "full",
+      "expected_pct": {
+        "total_cvd": 59.7,
+        "ascvd": 41.3,
+        "heart_failure": 53.3,
+        "chd": 26.9,
+        "stroke": 24.9
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 71, statin = TRUE, hba1c = 9, uacr = 1000)",
+      "inputs": {
+        "age": 71,
+        "sbp": 160,
+        "bp_tx": true,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": true,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 9,
+        "uacr": 1000,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "male_30yr",
+      "model": "full",
+      "expected_pct": {
+        "total_cvd": 54.8,
+        "ascvd": 37.5,
+        "heart_failure": 49.5,
+        "chd": 22.7,
+        "stroke": 23.6
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 71, sbp = 145, bp_tx = 0, hba1c = 6.7, uacr = 10, zip = NA)",
+      "inputs": {
+        "age": 71,
+        "sbp": 145,
+        "bp_tx": 0,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 6.7,
+        "uacr": 10,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "female_10yr",
+      "model": "full",
+      "expected_pct": {
+        "total_cvd": 16.6,
+        "ascvd": 10.2,
+        "heart_failure": 10.9,
+        "chd": 5.7,
+        "stroke": 5.5
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 71, sbp = 145, bp_tx = 0, hba1c = 6.7, uacr = 10, zip = NA)",
+      "inputs": {
+        "age": 71,
+        "sbp": 145,
+        "bp_tx": 0,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 6.7,
+        "uacr": 10,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "male_10yr",
+      "model": "full",
+      "expected_pct": {
+        "total_cvd": 20,
+        "ascvd": 13.5,
+        "heart_failure": 13.7,
+        "chd": 8,
+        "stroke": 6.5
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 71, sbp = 145, bp_tx = 0, hba1c = 6.7, uacr = 10, zip = NA)",
+      "inputs": {
+        "age": 71,
+        "sbp": 145,
+        "bp_tx": 0,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 6.7,
+        "uacr": 10,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "female_30yr",
+      "model": "full",
+      "expected_pct": {
+        "total_cvd": 35.9,
+        "ascvd": 22.5,
+        "heart_failure": 26.9,
+        "chd": 13.4,
+        "stroke": 12.5
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    },
+    {
+      "call": "check_equations_partial(age = 71, sbp = 145, bp_tx = 0, hba1c = 6.7, uacr = 10, zip = NA)",
+      "inputs": {
+        "age": 71,
+        "sbp": 145,
+        "bp_tx": 0,
+        "total_c": 200,
+        "hdl_c": 45,
+        "statin": false,
+        "dm": true,
+        "smoking": false,
+        "egfr": 90,
+        "bmi": 35,
+        "hba1c": 6.7,
+        "uacr": 10,
+        "sdi": null
+      },
+      "time": "both",
+      "column": "male_30yr",
+      "model": "full",
+      "expected_pct": {
+        "total_cvd": 35.6,
+        "ascvd": 24.2,
+        "heart_failure": 27.3,
+        "chd": 15.1,
+        "stroke": 12.3
+      },
+      "source": "tests/testthat/_snaps/estimate_risk.md (check_equations snapshot; values in percent, 1 decimal)"
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "_meta": {
+    "source": "OMS 2019 (WHO CVD Risk Chart Working Group, Kaptoge S et al., Lancet Glob Health 2019;7:e1332-e1345). Coeficientes e recalibração conforme o pacote R WHORiskCalculator 1.1.0 (MIT), que reproduz o programa Stata whocvdrisk dos autores. Região do Brasil: América Latina Tropical (GBD), ano 2017, o mesmo das tabelas OMS/HEARTS.",
+    "check": "Reproduz sem divergência as 2.100 células das tabelas da calculadora HEARTS/OPAS para Brasil/Paraguai."
+  },
+  "centering": {
+    "age": 60,
+    "sbp_mmHg": 120,
+    "total_cholesterol_mmol_L": 6,
+    "bmi_kg_m2": 25
+  },
+  "coefficients": {
+    "lab": {
+      "mi_chd|male": {
+        "log_hr_age": 0.0719227,
+        "log_hr_chol": 0.2284944,
+        "log_hr_sbp": 0.0132183,
+        "log_hr_diabetes": 0.6410114,
+        "log_hr_smoking": 0.5638109,
+        "log_hr_chol_age": -0.0045806,
+        "log_hr_sbp_age": -0.0001576,
+        "log_hr_diabetes_age": -0.0124966,
+        "log_hr_smoking_age": -0.0182545,
+        "baseline_survival": 0.9540108
+      },
+      "mi_chd|female": {
+        "log_hr_age": 0.1020713,
+        "log_hr_chol": 0.2050377,
+        "log_hr_sbp": 0.015823,
+        "log_hr_diabetes": 1.070358,
+        "log_hr_smoking": 1.053223,
+        "log_hr_chol_age": -0.0051932,
+        "log_hr_sbp_age": -0.0001378,
+        "log_hr_diabetes_age": -0.0234174,
+        "log_hr_smoking_age": -0.0332666,
+        "baseline_survival": 0.9894159
+      },
+      "stroke|male": {
+        "log_hr_age": 0.0986578,
+        "log_hr_chol": 0.029526,
+        "log_hr_sbp": 0.0222629,
+        "log_hr_diabetes": 0.6268712,
+        "log_hr_smoking": 0.4981217,
+        "log_hr_chol_age": 0.00142,
+        "log_hr_sbp_age": -0.0004147,
+        "log_hr_diabetes_age": -0.026302,
+        "log_hr_smoking_age": -0.0150561,
+        "baseline_survival": 0.9849257
+      },
+      "stroke|female": {
+        "log_hr_age": 0.1056632,
+        "log_hr_chol": 0.0257782,
+        "log_hr_sbp": 0.0206278,
+        "log_hr_diabetes": 0.8581998,
+        "log_hr_smoking": 0.7443627,
+        "log_hr_chol_age": -0.0021387,
+        "log_hr_sbp_age": -0.0004897,
+        "log_hr_diabetes_age": -0.0209826,
+        "log_hr_smoking_age": -0.0200822,
+        "baseline_survival": 0.9890569
+      }
+    },
+    "nonlab": {
+      "mi_chd|male": {
+        "log_hr_age": 0.073593,
+        "log_hr_bmi": 0.0337219,
+        "log_hr_sbp": 0.0133937,
+        "log_hr_smoking": 0.5954767,
+        "log_hr_bmi_age": -0.0010432,
+        "log_hr_sbp_age": -0.0001837,
+        "log_hr_smoking_age": -0.0200831,
+        "baseline_survival": 0.9544258
+      },
+      "mi_chd|female": {
+        "log_hr_age": 0.1049418,
+        "log_hr_bmi": 0.0257616,
+        "log_hr_sbp": 0.016726,
+        "log_hr_smoking": 1.093132,
+        "log_hr_bmi_age": -0.0006537,
+        "log_hr_sbp_age": -0.0001966,
+        "log_hr_smoking_age": -0.0343739,
+        "baseline_survival": 0.9887124
+      },
+      "stroke|male": {
+        "log_hr_age": 0.097674,
+        "log_hr_bmi": 0.0159518,
+        "log_hr_sbp": 0.0227294,
+        "log_hr_smoking": 0.4999862,
+        "log_hr_bmi_age": -0.0003516,
+        "log_hr_sbp_age": -0.0004374,
+        "log_hr_smoking_age": -0.0153895,
+        "baseline_survival": 0.984826
+      },
+      "stroke|female": {
+        "log_hr_age": 0.1046105,
+        "log_hr_bmi": 0.0036406,
+        "log_hr_sbp": 0.0216741,
+        "log_hr_smoking": 0.7399405,
+        "log_hr_bmi_age": -0.0000129,
+        "log_hr_sbp_age": -0.0005311,
+        "log_hr_smoking_age": -0.0203997,
+        "baseline_survival": 0.9885706
+      }
+    }
+  },
+  "recalibration": {
+    "female": {
+      "lab_chd_cons": -1.1042664051055908,
+      "lab_chd_slope": 0.6739416122436523,
+      "lab_stroke_cons": -1.4410560131072998,
+      "lab_stroke_slope": 0.5095553994178772,
+      "nonlab_chd_cons": -1.0668799877166748,
+      "nonlab_chd_slope": 0.712387204170227,
+      "nonlab_stroke_cons": -1.365731954574585,
+      "nonlab_stroke_slope": 0.524005651473999
+    },
+    "male": {
+      "lab_chd_cons": -0.8861995935440063,
+      "lab_chd_slope": 0.8525794744491577,
+      "lab_stroke_cons": -1.0206325054168701,
+      "lab_stroke_slope": 0.606601893901825,
+      "nonlab_chd_cons": -0.8524379730224609,
+      "nonlab_chd_slope": 0.9414605498313904,
+      "nonlab_stroke_cons": -1.054226040840149,
+      "nonlab_stroke_slope": 0.5955473184585571
+    }
+  }
+}

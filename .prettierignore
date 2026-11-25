@@ -1,0 +1,4 @@
+node_modules
+dist
+coverage
+src/risco/who2019.cells.json
