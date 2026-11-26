@@ -30,6 +30,12 @@ function parts(dia: Dia) {
   return { y: dt.getUTCFullYear(), m: dt.getUTCMonth() + 1, d: dt.getUTCDate(), wd: dt.getUTCDay() }
 }
 
+/** Ano, mês (1–12) e dia do mês. */
+export function ymd(dia: Dia): { y: number; m: number; d: number } {
+  const { y, m, d } = parts(dia)
+  return { y, m, d }
+}
+
 const p2 = (n: number) => String(n).padStart(2, '0')
 
 export function toIso(dia: Dia): string {

@@ -1,4 +1,4 @@
-import { fmtData, fromYmd, hojeIso, parseIso, toIso } from './datas'
+import { fmtData, fromYmd, hojeIso, parseIso, toIso } from '../shared/datas'
 import {
   compararDumUsg,
   dataParaIg,

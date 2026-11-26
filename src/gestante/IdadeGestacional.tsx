@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { DateField } from '../shared/DateField'
 import { NumberField, RadioGroup } from '../shared/NumberField'
 import { Alert, Card, Details, Result, Results, Src, type Tone } from '../shared/ui'
-import { type Dia, diaDaSemana, fmtData, hojeIso, parseIso } from './datas'
+import { type Dia, diaDaSemana, fmtData, hojeIso, parseIso } from '../shared/datas'
 import {
   type Comparacao,
   MARCOS,

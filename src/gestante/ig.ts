@@ -13,7 +13,7 @@
 //
 // Toda datação vira uma "DUM equivalente" (o dia 0 da IG); IG e DPP saem dela.
 
-import { type Dia, addMonths, fromYmd } from './datas'
+import { type Dia, addMonths, fromYmd } from '../shared/datas'
 
 export const DURACAO_GESTACAO = 280 // dias, a partir da DUM
 

@@ -13,6 +13,11 @@ Página estática, sem cadastro, sem servidor e sem armazenamento. Tudo fica na 
   sido feito e o que vem a seguir.
 - **Gestante → Consultas e exames:** calendário de consultas, exames por trimestre e vacinas
   (Caderneta Brasileira da Gestante 2026).
+- **Criança → Introdução alimentar:** pela idade e pelo leite (materno, fórmula ou leite de
+  vaca), o plano do dia, como oferecer, sinais de fome e saciedade e o que não oferecer (Guia
+  alimentar para crianças menores de 2 anos, MS).
+- **Criança → Marcos do desenvolvimento:** marcos da faixa (com idade corrigida para
+  prematuros), fatores de risco e a classificação com conduta da Caderneta da Criança (MS).
 
 ## Rodar
 
@@ -45,4 +50,5 @@ Ver `THIRD_PARTY_NOTICES.md` (dados de risco CV vindos dos pacotes `preventr` e
 - `docs/risco-cv.md`: escalas de risco cardiovascular, implementação e verificação.
 - `docs/gestante-ig.md`: idade gestacional, regras e fontes.
 - `docs/gestante-prenatal.md`: consultas, exames e vacinas do pré-natal.
+- `docs/crianca.md`: introdução alimentar e marcos do desenvolvimento.
 - `docs/accu-chek.md`: o protocolo, os modelos e o que falta testar com um aparelho real.

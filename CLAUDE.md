@@ -2,7 +2,7 @@
 
 Projeto paralelo ao Smedic, que será absorvido por ele no futuro (`smedic/apps/web`). É uma
 página **100% frontend**, sem cadastro, sem backend e sem armazenamento, com duas áreas
-separadas (sem estado compartilhado): **Diabetes** e **Gestante**.
+separadas (sem estado compartilhado): **Diabetes**, **Gestante** e **Criança**.
 
 Área Diabetes:
 
@@ -25,6 +25,13 @@ separadas (sem estado compartilhado): **Diabetes** e **Gestante**.
 2. **Consultas e exames**: referência do calendário de consultas, dos exames por trimestre e
    das vacinas (Caderneta Brasileira da Gestante 2026 e nota C3 do MS), em
    `docs/gestante-prenatal.md`.
+
+Área Criança (dados da criança em comum; um módulo por item da barra lateral):
+
+1. **Introdução alimentar**: plano do dia por idade e leite (materno, fórmula, leite de vaca),
+   como oferecer, sinais e o que não oferecer (Guia alimentar para menores de 2 anos, MS).
+2. **Marcos do desenvolvimento**: marcos por faixa, idade corrigida, fatores de risco e
+   classificação com conduta (Caderneta da Criança, 6ª ed.). Detalhes em `docs/crianca.md`.
 
 Stack igual à do `smedic/apps/web` (React 19 + TS strict + Vite + Vitest, mesmas versões), para
 a absorção ser só mover módulos. Em runtime, as únicas dependências são `react` e `react-dom`.
@@ -55,12 +62,15 @@ Gráfico, CSV, PDF (impressão do navegador) e protocolo USB são código própr
   JSON e testes que reproduzem os casos de referência (PREVENT) e as 2.100 células da OPAS (OMS).
 - `src/glicosimetro/`: `phdc/` (protocolo: bytes MDER, APDUs, segmentos, MDS, sessão, simulador),
   `usbTransport.ts` (WebUSB), `analysis.ts` (estatística e CSV), telas e gráfico SVG.
-- `src/gestante/`: `datas.ts` (datas de calendário como número de dias, sem fuso), `ig.ts`
+- `src/gestante/`: `ig.ts`
   e `prenatal.ts` (regras puras + testes), `GestantePage.tsx` (barra de módulos),
   `IdadeGestacional.tsx` e `PrenatalView.tsx` (não chamar de `Prenatal.tsx`: no Windows colide
   com `prenatal.ts`).
-- `src/shared/`: campos de formulário (número, data), componentes de resultado (`ui.tsx`) e
-  download.
+- `src/crianca/`: `idade.ts`, `alimentacao.ts` e `marcos.ts` (regras puras + testes),
+  `CriancaPage.tsx` (dados da criança + barra de módulos), `AlimentacaoView.tsx` e
+  `MarcosView.tsx`.
+- `src/shared/`: campos de formulário (número, data), componentes de resultado (`ui.tsx`),
+  `datas.ts` (datas de calendário como número de dias, sem fuso) e download.
 
 ## Pegadinhas
 

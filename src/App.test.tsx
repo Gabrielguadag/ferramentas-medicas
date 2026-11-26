@@ -108,4 +108,44 @@ describe('App', () => {
       within(panel).getByText('IG em 20/06/2026', { exact: false }).parentElement,
     ).toHaveTextContent('24s 2d')
   })
+  it('criança: introdução alimentar pela idade e classificação dos marcos', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('tab', { name: 'Criança' }))
+    const panel = screen.getByRole('tabpanel', { name: 'Criança' })
+    const set = (label: string, v: string) =>
+      fireEvent.change(within(panel).getByLabelText(label, { selector: 'input[type="date"]' }), {
+        target: { value: v },
+      })
+    set('Data da consulta', '2026-07-15')
+    set('Data de nascimento', '2026-01-01')
+    expect(
+      within(panel).getByText('Idade em 15/07/2026', { exact: false }).parentElement,
+    ).toHaveTextContent('6 meses e 14 dias')
+    const alim = within(panel).getByRole('region', { name: 'Introdução alimentar' })
+    expect(within(alim).getByRole('heading', { name: 'Aos 6 meses' })).toBeInTheDocument()
+    await user.click(within(alim).getByRole('radio', { name: 'Leite de vaca integral' }))
+    expect(
+      within(alim).getByRole('heading', { name: 'Entre 5 e 11 meses, com leite de vaca' }),
+    ).toBeInTheDocument()
+
+    // Marcos: 6 meses completos → faixa de 6 a 9 meses; todos presentes → adequado
+    await user.click(within(panel).getByRole('button', { name: /Marcos do desenvolvimento/ }))
+    const marcos = within(panel).getByRole('region', { name: 'Marcos do desenvolvimento' })
+    expect(
+      within(marcos).getByRole('heading', { name: 'Marcos de 6 a 9 meses' }),
+    ).toBeInTheDocument()
+    for (const r of within(marcos).getAllByRole('radio', { name: 'Presente' })) await user.click(r)
+    expect(within(marcos).getByText('Desenvolvimento adequado')).toBeInTheDocument()
+
+    // Prematuro de 30 semanas: idade corrigida de 4 meses → faixa de 4 a 6 meses, e a
+    // prematuridade entra como fator de risco: todos presentes → alerta
+    await user.type(within(panel).getByLabelText('IG ao nascer: semanas'), '30')
+    expect(
+      within(marcos).getByRole('heading', { name: 'Marcos de 4 a 6 meses' }),
+    ).toBeInTheDocument()
+    for (const r of within(marcos).getAllByRole('radio', { name: 'Presente' })) await user.click(r)
+    expect(within(marcos).getByText('Alerta para o desenvolvimento')).toBeInTheDocument()
+    expect(within(marcos).getByText('Marcar consulta de retorno em 30 dias.')).toBeInTheDocument()
+  })
 })

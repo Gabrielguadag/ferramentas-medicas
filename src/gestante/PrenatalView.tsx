@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Alert, Card, Check, Details, Result, Results, Src } from '../shared/ui'
-import { type Dia, diaDaSemana, fmtData } from './datas'
+import { type Dia, diaDaSemana, fmtData } from '../shared/datas'
 import { fmtIg, ig, igDias } from './ig'
 import {
   COM_INDICACAO,

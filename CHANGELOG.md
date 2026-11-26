@@ -2,6 +2,20 @@
 
 ## Não lançado
 
+- Nova área **Criança**, separada das demais, com um cartão de dados da criança (nascimento,
+  data da consulta e IG ao nascer, opcional) comum aos dois módulos:
+  - **Introdução alimentar:** pela idade em meses completos e pelo leite principal (materno,
+    fórmula infantil ou leite de vaca integral), o plano do dia com as refeições e a quantidade
+    aproximada, como oferecer, aspectos do desenvolvimento, sinais de fome e saciedade, o que
+    não oferecer e os cuidados de segurança para a idade, e os doze passos. Fonte: Guia
+    alimentar para crianças brasileiras menores de 2 anos (MS).
+  - **Marcos do desenvolvimento:** os 4 marcos da faixa, com "como pesquisar", marcados como
+    presente, ausente ou não verificado; faixa anterior quando falta marco; perímetro cefálico,
+    alterações fenotípicas e fatores de risco; classificação (provável atraso, alerta ou
+    adequado) e conduta. Usa a idade corrigida em prematuros. Fonte: Caderneta da Criança, 6ª
+    edição (MS).
+- Os utilitários de data foram para `src/shared/datas.ts` (usados por Gestante e Criança).
+
 - Gestante, protocolo do município sobre a lista do MS:
   - HTLV e eletroforese de hemoglobina ficam no fim da lista, descritos como rotina do MS sem
     oferta local;

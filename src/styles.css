@@ -768,3 +768,26 @@ tr.past td {
   font-weight: 600;
   margin: 0 0 6px;
 }
+.marcos {
+  display: flex;
+  flex-direction: column;
+}
+.marco {
+  border-top: 1px solid var(--grid);
+  padding: 10px 0;
+}
+.marco:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+.marco legend {
+  font-weight: 600;
+  padding: 0;
+}
+.marco .muted {
+  font-size: 0.875rem;
+  margin: 2px 0 6px;
+}
+.fields + .fields {
+  margin-top: 12px;
+}

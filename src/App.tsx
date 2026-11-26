@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useState } from 'react'
+import { CriancaPage } from './crianca/CriancaPage'
 import { GestantePage } from './gestante/GestantePage'
 import { ConsultaPage } from './glargina/ConsultaPage'
 import { GlicosimetroPage } from './glicosimetro/GlicosimetroPage'
 
-type Area = 'diabetes' | 'gestante'
+type Area = 'diabetes' | 'gestante' | 'crianca'
 type Tool = 'consulta' | 'glicosimetro'
 
 const AREAS: { id: Area; label: string }[] = [
   { id: 'diabetes', label: 'Diabetes' },
   { id: 'gestante', label: 'Gestante' },
+  { id: 'crianca', label: 'Criança' },
 ]
 
 const TOOLS: { id: Tool; label: string }[] = [
@@ -111,6 +113,14 @@ export function App() {
             hidden={area !== 'gestante'}
           >
             <GestantePage />
+          </div>
+          <div
+            id="area-panel-crianca"
+            role="tabpanel"
+            aria-labelledby="area-crianca"
+            hidden={area !== 'crianca'}
+          >
+            <CriancaPage />
           </div>
           <p className="disclaimer">
             Apoio à decisão para profissionais de saúde. Não substitui a avaliação clínica nem a
