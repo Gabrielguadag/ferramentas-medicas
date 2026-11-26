@@ -214,4 +214,19 @@ describe('App', () => {
       '2',
     )
   })
+
+  it('início da glargina no DM1: 10 anos, 30 kg, pré-púbere → glargina 6–12 UI/dia (NT 169, Quadro 1)', async () => {
+    render(<App />)
+    const user = userEvent.setup()
+    const panel = screen.getByRole('tabpanel', { name: 'Consulta de diabetes' })
+    await user.type(within(panel).getByLabelText('Idade (anos)'), '10')
+    await user.type(within(panel).getByLabelText('Peso (kg)'), '30')
+    await user.click(within(panel).getByLabelText('DM1'))
+    await user.click(within(panel).getByRole('button', { name: /Início da glargina/ }))
+    const sec = within(panel).getByRole('region', { name: 'Início da glargina' })
+    expect(within(sec).getByText(/Elegível à glargina/)).toBeInTheDocument()
+    await user.click(within(sec).getByLabelText('Pré-púbere'))
+    expect(within(sec).getByText(/^Glargina \(basal/).parentElement).toHaveTextContent('6–12')
+    expect(within(sec).getByText(/^DTDI/).parentElement).toHaveTextContent('15–24')
+  })
 })

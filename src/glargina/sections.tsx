@@ -27,6 +27,15 @@ import {
   dapagliflozinCriteria,
   pcdtFlow,
 } from './rules/pcdt'
+import {
+  type FaseDm1,
+  QUADRO_1,
+  QUADRO_2,
+  type SituacaoDm1Adulto,
+  caminhoGlargina,
+  fmtFaixa,
+  porPeso,
+} from './rules/inicioGlargina'
 import { titrate } from './rules/titulacao'
 import { ELIGIBILITY_LITERAL, GUIA_GLARGINA, NT_169, PCDT_DM2, eligibility } from './sources'
 import { Alert, Card, Check, Details, Result, Results, Src, fmt } from '../shared/ui'
@@ -323,13 +332,26 @@ export function InicioNphSection() {
 // elegibilidade da NT 169, item 3.1 ("incluindo novos diagnósticos").
 export function InicioGlarginaSection() {
   const { patient } = usePatient()
-  const [dose, setDose] = useState<number | null>(10)
-  const start = nphStart(patient.weight)
-  const ceiling = basalCeiling(patient.weight)
-  if (outOfScope(patient.age, patient.type, patient.profile)) return <ScopeNote />
+  const caminho = caminhoGlargina(patient.age, patient.type, patient.profile)
+  if (caminho === 'fora') return <ScopeNote />
   return (
     <>
       <GlargineEligibility />
+      {caminho === 'dm2' ? <InicioGlarginaDm2 /> : null}
+      {caminho === 'dm1-crianca' || caminho === 'dm1-adulto' ? (
+        <InicioGlarginaDm1 crianca={caminho === 'dm1-crianca'} />
+      ) : null}
+    </>
+  )
+}
+
+function InicioGlarginaDm2() {
+  const { patient } = usePatient()
+  const [dose, setDose] = useState<number | null>(10)
+  const start = nphStart(patient.weight)
+  const ceiling = basalCeiling(patient.weight)
+  return (
+    <>
       <Card
         title="Dose inicial de glargina"
         subtitle="Sem insulina prévia: iniciar e titular da mesma forma que a NPH."
@@ -373,18 +395,124 @@ export function InicioGlarginaSection() {
           <Src href={NT_169.url}>{NT_169.short}, item 3.1 e Quadro 4.</Src>
         </Details>
       </Card>
+      <DoseReceita dose={dose} onChange={setDose} />
+    </>
+  )
+}
+
+/** DM1 elegível à NT 169: dose estimada pelos Quadros 1 (2 a 17 anos) e 2 (70 anos ou mais). */
+function InicioGlarginaDm1({ crianca }: { crianca: boolean }) {
+  const { patient } = usePatient()
+  const [fase, setFase] = useState<FaseDm1 | ''>('')
+  const [situacao, setSituacao] = useState<SituacaoDm1Adulto | ''>('')
+  const [dose, setDose] = useState<number | null>(null)
+  const linha = crianca ? (fase ? QUADRO_1[fase] : null) : situacao ? QUADRO_2[situacao] : null
+  const dtdi = linha ? porPeso(linha.dtdi, patient.weight) : null
+  const basal = linha ? porPeso(linha.basal, patient.weight) : null
+  return (
+    <>
+      <Card
+        title="Dose inicial de glargina no DM1"
+        subtitle={
+          crianca
+            ? 'Crianças e adolescentes: dose total diária (DTDI) e basal por kg, pela fase.'
+            : 'Adultos: dose total diária (DTDI) e basal por kg, pela situação clínica.'
+        }
+      >
+        <div className="fields">
+          {crianca ? (
+            <RadioGroup
+              legend="Fase"
+              value={fase}
+              options={[
+                { value: 'pre-pubere', label: 'Pré-púbere' },
+                { value: 'pubere', label: 'Púbere' },
+              ]}
+              onChange={setFase}
+            />
+          ) : (
+            <RadioGroup
+              legend="Situação clínica"
+              value={situacao}
+              column
+              options={[
+                { value: 'recente', label: QUADRO_2.recente.rotulo },
+                { value: 'apos-cad', label: QUADRO_2['apos-cad'].rotulo },
+              ]}
+              onChange={setSituacao}
+            />
+          )}
+        </div>
+        {!linha ? (
+          <p className="empty">
+            {crianca ? 'Escolha a fase (pré-púbere ou púbere).' : 'Escolha a situação clínica.'}
+          </p>
+        ) : (
+          <Results>
+            <Result
+              label={`Glargina (basal ${fmtFaixa(linha.basal, linha.basal.max < 1 ? 2 : 1)} UI/kg/dia)`}
+              value={basal ? fmtFaixa(basal) : '—'}
+              unit={basal ? 'UI/dia' : undefined}
+              tone="info"
+            >
+              {basal
+                ? '1 vez ao dia, em horário fixo (manhã ou noite).'
+                : 'Informe o peso no painel do paciente.'}
+            </Result>
+            <Result
+              label={`DTDI (${fmtFaixa(linha.dtdi, 1)} UI/kg/dia)`}
+              value={dtdi ? fmtFaixa(dtdi) : '—'}
+              unit={dtdi ? 'UI/dia' : undefined}
+            >
+              {dtdi
+                ? 'Basal + prandial. O restante da DTDI é a insulina prandial, dividida antes das refeições.'
+                : null}
+            </Result>
+          </Results>
+        )}
+        <ul className="checklist">
+          <li>
+            Em geral, a basal fica entre 30% e 50% da DTDI
+            {crianca ? '; em adolescentes, pode chegar a 50% a 55%' : ''}.
+          </li>
+          <li>Em geral, não há necessidade de segunda dose diária de glargina.</li>
+          <li>
+            Ajustar a dose de forma individualizada pela glicemia de jejum, em intervalos de até 3
+            dias; monitorar com mais frequência nas semanas iniciais.
+          </li>
+          {crianca ? (
+            <li>
+              Basal acima de 50% da DTDI: possível excesso de basal; reavaliar o esquema (Quadro 4).
+            </li>
+          ) : null}
+        </ul>
+        <Details>
+          <Src href={NT_169.url}>
+            {NT_169.short}, {crianca ? 'Quadro 1' : 'Quadro 2'}, texto seguinte e Quadros 3 e 4.
+          </Src>
+        </Details>
+      </Card>
+      <DoseReceita dose={dose} onChange={setDose} />
+    </>
+  )
+}
+
+/** Dose diária para a receita + tubetes e agulhas. */
+function DoseReceita(props: { dose: number | null; onChange: (v: number | null) => void }) {
+  return (
+    <>
       <Card title="Dose para a receita">
         <div className="fields">
           <NumberField
             label="Dose diária de glargina"
             unit="U"
-            value={dose}
-            onChange={setDose}
+            value={props.dose}
+            onChange={props.onChange}
             hint="A dose inicial escolhida acima."
           />
         </div>
       </Card>
-      <QuantidadeReceita dose={dose} emptyText="Informe a dose diária de glargina." />
+      <QuantidadeReceita dose={props.dose} emptyText="Informe a dose diária de glargina." />
     </>
   )
 }
