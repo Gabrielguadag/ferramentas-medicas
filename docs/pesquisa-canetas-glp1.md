@@ -21,49 +21,64 @@ Legenda:
 
 ## Resumo
 
-| Medicamento e caneta                                                                        | Contagem de cliques                | Observação                                                                                                              |
-| ------------------------------------------------------------------------------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Semaglutida 1,34 mg/mL, 3 mL, marca 1 mg (Ozempic 1 mg, Extensior, Ozivy 1 mg, Semavy 1 mg) | **Possível**                       | É o uso principal: 0,25 e 0,5 mg a partir da caneta de 1 mg.                                                            |
-| Semaglutida 1,34 mg/mL, 1,5 mL, marcas 0,25 e 0,5 mg (Ozempic, Semavy)                      | Possível, mas raramente necessária | As doses usuais já estão marcadas.                                                                                      |
-| Wegovy / Poviztra (5 canetas de dose fixa, 4 doses cada)                                    | Não confirmada                     | O seletor gira até parar na dose da caneta. Não há fonte sobre parar antes e injetar com exatidão.                      |
-| Liraglutida 6 mg/mL (Victoza, Saxenda, Olire)                                               | Possível, mas raramente necessária | Marcas de 0,6 mg em 0,6 mg; 10 cliques entre marcas (carta de 2011).                                                    |
-| Xultophy, Soliqua                                                                           | **Não precisa**                    | O contador já mostra unidades de 1 em 1. A bula dá o GLP-1 por unidade.                                                 |
-| Mounjaro, dose única (Brasil)                                                               | Não                                | Sem seletor. Só aspirando para frasco, o que é complexo e arriscado; fora do escopo.                                    |
-| Mounjaro KwikPen (4 doses de 0,6 mL)                                                        | Fora por ora                       | Registrado em 03/2026, mas sem venda confirmada no Brasil. Cliques por dose sem medição (cerca de 60, evidência fraca). |
-| Trulicity                                                                                   | Não                                | Caneta de dose única.                                                                                                   |
+| Medicamento e caneta                                                                        | Contagem de cliques                | Observação                                                                                                                       |
+| ------------------------------------------------------------------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Semaglutida 1,34 mg/mL, 3 mL, marca 1 mg (Ozempic 1 mg, Extensior, Ozivy 1 mg, Semavy 1 mg) | **Possível**                       | É o uso principal: 0,25 e 0,5 mg a partir da caneta de 1 mg.                                                                     |
+| Semaglutida 1,34 mg/mL, 1,5 mL, marcas 0,25 e 0,5 mg (Ozempic, Semavy)                      | Possível, mas raramente necessária | As doses usuais já estão marcadas.                                                                                               |
+| Wegovy / Poviztra (5 canetas de dose fixa, 4 doses cada)                                    | Possível (relatos)                 | Mesmo mecanismo FlexTouch; dose cheia de 37 cliques (1,5 mL) ou 74-75 (3 mL). A FDA registra que nada impede discar entre doses. |
+| Liraglutida 6 mg/mL (Victoza, Saxenda, Olire)                                               | Possível, mas raramente necessária | Marcas de 0,6 mg em 0,6 mg; 10 cliques entre marcas (carta de 2011).                                                             |
+| Xultophy, Soliqua                                                                           | **Não precisa**                    | O contador já mostra unidades de 1 em 1. A bula dá o GLP-1 por unidade.                                                          |
+| Mounjaro, dose única (Brasil)                                                               | Não                                | Sem seletor. Só aspirando para frasco, o que é complexo e arriscado; fora do escopo.                                             |
+| Mounjaro KwikPen (4 doses de 0,6 mL)                                                        | Fora por ora                       | Registrado em 03/2026, mas sem venda confirmada no Brasil. Cliques por dose sem medição (cerca de 60, evidência fraca).          |
+| Trulicity                                                                                   | Não                                | Caneta de dose única.                                                                                                            |
 
 ## Semaglutida 1,34 mg/mL: quantos cliques
 
-**Não há medição publicada do volume por clique em nenhuma caneta comercial de semaglutida.** O
-fabricante diz que não avaliou a dose por cliques e não informa o volume por clique (informação
-médica da Novo Nordisk, 2024 [Bula]). Os números disponíveis vêm de três fontes:
+Atualizado em 26/11/2026, depois da contagem física do usuário e do documento da FDA.
 
-- **72 cliques do 0 até 1 mg.** Komé et al., Diabetes Care 2025;48:e25: "Each semaglutide-MDP
-  device delivers approximately 72 unnumbered 'clicks'" [Artigo]. Os materiais clínicos que
-  circulam dizem o mesmo [Relato]. Não descrevem método de contagem.
-- **74 cliques.** Whitley et al., Clin Diabetes 2023;41:467, Tabela 3. Vale para as três canetas
-  americanas, cuja dose cheia tem 0,75 mL em todas. Os autores avisam: "doses not confirmed by the
-  manufacturer but rather mathematically calculated by the authors" [Artigo, conferido no texto
-  integral].
-- **75 cliques.** É a conta de 0,746 mL a 0,01 mL por clique [Calc.]. A premissa de 0,01 mL por
-  clique vem dos protocolos de ensaio da Novo Nordisk (STEP 3, NCT03611582: "3.2 mg/mL | 2.4 mg |
-  0.75 mL | 75"). Esses protocolos usam uma caneta de ensaio com contador em valores, não a caneta
-  comercial.
+### Caneta da Novo Nordisk: documento regulatório da FDA
+
+A revisão de erro de medicação da FDA (DMEPA) no registro do Ozempic traz a contagem de cliques da
+caneta da Novo (NDA 209637, "Other Review(s)", 2017, Reference ID 4185013, PDF p. 51; trecho
+conferido por mim). A caneta descrita tem 2 mg/1,5 mL e 1,34 mg/mL, a mesma concentração das
+canetas brasileiras:
+
+> "Given the length required to dial each dose (19 'clicks' or 12 line markings to reach 0.25
+> mg, 37 'clicks' or 11 line markings—23 line markings total from 0—to reach 0.5 mg, and 74
+> 'clicks' or 47.5 line markings to reach 1 mg) before the user sees their prescribed dose in the
+> 'dose counter' window [...]"
+
+O mesmo documento registra: "there are no design features preventing users from dialing and
+injecting between doses".
+
+- Os números batem com 0,01 mL por clique e com os volumes de dose da bula europeia do Ozempic:
+  0,19 mL para 0,25 mg, 0,37 mL para 0,5 mg e 0,74 mL para 1 mg.
+- Para a caneta brasileira de 1 mg (4 mg/3 mL, 1,34 mg/mL), o volume da dose de 1 mg é o mesmo.
+  **Com o mesmo mecanismo, são 74 cliques até 1 mg** [Calc.].
+- Whitley 2023 também usa 74 [Artigo].
+- O "72" de Komé 2025 e dos materiais canadenses não tem método descrito [Relato].
+
+### Similares (Ozivy, Semavy, Semaclique, genérico EMS)
+
+- **Ozivy 1 mg: 72 cliques até 1 mg**, contados pelo usuário na caneta física (26/11/2026).
+- Relatos em vídeo de médicos brasileiros, compilados na calculadora de rodrigonahum.com.br
+  (revisão de 22/11/2026). Os vídeos não foram assistidos por mim:
+  - Ozivy 1 mg com 19/37/75 (Dr. Mário Toscano Filho, 07/2026), em divergência com a contagem
+    física;
+  - Semavy com 18 para 0,25 e 36 para 0,5 (Dra. Sheyla Alonso, 09/2026);
+  - Semavy 1 mg com 74 (Dr. Mateus).
+- O passo do clique pode diferir entre fabricantes. No Canadá, a caneta da Dr. Reddy's tem 24
+  cliques por mg, contra 72 a 74 da Novo [Relato].
 
 Conta proporcional: cliques = dose ÷ dose da marca × cliques até a marca.
 
-| Dose desejada (caneta de 1 mg) | Se 72 cliques até 1 mg | Se 75 cliques até 1 mg |
-| -----------------------------: | ---------------------: | ---------------------: |
-|                        0,25 mg |                     18 |             18,75 (19) |
-|                         0,5 mg |                     36 |        37,5 (37 ou 38) |
-|                        0,75 mg |                     54 |             56,25 (56) |
+| Dose desejada (caneta de 1 mg) |              Novo (74 até 1 mg) | Ozivy (72 até 1 mg) |
+| -----------------------------: | ------------------------------: | ------------------: |
+|                        0,25 mg | 18,5 (FDA: 19 na marca de 0,25) |                  18 |
+|                         0,5 mg |                              37 |                  36 |
+|                        0,75 mg |                    55,5 (55-56) |                  54 |
 
-A diferença entre as hipóteses é de cerca de 4%, ou 1 clique nas doses de 0,25 e 0,5 mg.
-
-**A contagem não se transfere entre marcas.** Um material canadense mostra 72 cliques por mg na
-caneta da Novo e 24 na da Dr. Reddy's, com a mesma concentração [Relato]. Para Ozivy e Semavy, não
-há fonte sobre o dispositivo nem sobre o passo do clique. A única base segura é contar os cliques
-até a marca de dose na própria caneta e aplicar a conta proporcional.
+Na caneta de 1,5 mL da Novo, as marcas de 0,25 e 0,5 ficam em 19 e 37 cliques (FDA).
 
 ### Quantas doses a caneta rende
 
@@ -123,11 +138,25 @@ As cinco canetas têm concentrações diferentes:
 - 1,7 mg: 2,27 mg/mL;
 - 2,4 mg: 3,2 mg/mL.
 
-A bula diz "Gire o seletor de dose até o contador de dose parar e mostrar a dose" [Bula]. Pela
-premissa de 0,01 mL por clique, a dose cheia de cada caneta teria 37 cliques (as de 1,5 mL) ou 75
-(as de 3 mL) [Calc.]. Não achei fonte que confirme ser possível parar antes do batente e injetar
-uma dose parcial com exatidão. **Recomendo deixar o Wegovy fora da contagem** até conferir numa
-caneta física.
+A bula diz "Gire o seletor de dose até o contador de dose parar e mostrar a dose" [Bula]. As
+canetas brasileiras têm as mesmas concentrações e volumes da Wegovy FlexTouch europeia (EPAR). A
+0,01 mL por clique, que é o passo da caneta da Novo segundo a FDA, a dose cheia fica assim
+[Calc.]:
+
+| Caneta               | Volume da dose | Cliques até a dose cheia | Relatos                                                       |
+| -------------------- | -------------- | -----------------------: | ------------------------------------------------------------- |
+| 0,25 mg (0,68 mg/mL) | 0,37 mL        |                       37 | 37 (Dr. Mário Toscano, vídeo)                                 |
+| 0,5 mg (1,34 mg/mL)  | 0,37 mL        |                       37 | 37 (ByWard, Canadá: total de 148 por caneta)                  |
+| 1 mg (1,34 mg/mL)    | 0,74 mL        |                       74 | igual ao Ozempic 1 mg (FDA: 74)                               |
+| 1,7 mg (2,27 mg/mL)  | 0,75 mL        |                       75 | 75 (BC Diabetes e ByWard, Canadá)                             |
+| 2,4 mg (3,2 mg/mL)   | 0,75 mL        |                       75 | 75 (Dr. Mário Toscano para Poviztra 2,4; BC Diabetes; ByWard) |
+
+- Doses parciais na caneta de 2,4 mg, a 0,032 mg por clique: 0,25 = 8; 0,5 = 16; 1 = 31; 1,7 = 53
+  [Calc.]. Coincidem com BC Diabetes e com o relato de 32 cliques para 1 mg.
+- A FDA registra, para a caneta da Novo, que nada impede discar e injetar entre as doses. Os
+  relatos brasileiros e canadenses fazem a contagem nas canetas de Wegovy.
+- O documento de Rodrigo Nahum usa 74 para as canetas de 1,7 e 2,4 mg. O volume da dose (0,75 mL)
+  e os relatos dão 75.
 
 ## Contexto oficial (uma vez, para registro)
 
@@ -153,15 +182,14 @@ caneta física.
 3. **Combinações com insulina:** conversão de unidades em GLP-1 (Xultophy e Soliqua), sem cliques.
 4. **Plano de início e escalonamento** pela bula (tabela em `research_notes/canetas-glp1/
 clinico-regulatorio.md`), com a caneta e o número de cliques de cada etapa.
-5. **Fora:** Mounjaro (as duas canetas), Trulicity e Wegovy para dose parcial.
+5. **Fora:** Mounjaro (as duas canetas) e Trulicity.
 
 ## Decisões pendentes
 
-1. **Cliques até 1 mg na caneta de 1 mg (Ozempic/Extensior):** 72, que é o que se conta na
-   prática segundo Komé 2025, ou 74/75, que é o calculado? Se você conta na sua prática, o seu
-   número vale mais que qualquer fonte encontrada.
-2. **Ozivy e Semavy:** se tiver as canetas, conte do 0 até a marca. Elas podem não usar o mesmo
-   mecanismo da Novo.
+1. **Semavy, Semaclique e genérico EMS:** os relatos divergem entre 72 e 74 até 1 mg. Falta a
+   contagem física. Ozivy já tem: 72 até 1 mg, contados pelo usuário.
+2. **Wegovy 1,7 e 2,4 mg:** usar 75 cliques até a dose cheia (volume de 0,75 mL e relatos) ou 74
+   (documento de Rodrigo Nahum)?
 3. **Escopo:** só DM2 ou também obesidade? Ozempic, Ozivy e Semavy são para DM2; Wegovy e Saxenda
    são para obesidade.
 4. **Nome da aba.** Sugestão: "AR GLP-1 e GIP/GLP-1".
