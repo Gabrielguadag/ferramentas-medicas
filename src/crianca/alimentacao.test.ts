@@ -73,9 +73,11 @@ describe('introdução alimentar (Guia alimentar para menores de 2 anos)', () =>
     expect(t(13)).toContain('Mel')
     expect(t(30)).not.toContain('Mel')
     expect(t(30)).toContain('ultraprocessados')
-    expect(t(13)).toContain('composto lácteo não é leite em pó')
+    expect(t(13)).toContain('Composto lácteo: não é leite em pó nem fórmula')
     expect(t(30)).not.toContain('Composto lácteo')
-    expect(plano('formula', 3).notas.join(' ')).toContain('Composto lácteo não é fórmula infantil')
+    expect(plano('formula', 3).notas.join(' ')).toContain(
+      'Composto lácteo: não é leite em pó nem fórmula',
+    )
     expect(t(40)).not.toContain('120 mL')
   })
 })

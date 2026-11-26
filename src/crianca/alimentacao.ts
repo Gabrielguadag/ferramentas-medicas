@@ -27,7 +27,7 @@ export function leiteVacaNaoIndicado(meses: number): boolean {
 
 /** Composto lácteo (Guia, pág. 144: "Parece fórmula infantil ou leite de vaca integral, mas não é"). */
 export const COMPOSTO_LACTEO =
-  'Composto lácteo não é fórmula infantil nem leite: é uma mistura de leite (no mínimo 51%) com outros ingredientes, que costuma ter açúcar e aditivos. Não serve para menores de 2 anos (a embalagem fala em 1 ano, mas o açúcar e os aditivos não são indicados antes dos 2) e não substitui o leite materno nem a fórmula. Exemplo: uma lata parecida com a da fórmula, na mesma prateleira e mais barata, mas com "composto lácteo" escrito na frente ou no verso e a frase obrigatória "composto lácteo não é leite em pó" (ou "este produto não é leite em pó").'
+  'Composto lácteo: não é leite em pó nem fórmula infantil, e sim uma mistura de leite com outros ingredientes, muitas vezes incluindo açúcar. Não oferecer antes dos 2 anos.'
 
 export interface Refeicao {
   nome: string
