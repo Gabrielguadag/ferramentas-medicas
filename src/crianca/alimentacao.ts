@@ -1,6 +1,8 @@
 // Introdução alimentar: o que oferecer em cada idade, conforme o leite que a criança recebe.
-// Fonte única: Ministério da Saúde, Guia alimentar para crianças brasileiras menores de 2 anos
-// (2019; 1ª ed. revisada, 2022). As páginas citadas são as da edição revisada.
+// Fonte principal: Ministério da Saúde, Guia alimentar para crianças brasileiras menores de 2 anos
+// (2019; 1ª ed. revisada, 2022); páginas citadas = as da edição revisada. Onde as fontes divergem,
+// o padrão é a SBP (Manual de Alimentação, 5ª ed., 2024; páginas impressas): leite de vaca antes de
+// 1 ano, sal, suplementação de rotina e início dos outros alimentos no prematuro.
 
 export type Leite = 'materno' | 'formula' | 'vaca'
 
@@ -13,7 +15,7 @@ export const LEITES: { value: Leite; label: string }[] = [
 /**
  * Leite de vaca integral antes de 12 meses (decisão do usuário, 2026-11-25):
  * - antes de 6 meses não é recomendado: o Guia do MS indica a fórmula como primeira alternativa
- *   (pág. 142) e só orienta como usar o leite de vaca quando não há outra opção;
+ *   (pág. 142) e só orienta como usar o leite de vaca quando não há outra opção (decisão do usuário);
  * - de 6 a 11 meses é a alternativa do MS, não indicada em condições gerais: o padrão é a SBP,
  *   que não recomenda leite de vaca integral no primeiro ano (sem leite materno, fórmula).
  */
@@ -28,7 +30,7 @@ export function avisoLeiteVaca(meses: number): AvisoLeiteVaca | null {
     return {
       rotulo: 'não recomendado; só quando não há outra opção',
       aviso:
-        'Não recomendado antes dos 6 meses: sem leite materno, usar fórmula infantil. O Guia do MS indica a fórmula como primeira alternativa e só orienta como usar o leite de vaca quando não há outra opção; a SBP não o recomenda no primeiro ano de vida. As orientações abaixo são as do Guia para essa situação.',
+        'Não recomendado antes dos 6 meses: sem leite materno, usar fórmula infantil. Abaixo, a orientação do Guia do MS para quando não há outra opção.',
     }
   }
   if (meses < 12) {
@@ -202,7 +204,7 @@ function planoFormula(meses: number): Plano {
         'Seguir as quantidades de pó e água do rótulo (ou as indicadas pelo profissional): menos pó prejudica o ganho de peso; mais pó leva a ganho excessivo.',
         'A criança que recebe só fórmula infantil, bem preparada, não precisa de água.',
         'Novos alimentos, inclusive a água, a partir dos 6 meses.',
-        'Preparo: água tratada fervida por 5 minutos; misturar o pó em até 15 minutos depois da fervura, nunca com a água fervendo; não aquecer no micro-ondas.',
+        'Preparo (Guia, pág. 145 e 146; SBP, pág. 27): ferver a água por 5 minutos, mesmo se for filtrada ou mineral. Misturar o pó na água ainda bem quente (cerca de 70 °C, em até 15 minutos depois da fervura, e não com ela fervendo): é isso que descontamina o pó. Testar a temperatura (gotas na parte de dentro do antebraço) antes de oferecer, descartar a sobra e não aquecer no micro-ondas.',
         COMPOSTO_LACTEO,
       ],
     }
@@ -461,8 +463,8 @@ export function cuidados(meses: number): Cuidado[] {
   }
   c.push({
     texto:
-      'Alimentos ultraprocessados (refrigerantes, achocolatados, farinhas instantâneas com açúcar, bolos prontos, biscoitos, iogurtes, sucos de caixinha, entre outros): não oferecer.',
-    pagina: 'pág. 104 e 223',
+      'Alimentos ultraprocessados (refrigerantes, achocolatados, farinhas instantâneas com açúcar, bolos prontos, biscoitos, iogurtes adoçados ou com sabor, sucos de caixinha, entre outros): não oferecer. Iogurte natural sem açúcar pode.',
+    pagina: 'pág. 87, 88, 104 e 223',
   })
   if (meses < 12) {
     c.push({
@@ -511,7 +513,7 @@ export function cuidados(meses: number): Cuidado[] {
     c.push({
       texto:
         'Leite de vaca integral (líquido ou em pó) como bebida ou refeição antes de 1 ano: não indicado em condições gerais (SBP). O Guia do MS o admite como alternativa quando não há acesso à fórmula. Leite e derivados podem entrar como ingredientes de receitas caseiras a partir dos 6 meses.',
-      pagina: 'SBP, pág. 24 e 58; Guia, pág. 162',
+      pagina: 'SBP, pág. 24 e 59; Guia, pág. 162',
     })
   }
   c.push(
@@ -532,8 +534,10 @@ export function cuidados(meses: number): Cuidado[] {
     },
     {
       texto:
-        'Sal no mínimo necessário; temperos naturais. Não usar temperos prontos (cubo, sachê, pó ou líquido).',
-      pagina: 'pág. 103',
+        meses < 12
+          ? 'Não adicionar sal nas papas e refeições até 1 ano; temperos naturais. Não usar temperos prontos (cubo, sachê, pó ou líquido).'
+          : 'Sal com moderação (de preferência o mínimo necessário); temperos naturais. Não usar temperos prontos (cubo, sachê, pó ou líquido).',
+      pagina: 'SBP, pág. 24; Guia, pág. 103',
     },
     {
       texto:
@@ -551,7 +555,7 @@ export function cuidados(meses: number): Cuidado[] {
   return c
 }
 
-/** Doze passos para uma alimentação saudável (pág. 219 a 227). */
+/** Doze passos para uma alimentação saudável (pág. 220 a 226). */
 export const DOZE_PASSOS = [
   'Amamentar até 2 anos ou mais, oferecendo somente o leite materno até 6 meses.',
   'Oferecer alimentos in natura ou minimamente processados, além do leite materno, a partir dos 6 meses.',
@@ -566,3 +570,31 @@ export const DOZE_PASSOS = [
   'Oferecer à criança alimentação adequada e saudável também fora de casa.',
   'Proteger a criança da publicidade de alimentos.',
 ]
+
+/** Caso excepcional: sem doses (esquema próprio). */
+export const SUPLEMENTACAO_PREMATURO = 'Prematuro ou baixo peso: esquema próprio de suplementação.'
+
+/**
+ * Suplementação de rotina da criança nascida a termo (SBP, Manual de Alimentação, 5ª ed.):
+ * vitamina D 400 UI/dia da 1ª semana até 12 meses e 600 UI/dia de 12 a 24 meses (pág. 59, item 11);
+ * ferro elementar 1 mg/kg/dia a partir dos 180 dias, ou dos 90 dias se houver fator de risco,
+ * até 24 meses (pág. 51, quadros 10 e 11; pág. 59, item 14). Vale com leite materno, fórmula ou
+ * leite de vaca. A vitamina A (regiões de alta prevalência) não entra.
+ */
+export function suplementacao(meses: number): Cuidado[] {
+  if (meses >= 24) return []
+  return [
+    {
+      texto:
+        meses < 12
+          ? 'Vitamina D: 400 UI por dia, da 1ª semana de vida até 12 meses.'
+          : 'Vitamina D: 600 UI por dia dos 12 aos 24 meses.',
+      pagina: 'SBP, pág. 59',
+    },
+    {
+      texto:
+        'Ferro elementar: 1 mg/kg por dia, a partir dos 6 meses (180 dias), ou dos 3 meses (90 dias) se houver fator de risco de deficiência de ferro, até 2 anos.',
+      pagina: 'SBP, pág. 51 e 59',
+    },
+  ]
+}

@@ -11,7 +11,7 @@ escolha está em `pesquisa-risco-cv.md`.
 | **SBC 2025**          | Todos              | Categoria (baixo a extremo) e metas de LDL, não-HDL e ApoB                  | `escalas.ts` (`sbc2025`), Fig. 4.1 da diretriz | Testes por critério                                                      |
 | **SBD 2026**          | Só com diabetes    | Categoria (baixo a muito alto), metas e potência da estatina                | `escalas.ts` (`sbd2026`)                       | Testes por critério                                                      |
 | **PCDT DM2 2026**     | DM2                | Alto (40–74 anos), muito alto (com DCV), individualizado (≤ 39 e ≥ 75 anos) | `escalas.ts` (`pcdt2026`)                      | Testes por critério                                                      |
-| **OMS 2019 / HEARTS** | 40–74 anos         | % em 10 anos e categoria da OPAS, com e sem laboratório                     | `who2019.ts`                                   | **2.100 células da tabela oficial da OPAS reproduzidas sem divergência** |
+| **OMS 2019 / HEARTS** | 40–74 anos         | % em 10 anos e categoria da OPAS, com e sem laboratório (ver fluxo abaixo)  | `who2019.ts`                                   | **2.100 células da tabela oficial da OPAS reproduzidas sem divergência** |
 | **PREVENT**           | 30–79 anos sem DCV | % em 10 e 30 anos (ASCVD, DCV total, IC)                                    | `prevent.ts`                                   | **40 casos de teste do pacote de referência reproduzidos**               |
 
 ### SBC 2025
@@ -21,7 +21,8 @@ a 4.8, Fig. 4.1 e Tab. 5.1.
 
 - **Ordem do fluxo (Fig. 4.1):**
   1. Evento aterosclerótico prévio: extremo, se houver múltiplos eventos ou ≥ 2 condições da
-     Tab. 4.2; senão, muito alto.
+     Tab. 4.2; senão, muito alto. A revascularização só conta como condição se for "fora do
+     evento maior" (campo próprio; Tab. 4.2). Idade < 18 anos: fora do escopo.
   2. Obstrução ≥ 50% ou CAC > 300: muito alto.
   3. Diabetes: EMAR ou ≥ 3 EAR dá muito alto; 1 a 2 EAR dão alto; sem estratificadores, homem
      ≥ 50 ou mulher ≥ 56 anos é alto, abaixo disso é intermediário.
@@ -34,6 +35,14 @@ a 4.8, Fig. 4.1 e Tab. 5.1.
   - No DM, "LDL > 190 ou CT > 310" é EMAR (Tab. 4.8).
   - "3 ≥ EAR" foi lido como ≥ 3.
   - Qualquer agravante reclassifica, como na Tab. 4.1; o texto pede julgamento clínico.
+  - Hipertensão é "tratada ou não" (Tab. 4.6): quem usa anti-hipertensivo conta como hipertenso.
+  - "DM1 com mais de 20 anos, diagnosticado após os 18" só vale com a resposta marcada; o campo
+    começa vazio. DM1 com 20 anos ou mais e sem estratificador: as tabelas só dão a faixa de idade
+    para o DM2; a tela mostra "avaliação individualizada".
+  - Dado não informado (tempo de DM, TFGe, albuminúria) não entra na classificação; a tela avisa.
+  - Limiar de tratamento no risco baixo: LDL "acima de 145" (item 5.1).
+  - Obstrução: usa-se "≥ 50%" nas duas escalas (SBC Fig. 4.1; a Tab. 4.8 e o Quadro 4 da SBD
+    escrevem "> 50%").
 
 ### SBD 2026
 
@@ -46,12 +55,21 @@ diferenças em relação à SBC:
 - A hipercolesterolemia familiar é EMAR.
 - "> 3 EAR" na tabela foi lido como ≥ 3, de acordo com o texto ("até dois EAR = alto").
 - Para o corte de "idoso" do NT-proBNP, a tela usa 60 anos.
+- Divergências internas da SBD resolvidas pelos quadros, sem aparecer na tela: mulher de 56 anos
+  é alto (Quadro 1 e SBC); meta de não-HDL no risco alto é < 100 (Quadro 5; o texto de R4 diz
+  < 80); LDL > 190 é EAR (Quadro 2; a R9 fala em muito alto só com HF confirmada); grade renal
+  segue o Quadro 3 (TFGe 30 e 45 exatos ficam em "alto").
+- Em diálise (TFGe < 15), a tela acrescenta uma linha: a SBD não recomenda iniciar estatina em
+  diálise sem doença arterial clínica (R10). Insuficiência cardíaca (R11) não tem campo.
+- Muito alto: "estatina de alta potência; se a meta não for atingida na dose máxima tolerada,
+  considerar ezetimiba (R2, IIa) e depois, se ainda não atingida, iPCSK9 (R3, IIb)".
 
 ### PCDT DM2 2026 (item 5.5)
 
 - **40 a 74 anos:** o DM2 já é alto risco; com DAC, AVC ou DAP passa a muito alto.
 - **≤ 39 anos:** avaliação individualizada; nefropatia ou retinopatia dão alto risco.
 - **≥ 75 anos ou DM1:** avaliação individualizada.
+- Idade em anos completos (a tela usa o piso); < 18 anos: fora do escopo.
 - O PCDT afirma que a estratificação "não altera a conduta para o DM2" e remete ao PCDT de
   Dislipidemia (2019), que não foi lido.
 
@@ -63,6 +81,18 @@ diferenças em relação à SBC:
 - **Cálculo:** igual ao da calculadora HEARTS. Usa faixas de idade, PA e colesterol (ou IMC) e
   calcula o modelo no valor representativo de cada célula. A tela mostra também o valor contínuo.
 - **Categorias:** < 5% baixo; 5–9% moderado; 10–19% alto; 20–29% muito alto; ≥ 30% crítico.
+- **Fluxo oficial (aplicativo HEARTS/OPAS, texto de ajuda):** "A estimativa de risco cardiovascular
+  começa com a identificação de subpopulações de risco alto e muito alto usando três perguntas
+  dicotômicas consecutivas" (doença cardiovascular estabelecida, doença renal crônica, diabetes).
+  No código do aplicativo: diabetes ou doença renal = "Paciente de Alto Risco"; só doença
+  cardiovascular = "Paciente de Risco Muito Alto". Sem percentual em nenhum caso.
+- **Na tela:** doença cardiovascular estabelecida mostra "Muito alto" (a mesma classificação do
+  PCDT para DM2 com DCV) e doença renal crônica (TFGe < 60, a mesma definição da SBC Tab. 4.2)
+  mostra "Alto", sem percentual, na aba e na comparação. DM2 de 40 a 74 anos também mostra "Alto"
+  (PCDT). Em DM1 ou fora dessa idade, a calculadora segue com o diabetes como variável e a tela
+  lembra que o PCDT pede avaliação individualizada. A tela não discute a divergência entre a
+  SBC (PREVENT) e o PCDT (HEARTS), nem coloca na tela qual escala é a principal.
+- **Idade:** < 18 anos fora do escopo.
 
 ### PREVENT
 
@@ -71,17 +101,26 @@ diferenças em relação à SBC:
 - **Modelo escolhido como no pacote:** básico; com HbA1c; com albuminúria; ou completo, com os
   dois e sem SDI (índice dos EUA).
 - **Faixas aceitas:** idade 30–79, CT 130–320, HDL 20–100, PAS 90–180 e TFGe 15–140. A IC exige
-  IMC de 18,5 a 39,9. O horizonte de 30 anos é mostrado até 59 anos.
+  IMC de 18,5 a 39,9. O horizonte de 30 anos é mostrado até 59 anos. HbA1c fora de 4,5–15% e
+  albuminúria fora de 0,1–25.000 mg/g são ignoradas (a tela avisa).
+- **Quem não entra:** doença cardiovascular estabelecida e insuficiência cardíaca (artigo: "without
+  known ASCVD or HF"). A tela diz que as equações foram desenvolvidas nos EUA.
 - **Não verificado:** os coeficientes contra o suplemento oficial (S12) e a calculadora da AHA.
   Os dois estavam bloqueados para download automático.
 
 ## Diabetes como fator
 
-A caixa "Considerar diabetes" vem marcada para quem tem DM. Desmarcada:
+A caixa "Considerar diabetes" vem marcada para quem tem DM. Desmarcada, a tela mostra a faixa
+"Cálculo como pessoa sem diabetes (simulação)" e:
 
 - a SBC segue o ramo sem diabetes (PREVENT e agravantes);
 - a SBD e o PCDT deixam de se aplicar;
 - o PREVENT e a OMS laboratorial calculam com diabetes = não.
+
+## Comparação entre as escalas
+
+A tabela mostra o resultado de cada escala com a sua própria categoria; a tela avisa que as
+categorias não equivalem entre si. Metas de LDL aparecem só para SBC e SBD.
 
 ## Não implementado
 
@@ -89,3 +128,12 @@ A caixa "Considerar diabetes" vem marcada para quem tem DM. Desmarcada:
   valores publicados.
 - **Steno Type 1 Risk Engine:** indicado para DM1 com menos de 20 anos de doença e sem
   estratificadores. A tela avisa e não calcula.
+- **PCDT de Dislipidemia (2019)**, citado pelo PCDT DM2: não foi lido; o app só o menciona.
+- **Insuficiência cardíaca e diálise como campos:** são casos excepcionais; a tela tem só a linha
+  de escopo (diálise, SBD R10) e a nota do PREVENT.
+
+## Escolhas de borda
+
+- CKD-EPI 2021 sem raça (Inker, NEJM 2021); o PCDT (Quadro 5) traz a fórmula de 2009. Creatinina
+  fora de 0,3 a 15 mg/dL não calcula a TFGe (provável erro de unidade).
+- Idade em anos completos; < 18 anos fora do escopo em todas as escalas.

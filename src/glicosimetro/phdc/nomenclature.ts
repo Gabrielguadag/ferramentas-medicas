@@ -130,7 +130,10 @@ export const TRIG_XFER_RSP: Record<number, string> = {
   512: 'falha ao ler o segmento',
 }
 
-/** MeasurementStatus (BITS-16) — significado padrão; o uso pela Roche não está documentado. */
+/**
+ * MeasurementStatus (BITS-16) — significado padrão; o uso pela Roche não está documentado.
+ * NÃO usar na interface: o status bruto só é exibido e exportado em hexadecimal (invariante 6).
+ */
 export const MSMT_STATUS_BITS: ReadonlyArray<readonly [number, string]> = [
   [0x8000, 'inválida'],
   [0x4000, 'questionável'],

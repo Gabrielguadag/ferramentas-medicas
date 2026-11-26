@@ -25,6 +25,8 @@ export interface FakeMeterOptions {
   entryMap?: boolean
   /** Tamanho máximo de cada transferência USB simulada (fragmenta os APDUs). */
   chunkSize?: number
+  /** Unidade declarada na configuração (padrão: mg/dL). Só para testes. */
+  unit?: 'mg/dL' | 'mmol/L'
   /** Comportamentos de falha para testes. */
   behavior?: 'normal' | 'silent' | 'abort-mid-transfer' | 'no-release-response'
 }
@@ -107,7 +109,10 @@ export class FakeMeter implements Transport {
     const attr = (id: number, value: Writer | Uint8Array) => new Writer().u16(id).block(value)
     const numericAttrs = [
       attr(ATTR.MDC_ATTR_ID_TYPE, new Writer().u16(2).u16(GLUCOSE_CAPILLARY_WB)),
-      attr(ATTR.MDC_ATTR_UNIT_CODE, new Writer().u16(UNIT.MG_PER_DL)),
+      attr(
+        ATTR.MDC_ATTR_UNIT_CODE,
+        new Writer().u16(this.opts.unit === 'mmol/L' ? UNIT.MMOL_PER_L : UNIT.MG_PER_DL),
+      ),
     ]
     const pmAttrs = [
       attr(ATTR.MDC_ATTR_PM_STORE_CAPAB, new Writer().u16(0x4000)),

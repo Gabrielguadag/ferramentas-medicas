@@ -3,7 +3,7 @@
 // Fontes (Ministério da Saúde):
 // - Caderneta Brasileira da Gestante (2026, Rede Alyne): 4.1.2 (início até a 12ª semana),
 //   4.1.4 (mínimo de 7 consultas; programação mínima: mensal até 28 semanas, quinzenal de 28 a
-//   36, semanal a partir de 36; ao menos 2 consultas puerperais, a 1ª até 7 dias e a 2ª até 30
+//   36, semanal a partir de 36; ao menos 2 consultas puerperais, a 1ª na primeira semana após a saída da maternidade e a 2ª em torno de 30
 //   dias após o parto), 4.2.1 (exames de rotina por trimestre, no parto e com indicação
 //   clínica) e 4.3 (vacinas).
 // - Nota metodológica C3 — Cuidado na gestação e puerpério (SAPS/MS): 1ª consulta até a 12ª
@@ -245,13 +245,13 @@ export const PROTOCOLO_LOCAL = {
         tipo: 'exame',
         periodo: 't3',
         nome: 'Cultura para estreptococo do grupo B (swab vaginal e retal)',
-        janela: { de: igDias(35, 0), ate: igDias(37, 6) },
-        quando: 'de 35 a 37 semanas',
+        janela: { de: igDias(35, 0), ate: igDias(37, 0) },
+        quando: 'de 35s 0d a 37s 0d',
       } as Item,
     },
   ],
   resumo:
-    'Ajustado ao protocolo do município: HTLV e eletroforese de hemoglobina aparecem no fim da lista, sem oferta local; sem Chagas e malária; toxoplasmose só no 1º e no 3º trimestre; estreptococo do grupo B de 35 a 37 semanas (não está na lista do MS); sem os exames do parto; ultrassonografia obstétrica de 11 a 13 e de 20 a 24 semanas (a Caderneta do MS indica uma, idealmente entre 7 e 12 semanas).',
+    'Ajustado ao protocolo do município: HTLV e eletroforese de hemoglobina aparecem no fim da lista, sem oferta local; sem Chagas e malária; toxoplasmose só no 1º e no 3º trimestre; estreptococo do grupo B de 35s 0d a 37s 0d (não está na lista do MS); sem os exames do parto; ultrassonografia obstétrica de 11 a 13 e de 20 a 24 semanas (a Caderneta do MS indica uma, idealmente entre 7 e 12 semanas).',
 }
 
 function aplicarProtocolo(base: readonly Item[]): Item[] {

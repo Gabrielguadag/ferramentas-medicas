@@ -12,7 +12,8 @@ export interface RiskInputs {
   diabetes: boolean
   dmType: 'DM1' | 'DM2'
   dmYears: number | null
-  dmDiagnosedAfter18: boolean
+  /** null = não informado (a regra do DM1 só vale quando o médico marca "após os 18 anos"). */
+  dmDiagnosedAfter18: boolean | null
   bmi: number | null
 
   // Clínica
@@ -40,6 +41,7 @@ export interface RiskInputs {
   priorMi: boolean // IAM prévio ou angina estável
   ischemicStroke: boolean // AVC isquêmico/aterotrombótico ou AIT
   revascularization: boolean // revascularização coronária, carotídea, renal ou periférica
+  revascOutsideEvent: boolean // revascularização/ICP em momento diferente do evento maior (SBC Tab. 4.2)
   pad: boolean // DAP sintomática, insuficiência vascular periférica ou amputação
   multipleEvents: boolean
   eventUnder2Years: boolean
@@ -71,7 +73,7 @@ export function emptyInputs(): RiskInputs {
     diabetes: true,
     dmType: 'DM2',
     dmYears: null,
-    dmDiagnosedAfter18: true,
+    dmDiagnosedAfter18: null,
     bmi: null,
     smoker: false,
     hypertension: false,
@@ -93,6 +95,7 @@ export function emptyInputs(): RiskInputs {
     priorMi: false,
     ischemicStroke: false,
     revascularization: false,
+    revascOutsideEvent: false,
     pad: false,
     multipleEvents: false,
     eventUnder2Years: false,
@@ -114,6 +117,16 @@ export function emptyInputs(): RiskInputs {
 
 export function hasAscvdEvent(i: RiskInputs): boolean {
   return i.recentAcs || i.priorMi || i.ischemicStroke || i.revascularization || i.pad
+}
+
+/** Hipertensão arterial "tratada ou não" (SBC Tab. 4.6; SBD Quadro 2): quem usa anti-hipertensivo conta. */
+export function hasHypertension(i: RiskInputs): boolean {
+  return i.hypertension || i.onBpMeds
+}
+
+/** DRC pelo corte de TFGe < 60 (SBC Tab. 4.2: "DRC, TFGe 15 a 59"; abaixo de 15 também é DRC). */
+export function hasCkd(i: RiskInputs): boolean {
+  return i.egfr !== null && i.egfr < 60
 }
 
 /** SBC Tab. 4.3 — fatores agravantes (Lp(a) é avaliada pelo valor informado). */

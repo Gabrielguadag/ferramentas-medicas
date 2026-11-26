@@ -5,7 +5,9 @@
 //   - "Glicemia < 80 mg/dL durante a madrugada ou em glicemia de jejum diurna: diminuir 2 U";
 //   - AIAP (glargina): iniciar e titular da mesma forma que a NPH (PCDT 8.3.4.2);
 //   - NT 169: titulação em intervalos de até três dias, com base na glicemia de jejum.
-// A meta de jejum vem do perfil (NT 169, Quadro 5).
+// A meta de jejum vem do perfil (NT 169, Quadro 5). A decisão usa a média dos jejuns informados,
+// sem arredondar antes de comparar (o PCDT não define como combinar vários jejuns).
+// Escopo: DM2 adulto (ver escopo.ts).
 
 import { type Profile, goalOf } from './metas'
 
@@ -35,7 +37,8 @@ export function titrate(
 ): Titration | null {
   const v = values.filter((x): x is number => x !== null && Number.isFinite(x))
   if (v.length === 0 && !nocturnalHypo) return null
-  const mean = v.length ? Math.round(v.reduce((s, x) => s + x, 0) / v.length) : 0
+  const rawMean = v.length ? v.reduce((s, x) => s + x, 0) / v.length : 0
+  const mean = Math.round(rawMean)
   const min = v.length ? Math.min(...v) : 0
   const [lo, hi] = goalOf(profile).fasting
   let action: Action
@@ -48,12 +51,12 @@ export function titrate(
   } else if (min < 80) {
     action = 'reduzir-2'
     explanation = `Jejum de ${min} mg/dL (< 80): reduzir a dose diária em 2 U até atingir a meta.`
-  } else if (mean > hi) {
+  } else if (rawMean > hi) {
     action = 'aumentar-2'
     explanation = `Média de jejum ${mean} mg/dL, acima da meta (${lo}–${hi}): aumentar 2 U e reavaliar em 3 dias.`
-  } else if (mean < lo) {
+  } else if (rawMean < lo) {
     action = 'manter-avaliar'
-    explanation = `Média de jejum ${mean} mg/dL, abaixo da meta do perfil (${lo}–${hi}), sem valores < 80: manter e reavaliar.`
+    explanation = `Média de jejum ${mean} mg/dL, abaixo da meta do perfil (${lo}–${hi}): manter a dose, reavaliar e ficar atento ao risco de hipoglicemia.`
   } else {
     action = 'manter'
     explanation = `Média de jejum ${mean} mg/dL, dentro da meta (${lo}–${hi}): manter a dose e seguir monitorando.`

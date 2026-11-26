@@ -43,6 +43,7 @@ export type SessionErrorCode =
   | 'device-ended' // o aparelho encerrou ou abortou a sessão
   | 'protocol' // resposta inesperada
   | 'timeout'
+  | 'unsupported-unit' // o aparelho declara mmol/L (o app só lê aparelhos em mg/dL)
 
 export class SessionError extends Error {
   override name = 'SessionError'
@@ -208,6 +209,13 @@ export async function downloadMeter(
   const pmStore = config.objects.find((o) => o.objClass === OBJ_CLASS.MDC_MOC_VMO_PMSTORE)
   if (!pmStore) throw new SessionError('protocol', 'PM-Store ausente.')
   const declaredUnit = unitOf(config.objects)
+  if (declaredUnit === 'mmol/L') {
+    // Não há conversão testada com aparelho em mmol/L: melhor não mostrar números do que errar.
+    throw new SessionError(
+      'unsupported-unit',
+      'Este glicosímetro está configurado em mmol/L. Esta página só lê aparelhos em mg/dL, então as medições não foram mostradas.',
+    )
+  }
   await stream.send(buildConfigResponse(config.invokeId, config.configReportId))
 
   let invokeId = (config.invokeId + 1) & 0xffff

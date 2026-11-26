@@ -3,6 +3,7 @@ import { NumberField, RadioGroup, SelectField } from '../shared/NumberField'
 import { usePatient } from './patient'
 import {
   basalCeiling,
+  fixedAboveRange,
   bolusDose,
   correctionByAlgorithm,
   correctionByFactor,
@@ -10,8 +11,15 @@ import {
   nphStart,
   secondNphDose,
 } from './rules/insulina'
+import { OUT_OF_SCOPE_TEXT, PREGNANCY_TEXT, outOfScope } from './rules/escopo'
 import { type Check as GoalCheck, GOALS, evaluateGoals, goalOf } from './rules/metas'
-import { basalAlert, convertNphToGlargine, tubetesFor, uiPerKg } from './rules/migracao'
+import {
+  basalAlert,
+  convertNphToGlargine,
+  dtdiAfterSwitch,
+  tubetesFor,
+  uiPerKg,
+} from './rules/migracao'
 import {
   PCDT_RISK_FACTORS,
   STAGE_LABEL,
@@ -22,6 +30,10 @@ import {
 import { titrate } from './rules/titulacao'
 import { ELIGIBILITY_LITERAL, NT_169, PCDT_DM2, eligibility } from './sources'
 import { Alert, Card, Check, Details, Result, Results, Src, fmt } from '../shared/ui'
+
+function ScopeNote() {
+  return <Alert tone="info">{OUT_OF_SCOPE_TEXT}</Alert>
+}
 
 // ---------------------------------------------------------------------------------------------
 export function MigracaoSection() {
@@ -34,7 +46,8 @@ export function MigracaoSection() {
 
   const conv = nph !== null && nph > 0 ? convertNphToGlargine(nph, apps === '1' ? 1 : 2) : null
   const perKg = conv ? uiPerKg(conv.glargine, patient.weight) : null
-  const alert = conv ? basalAlert(patient.type, conv.glargine, patient.weight, dtdi) : null
+  const dtdiNew = conv ? dtdiAfterSwitch(dtdi, nph ?? 0, conv.glargine) : null
+  const alert = conv ? basalAlert(patient.type, conv.glargine, patient.weight, dtdiNew) : null
   const tub = conv && days ? tubetesFor(conv.glargine, days, priming ?? 0) : null
   const elig = eligibility(patient.age, patient.type)
 
@@ -50,6 +63,9 @@ export function MigracaoSection() {
           }
         >
           {elig.reason}
+          {elig.kind === 'eligible'
+            ? ' Também são necessárias prescrição válida e avaliação clínica individualizada (item 3.4); quem já é atendido pelo CEAF mantém o acompanhamento atual (item 3.5).'
+            : null}
         </Alert>
       ) : (
         <Alert tone="info">
@@ -76,11 +92,11 @@ export function MigracaoSection() {
           />
           {patient.type === 'DM1' ? (
             <NumberField
-              label="DTDI (basal + rápida)"
+              label="DTDI atual (NPH + rápida)"
               unit="UI/dia"
               value={dtdi}
               onChange={setDtdi}
-              hint="Para o alerta de basal > 50% da DTDI."
+              hint="Soma das doses de hoje. O alerta de basal > 50% usa a DTDI já com a glargina."
             />
           ) : null}
         </div>
@@ -89,7 +105,7 @@ export function MigracaoSection() {
             <Result label="Glargina, 1 vez ao dia" value={conv.glargine} unit="UI" tone="info">
               {conv.rule === 'equivalent'
                 ? 'NPH 1x/dia: mesma dose (1:1), no mesmo horário.'
-                : `NPH 2x ou mais: ${fmt(nph ?? 0)} × 0,8 = ${fmt(conv.exact, 1)} UI. Aplicar no horário da maior dose anterior de NPH.`}
+                : `NPH 2x ou mais: ${fmt(nph ?? 0)} × 0,8 = ${fmt(conv.exact, 1)} UI. Preferencialmente no horário da maior dose anterior de NPH.`}
             </Result>
             <Result
               label="Dose por peso"
@@ -148,7 +164,7 @@ export function MigracaoSection() {
                 : `${fmt(tub.uiPerDay)} UI/dia (dose + escorva) × ${days} dias ÷ 300 UI por tubete.`}
             </Result>
             <Result label="Agulhas 4 mm" value={days ?? 0}>
-              Uma agulha por dia.
+              Uma agulha por dia, por tipo de insulina.
             </Result>
           </Results>
         ) : (
@@ -177,6 +193,7 @@ export function InicioNphSection() {
   const start = nphStart(patient.weight)
   const ceiling = basalCeiling(patient.weight)
   const second = bedtime ? secondNphDose(bedtime) : null
+  if (outOfScope(patient.age, patient.type)) return <ScopeNote />
   return (
     <>
       <Card
@@ -186,6 +203,7 @@ export function InicioNphSection() {
         <Results>
           <Result label="Dose fixa" value={start.fixed} unit="U" tone="info">
             À noite, antes de dormir (perto das 22 h ou 8 h antes do desjejum).
+            {fixedAboveRange(patient.weight) ? ' Neste peso, 10 U passa de 0,2 U/kg.' : ''}
           </Result>
           <Result
             label="Ou por peso (0,1 a 0,2 U/kg)"
@@ -252,19 +270,24 @@ export function TitulacaoSection() {
   const { patient } = usePatient()
   const [g, setG] = useState<(number | null)[]>([null, null, null])
   const [nocturnal, setNocturnal] = useState(false)
+  const [dose, setDose] = useState<number | null>(null)
   const goal = goalOf(patient.profile)
   const t = titrate(g, patient.profile, nocturnal)
+  const excess =
+    dose !== null && dose > 0 ? basalAlert('DM2', dose, patient.weight, null).active : false
+  const blocked = t?.action === 'aumentar-2' && excess
   const tone = !t
     ? 'neutral'
-    : t.action.startsWith('reduzir')
+    : blocked || t.action.startsWith('reduzir')
       ? 'danger'
       : t.action === 'aumentar-2'
         ? 'warn'
         : 'ok'
+  if (outOfScope(patient.age, patient.type, patient.profile)) return <ScopeNote />
   return (
     <Card
       title="Glicemias de jejum (até 3 dias)"
-      subtitle={`Meta de jejum (${goal.short.toLowerCase()}): ${goal.fasting[0]}–${goal.fasting[1]} mg/dL. O perfil é escolhido no painel do paciente.`}
+      subtitle={`Meta de jejum (${goal.short}): ${goal.fasting[0]}–${goal.fasting[1]} mg/dL. O perfil é escolhido no painel do paciente.`}
     >
       <div className="fields">
         {[0, 1, 2].map((i) => (
@@ -277,10 +300,23 @@ export function TitulacaoSection() {
           />
         ))}
       </div>
+      <div className="fields">
+        <NumberField
+          label="Dose atual de insulina basal (opcional)"
+          unit="U/dia"
+          value={dose}
+          onChange={setDose}
+          hint="Com o peso do painel, confere o limite de 0,5 UI/kg/dia antes de aumentar."
+        />
+      </div>
       <Check label="Hipoglicemia noturna relatada" checked={nocturnal} onChange={setNocturnal} />
       {t ? (
         <Results>
-          <Result label="Conduta" value={t.label} tone={tone}>
+          <Result
+            label="Conduta"
+            value={blocked ? 'Não aumentar: reavaliar o esquema' : t.label}
+            tone={tone}
+          >
             {t.explanation}
           </Result>
           {t.count ? (
@@ -294,12 +330,14 @@ export function TitulacaoSection() {
       ) : (
         <p className="empty">Preencha ao menos um jejum.</p>
       )}
-      {patient.profile === 'idoso-comprometido' ? (
-        <Alert tone="info">
-          Para idosos comprometidos, o PCDT DM2 aceita jejum até 180 mg/dL; a NT 169 (Quadro 5) usa
-          90–150.
+      {blocked ? (
+        <Alert tone="danger" title="Insulina basal > 0,5 UI/kg/dia.">
+          “Recomenda-se reavaliar o esquema terapêutico, evitando o aumento adicional da insulina
+          basal e, quando necessário, realizar o cuidado compartilhado com a Atenção Especializada”
+          (NT 169, Quadro 4).
         </Alert>
       ) : null}
+      <p className="hint-inline">{PREGNANCY_TEXT}</p>
       <Details>
         <ul>
           <li>Aumentar 2 U a cada 3 dias até atingir a meta de jejum.</li>
@@ -308,7 +346,9 @@ export function TitulacaoSection() {
           <li>Vale para NPH e para glargina (“iniciar e titular os AIAP da mesma forma”).</li>
           <li>
             Excesso de basal: &gt; 0,5 U/kg/dia, queda &gt; 50 mg/dL entre deitar e acordar, HbA1c
-            fora da meta com jejum no alvo, hipoglicemias.
+            fora da meta com jejum no alvo, hipoglicemias. Nessas situações: “recomenda-se reavaliar
+            o esquema terapêutico, evitando o aumento adicional da insulina basal” (NT 169, Quadro
+            4).
           </li>
         </ul>
         <Src href={PCDT_DM2.url}>
@@ -321,12 +361,15 @@ export function TitulacaoSection() {
 
 // ---------------------------------------------------------------------------------------------
 export function PrandialSection() {
+  const { patient } = usePatient()
   const [prandial, setPrandial] = useState<number | null>(null)
   const [glucose, setGlucose] = useState<number | null>(null)
   const [mode, setMode] = useState<'algoritmo' | 'fator'>('algoritmo')
-  const [upper, setUpper] = useState<number | null>(130)
+  const [upperInput, setUpper] = useState<number | null | undefined>(undefined)
   const [factorKind, setFactorKind] = useState<'50' | 'dtdi'>('50')
   const [dtdi, setDtdi] = useState<number | null>(null)
+  // Limite superior pré-preenchido com o teto de jejum/pré-prandial do perfil (NT 169, Quadro 5).
+  const upper = upperInput === undefined ? goalOf(patient.profile).fasting[1] : upperInput
   const factor = factorKind === '50' ? 50 : dtdi && dtdi > 0 ? factorFromDtdi(dtdi) : null
   const correction =
     glucose === null
@@ -340,6 +383,7 @@ export function PrandialSection() {
     prandial !== null && correction !== null && glucose !== null
       ? bolusDose(prandial, correction, glucose)
       : null
+  if (outOfScope(patient.age, patient.type, patient.profile)) return <ScopeNote />
   return (
     <>
       <Card title="Início do bolus" subtitle="HbA1c fora da meta, jejum adequado e NPH 2x/dia.">
@@ -408,7 +452,7 @@ export function PrandialSection() {
                   unit="U/dia"
                   value={dtdi}
                   onChange={setDtdi}
-                  hint={factor ? `FC = ${fmt(factor, 0)}` : undefined}
+                  hint={factor ? `FC = ${fmt(factor, 1)}` : undefined}
                 />
               ) : null}
             </>
@@ -496,10 +540,7 @@ export function MetasSection() {
   const goal = goalOf(patient.profile)
   const ev = evaluateGoals(patient.profile, hb, fj, pp)
   return (
-    <Card
-      title={`Metas: ${goal.label.toLowerCase()}`}
-      subtitle="O perfil é escolhido no painel do paciente."
-    >
+    <Card title={`Metas: ${goal.label}`} subtitle="O perfil é escolhido no painel do paciente.">
       <div className="fields">
         <NumberField label="HbA1c" unit="%" value={hb} onChange={setHb} />
         <NumberField label="Glicemia de jejum" unit="mg/dL" value={fj} onChange={setFj} />
@@ -516,7 +557,7 @@ export function MetasSection() {
             : CHECK_TEXT[ev.hba1c]}
         </Result>
         <Result
-          label="Jejum"
+          label="Jejum e pré-prandial"
           value={`${goal.fasting[0]}–${goal.fasting[1]}`}
           unit="mg/dL"
           tone={CHECK_TONE[ev.fasting]}
@@ -533,13 +574,14 @@ export function MetasSection() {
         </Result>
         <Result label="Ao deitar" value={`${goal.bedtime[0]}–${goal.bedtime[1]}`} unit="mg/dL" />
       </Results>
+      <p className="hint-inline">{PREGNANCY_TEXT}</p>
       <Details summary="Todas as metas (Quadro 5)">
         <table>
           <thead>
             <tr>
               <th>Perfil</th>
               <th>HbA1c</th>
-              <th>Jejum</th>
+              <th>Jejum e pré-prandial</th>
               <th>2 h pós</th>
               <th>Ao deitar</th>
             </tr>
@@ -564,7 +606,7 @@ export function MetasSection() {
 
 // ---------------------------------------------------------------------------------------------
 export function TratamentoSection() {
-  const { patient } = usePatient()
+  const { patient, bmi } = usePatient()
   const [months, setMonths] = useState<'menos-3' | '3-ou-mais'>('3-ou-mais')
   const [factors, setFactors] = useState<Set<string>>(new Set())
   const [stage, setStage] = useState<Stage>('inicio')
@@ -587,6 +629,7 @@ export function TratamentoSection() {
     dapagliflozinEligible: dapa.eligible,
   })
   const tone = flow.next === 'insulina' ? 'warn' : flow.next === 'monitorar' ? 'ok' : 'info'
+  if (outOfScope(patient.age, patient.type)) return <ScopeNote />
   return (
     <>
       <Card title="Situação do paciente">
@@ -628,6 +671,9 @@ export function TratamentoSection() {
           <details className="more">
             <summary>Fatores de risco para o diabetes ({factors.size})</summary>
             <div className="checks more-body">
+              {bmi ? (
+                <p className="hint">IMC do paciente: {String(bmi).replace('.', ',')} kg/m²</p>
+              ) : null}
               {PCDT_RISK_FACTORS.map((f) => (
                 <Check
                   key={f}
@@ -655,6 +701,7 @@ export function TratamentoSection() {
             ) : null}
           </Result>
         </Results>
+        <p className="hint-inline">{PREGNANCY_TEXT}</p>
         <Details>
           <p>
             Metas terapêuticas da Figura 2: HbA1c &lt; 7,0% ou, em idosos, de 7,5% a 8,0%. Reavaliar
@@ -684,12 +731,6 @@ export function TratamentoSection() {
             ou tabagismo. Dose 10 mg/dia; não iniciar com TFGe &lt; 25 mL/min/1,73 m².
           </Alert>
         )}
-        {dapa.maleAgeConflict ? (
-          <Alert tone="warn">
-            O texto do PCDT (8.3.3) diz homens ≥ 55 anos; a nota da Figura 2 diz ≥ 65 anos. Confira
-            o critério adotado no seu serviço.
-          </Alert>
-        ) : null}
         <Details>
           <Src href={PCDT_DM2.url}>{PCDT_DM2.short}, item 8.3.3 e nota g da Figura 2.</Src>
         </Details>

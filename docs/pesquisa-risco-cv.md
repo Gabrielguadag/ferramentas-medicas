@@ -74,8 +74,8 @@ Rached et al., Arq Bras Cardiol 2025;122(9):e20250640.
 
 ### SBD
 
-- [?] O capítulo de risco CV da diretriz da SBD não foi lido. A SBC 2025 usa a mesma origem
-  ("Izar et al."), então provavelmente a SBD também usa EAR/EMAR [P].
+- [L] O capítulo "Manejo do risco cardiovascular: dislipidemia" foi lido depois desta pesquisa
+  (Quadros 1 a 6) e está implementado; ver `risco-cv.md`.
 
 ## PREVENT (Khan et al., Circulation 2024;149:430–449) [C]
 
@@ -99,8 +99,9 @@ Rached et al., Arq Bras Cardiol 2025;122(9):e20250640.
 - [C] Usa as tabelas da OMS de 2019 (regiões do GBD), com ou sem colesterol, e estima infarto, AVC ou
   morte CV em 10 anos. Calculadora em
   https://www.paho.org/pt/hearts-nas-americas/calculadora-risco-cardiovascular.
-- [?] As variáveis exatas, os cortes e o tratamento do diabetes não foram verificados. Sem a tabela
-  oficial, não dá para recriar a calculadora.
+- [L] Verificado depois desta pesquisa no código do aplicativo da OPAS: três perguntas iniciais
+  (doença cardiovascular, doença renal, diabetes) classificam direto, sem percentual; variáveis,
+  faixas e 2.100 células conferidas. Ver `risco-cv.md`.
 
 ## CKD-EPI 2021, sem raça [C, Inker et al., NEJM 2021]
 
@@ -112,16 +113,8 @@ TFGe = 142 × min(Scr/κ, 1)^α × max(Scr/κ, 1)^−1,200 × 0,9938^idade × 1,
 
 ## Comparação com a tela atual
 
-A tela usa EAR/EMAR, como a SBC 2025 no DM2, mas há divergências:
-
-- usa o rótulo "baixo/intermediário"; no DM2 deveria ser **intermediário**;
-- falta a categoria **extremo**;
-- as listas não batem com as da SBC:
-  - "ITB < 0,9" e "insuficiência cardíaca" não aparecem nas listas da SBC lidas;
-  - "LDL > 190" é EMAR na SBC, mas na tela conta como fator de risco;
-  - "estenose < 50%" é EAR, e "estenose > 50%" é EMAR;
-- a grade renal está simplificada (albuminúria entra sem graduação);
-- falta a meta de LDL-c e não-HDL-c da categoria.
+Superada: a tela hoje tem as categorias (inclusive extremo), as listas EAR/EMAR da SBC e da SBD, a
+grade renal e as metas de LDL, não-HDL e ApoB. Ver `risco-cv.md`.
 
 ## Opções para a tela
 

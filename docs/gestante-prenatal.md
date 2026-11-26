@@ -26,7 +26,7 @@ Código:
      - mensal até 28 semanas;
      - quinzenal da 28ª à 36ª semana;
      - semanal a partir da 36ª semana;
-     - após o parto, ao menos 2 consultas: a 1ª até 7 dias e a 2ª até 30 dias.
+     - após o parto, ao menos 2 consultas: a 1ª na primeira semana após a saída da maternidade e a 2ª em torno de 30 dias após o parto.
    - 4.2.1: exames de rotina para o 1º trimestre ou a 1ª consulta, o 2º trimestre, o 3º
      trimestre e o parto ou pós-parto imediato, mais os exames com indicação clínica.
    - 4.2.2: exames do alto risco.
@@ -57,7 +57,7 @@ A lista nacional continua no código como `ITENS_MS`.
 | Chagas                                                  | só em casos suspeitos                                               | sai                                                                                                         |
 | Malária                                                 | só em região endêmica                                               | sai                                                                                                         |
 | Toxoplasmose                                            | 1º trimestre para todas; 2º e 3º se IgG não reagente                | só 1º e 3º trimestre (sai a do 2º)                                                                          |
-| Estreptococo do grupo B (cultura, swab vaginal e retal) | não está na lista (o Caderno 32 não recomendava rastreio de rotina) | 3º trimestre, de 35 a 37 semanas (35s 0d a 37s 6d)                                                          |
+| Estreptococo do grupo B (cultura, swab vaginal e retal) | não está na lista (o Caderno 32 não recomendava rastreio de rotina) | 3º trimestre, de 35s 0d a 37s 0d (inclusive)                                                                |
 | Exames no parto ou pós-parto imediato                   | HIV, sífilis e hepatites B e C (se não feitas)                      | saem: não são usados pela equipe                                                                            |
 | Teste rápido de gravidez                                | 1º trimestre                                                        | sai (no pré-natal, já foi feito)                                                                            |
 | Ultrassonografia obstétrica                             | uma, idealmente entre 7 e 12 semanas                                | duas: 1º trimestre de 11 a 13 semanas (11s 0d a 13s 6d) e 2º trimestre de 20 a 24 semanas (20s 0d a 24s 6d) |
@@ -141,3 +141,20 @@ interpretação da interface e não está escrito na fonte.
 - hepatite C em "já deveria ter sido feito";
 - 3º trimestre a partir de 16/07/2026;
 - frequência mensal.
+
+## Escolhas registradas (revisão de 2026-11-25)
+
+- **Coombs indireto:** a tela segue a Caderneta 2026 (por trimestre, para Rh negativo com Coombs
+  negativo no 1º trimestre). Sem mudança de regra.
+- **Estreptococo do grupo B:** janela de 35s 0d a 37s 0d, com o fim inclusivo (com 37s 1d já
+  aparece em "já deveria ter sido feito"). É protocolo do município.
+- **dT:** a Caderneta 2026 (4.3, p.40) só traz o caso "apenas 1 dose anterior: 1 dT e 1 dTpa a
+  partir da 20ª semana". O esquema para quem não tem nenhuma dose não está nessa fonte e não foi
+  incluído; a dTpa vale para toda gestante.
+- **VSR:** segue o MS (a partir da 28ª semana, sem limite superior).
+- **Frequência de consultas:** a Caderneta 2026 diz semanal a partir da 36ª semana (o Caderno 32
+  dizia semanal no termo). "28ª" e "36ª semana" são lidas como 28s 0d e 36s 0d.
+- **Início do pré-natal:** a Caderneta diz "de preferência até a 12ª semana". O alerta da tela
+  usa o limite de 12s 6d, escolha da interface.
+- **Consultas puerperais:** texto igual ao da Caderneta (4.1.4): "uma na primeira semana após a
+  saída da maternidade e outra em torno de 30 dias após o parto".

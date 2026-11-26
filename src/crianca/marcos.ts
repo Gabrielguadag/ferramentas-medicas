@@ -1,5 +1,5 @@
 // Marcos do desenvolvimento e Instrumento de Avaliação do Desenvolvimento Integral da Criança.
-// Fonte: Caderneta da Criança (MS), 6ª ed., pág. 78 a 86. As faixas etárias de cada grupo de
+// Fonte: Caderneta da Criança (MS), 6ª ed., pág. 78 a 86 (78 a 80: vigilância e instrumento; 81 a 85: marcos; 86: a partir de 6 anos). As faixas etárias de cada grupo de
 // quatro marcos são as colunas coloridas das tabelas (pág. 81 a 85); o texto de "como pesquisar"
 // é o da Caderneta, sem alteração de conteúdo.
 
@@ -633,7 +633,7 @@ export const CONDUTA: Record<Classe, { titulo: string; conduta: string[] }> = {
   },
 }
 
-/** Sinais de alerta (Caderneta, pág. 53 e 54). */
+/** Sinais de alerta (Caderneta, pág. 53). */
 export const SINAIS_ALERTA = [
   'Não busca interação, não reage ou se irrita ao contato com as pessoas e com o ambiente.',
   'Não responde ao olhar, aos sons, à conversa e ao toque quando é amamentada, alimentada, colocada no colo ou acariciada.',

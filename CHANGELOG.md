@@ -2,6 +2,27 @@
 
 ## Não lançado
 
+- Correções da revisão clínica de 25/11/2026 (detalhes em `docs/revisao-2026-11-25.md`). Regra do
+  produto: guia geral, sem polêmicas nem casos excepcionais na tela.
+  - Insulinas: titulação, início da NPH, insulina prandial e fluxograma do DM2 ficam fora do
+    escopo para DM1, menores de 18 anos e perfil criança; manter a metformina ao insulinizar;
+    limites de TFG da metformina e da sulfonilureia; glibenclamida não recomendada a partir de 60
+    anos; alerta de basal acima de 50% da DTDI usa a DTDI depois da troca; dapagliflozina com
+    homem ≥ 55 anos.
+  - Risco CV: na aba OMS/HEARTS, doença cardiovascular, DRC e DM2 de 40 a 74 anos já definem a
+    categoria, sem percentual; "DM1 diagnosticado após os 18 anos" deixa de vir marcado; uso de
+    anti-hipertensivo conta como hipertensão; revascularização não conta duas vezes; idade abaixo
+    de 18 anos fora do escopo; avisos para dado não informado e simulação sem diabetes.
+  - Gestante: conduta com 42 semanas ou mais; texto de gestação prolongada; GBS de 35s 0d a
+    37s 0d; precisão da ultrassonografia tardia (ACOG); consultas puerperais como na Caderneta.
+  - Criança: sal (não adicionar até 1 ano), suplementação de vitamina D e ferro e início dos
+    alimentos no prematuro pela SBP; preparo da fórmula (água fervida mesmo filtrada ou mineral,
+    pó com a água ainda bem quente, cerca de 70 °C); páginas corrigidas.
+  - Glicosímetro: meta em mmol/L não muda mais a classificação; "<1%" em vez de "0%" quando houve
+    ocorrência; aparelho em mmol/L é bloqueado; avisos de leitura não validada, solução de
+    controle, relógio do aparelho e medições sem data; fonte dos limiares (Battelino 2019); texto
+    de privacidade corrigido.
+
 - Criança, leite de vaca: antes dos 6 meses aparece como "não recomendado; só quando não há
   outra opção" (o Guia do MS indica a fórmula como primeira alternativa e só orienta o uso
   quando não há outra opção). "Alternativa do MS, não indicada em condições gerais" vale só de 6

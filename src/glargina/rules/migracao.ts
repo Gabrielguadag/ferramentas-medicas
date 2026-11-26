@@ -20,6 +20,19 @@ export function convertNphToGlargine(nphDailyDose: number, applicationsPerDay: n
   }
 }
 
+/**
+ * DTDI depois da troca: a NPH sai e entra a glargina (a dose rápida não muda).
+ * O alerta "basal > 50% da DTDI" (Quadro 4) deve usar este valor, não a DTDI de antes.
+ */
+export function dtdiAfterSwitch(
+  dtdiBefore: number | null,
+  nphDose: number,
+  glargine: number,
+): number | null {
+  if (dtdiBefore === null || !(dtdiBefore > 0)) return null
+  return Math.max(0, dtdiBefore - nphDose + glargine)
+}
+
 export function uiPerKg(dose: number, weightKg: number | null): number | null {
   if (!weightKg || !(weightKg > 0)) return null
   return Math.round((dose / weightKg) * 100) / 100

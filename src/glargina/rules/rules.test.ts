@@ -4,11 +4,13 @@ import {
   correctionByAlgorithm,
   correctionByFactor,
   factorFromDtdi,
+  fixedAboveRange,
   nphStart,
   secondNphDose,
 } from './insulina'
 import { evaluateGoals } from './metas'
-import { basalAlert, convertNphToGlargine, tubetesFor, uiPerKg } from './migracao'
+import { basalAlert, convertNphToGlargine, dtdiAfterSwitch, tubetesFor, uiPerKg } from './migracao'
+import { outOfScope } from './escopo'
 import { dapagliflozinCriteria, pcdtFlow } from './pcdt'
 import { titrate } from './titulacao'
 import { eligibility } from '../sources'
@@ -24,6 +26,15 @@ describe('migração (NT 169, Quadros 3 e 4)', () => {
     expect(basalAlert('DM2', 36, 70, null).active).toBe(true)
     expect(basalAlert('DM2', 35, 70, null).active).toBe(false)
     expect(basalAlert('DM1', 31, 70, 60).active).toBe(true)
+  })
+  it('DM1: a DTDI do alerta já tem a glargina no lugar da NPH', () => {
+    // NPH 30 U (2x) + rápida 20 U: DTDI 50; glargina 24; DTDI nova 44; 24/44 = 54,5% (> 50%)
+    const conv = convertNphToGlargine(30, 2)
+    const novo = dtdiAfterSwitch(50, 30, conv.glargine)
+    expect(novo).toBe(44)
+    expect(basalAlert('DM1', conv.glargine, null, novo).active).toBe(true)
+    expect(basalAlert('DM1', conv.glargine, null, 50).active).toBe(false)
+    expect(dtdiAfterSwitch(null, 30, 24)).toBeNull()
   })
   it('tubetes: 300 UI e no máximo 28 dias depois de aberto', () => {
     expect(tubetesFor(24, 30, 2)).toMatchObject({ tubetes: 3, byVolume: 3, byExpiry: 2 }) // 26×30/300 = 2,6
@@ -53,12 +64,38 @@ describe('titulação (PCDT 8.3.4.1 e Figura 3)', () => {
     expect(titrate([140, 140, 140], 'adulto')?.action).toBe('aumentar-2')
     expect(titrate([85, 85, 85], 'idoso-muito-comprometido')?.action).toBe('manter-avaliar')
   })
+  it('compara a média sem arredondar (130,33 já está acima de 130)', () => {
+    expect(titrate([130, 130, 131], 'adulto')?.action).toBe('aumentar-2') // 130,33 (antes arredondava para 130)
+    expect(titrate([131, 131, 130], 'adulto')?.action).toBe('aumentar-2') // 130,67
+    expect(titrate([130, 130, 130], 'adulto')?.action).toBe('manter')
+  })
+  it('limiares 70 e 80 (jejum mínimo)', () => {
+    expect(titrate([70, 120, 120], 'adulto')?.action).toBe('reduzir-2')
+    expect(titrate([69, 120, 120], 'adulto')?.action).toBe('reduzir-2-4')
+    expect(titrate([80, 120, 120], 'adulto')?.action).toBe('manter')
+  })
   it('sem dados, sem resultado', () => {
     expect(titrate([null, null, null], 'adulto')).toBeNull()
   })
 })
 
+describe('escopo: DM2 adulto (Figura 2 e 8.3.4 do PCDT)', () => {
+  it('DM1 e menores de 18 anos ficam fora; perfil criança também', () => {
+    expect(outOfScope(40, 'DM1')).toBe(true)
+    expect(outOfScope(17, 'DM2')).toBe(true)
+    expect(outOfScope(18, 'DM2')).toBe(false)
+    expect(outOfScope(null, 'DM2')).toBe(false)
+    expect(outOfScope(30, 'DM2', 'crianca')).toBe(true)
+    expect(outOfScope(30, 'DM2', 'adulto')).toBe(false)
+  })
+})
+
 describe('insulinização (PCDT 8.3.4)', () => {
+  it('10 U passa de 0,2 U/kg abaixo de 50 kg', () => {
+    expect(fixedAboveRange(49)).toBe(true)
+    expect(fixedAboveRange(50)).toBe(false)
+    expect(fixedAboveRange(null)).toBe(false)
+  })
   it('NPH inicial: 10 U ou 0,1–0,2 U/kg; teto de basal', () => {
     expect(nphStart(70)).toEqual({ fixed: 10, range: [7, 14] })
     expect(basalCeiling(80)).toEqual({ usual: 40, obesity: 60 })
@@ -121,17 +158,27 @@ describe('fluxograma do PCDT (Figura 2)', () => {
     expect(pcdtFlow({ ...base, stage: 'metformina', atGoal: true }).next).toBe('monitorar')
     expect(pcdtFlow({ ...base, stage: 'inicio', insulinIndication: true }).next).toBe('insulina')
   })
-  it('dapagliflozina: texto (homem ≥ 55) × nota da figura (≥ 65)', () => {
+  it('conduta de insulina mantém a metformina; metformina e sulfonilureia trazem os limites de TFG', () => {
+    const ins = pcdtFlow({ ...base, stage: 'inicio', insulinIndication: true })
+    expect(ins.notes.join(' ')).toContain('Manter a metformina')
+    expect(pcdtFlow({ ...base, stage: 'inicio' }).notes.join(' ')).toContain('TFG < 30')
+    const su = pcdtFlow({ ...base, stage: 'metformina' }).notes.join(' ')
+    expect(su).toContain('TFG < 30')
+    expect(su).toContain('a partir de 60 anos')
+  })
+  it('dapagliflozina: homem ≥ 55, mulher ≥ 60 (texto do PCDT)', () => {
     expect(
       dapagliflozinCriteria({ age: 45, sex: 'M', establishedCvd: true, highRiskFactor: false })
         .eligible,
     ).toBe(true)
     expect(
-      dapagliflozinCriteria({ age: 58, sex: 'M', establishedCvd: false, highRiskFactor: true }),
-    ).toEqual({
-      eligible: true,
-      maleAgeConflict: true,
-    })
+      dapagliflozinCriteria({ age: 55, sex: 'M', establishedCvd: false, highRiskFactor: true })
+        .eligible,
+    ).toBe(true)
+    expect(
+      dapagliflozinCriteria({ age: 54, sex: 'M', establishedCvd: false, highRiskFactor: true })
+        .eligible,
+    ).toBe(false)
     expect(
       dapagliflozinCriteria({ age: 59, sex: 'F', establishedCvd: false, highRiskFactor: true })
         .eligible,

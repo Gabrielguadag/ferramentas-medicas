@@ -149,7 +149,9 @@ export function MarcosSection(props: { dados: DadosCrianca }) {
             {av.classe === 'incompleta' ? (
               <p className="empty">
                 {av.falta === 'faixa'
-                  ? 'Marque cada marco da faixa como presente ou ausente.'
+                  ? temAusente
+                    ? 'Já há marco ausente: a classificação é no mínimo alerta. Marque os demais marcos da faixa como presente ou ausente para concluir.'
+                    : 'Marque cada marco da faixa como presente ou ausente.'
                   : 'Marque os marcos da faixa anterior como presente ou ausente.'}
               </p>
             ) : (
@@ -186,7 +188,7 @@ export function MarcosSection(props: { dados: DadosCrianca }) {
     <>
       {corpo}
       <Details summary="Sinais de alerta">
-        <p>Fazem suspeitar de problema no desenvolvimento (Caderneta, pág. 53 e 54):</p>
+        <p>Fazem suspeitar de problema no desenvolvimento (Caderneta, pág. 53):</p>
         <ul className="checklist">
           {SINAIS_ALERTA.map((s) => (
             <li key={s}>{s}</li>
@@ -214,6 +216,14 @@ export function MarcosSection(props: { dados: DadosCrianca }) {
       </Details>
       <Details>
         <ul className="checklist">
+          <li>
+            No dia em que a criança completa o mês do limite (ex.: 4 meses), já vale a faixa
+            seguinte.
+          </li>
+          <li>
+            Só use a informação do cuidador nos itens em que o texto de como pesquisar a prevê; nos
+            demais, observe a criança (Caderneta, pág. 78).
+          </li>
           <li>
             A faixa vem da idade em meses completos. Em prematuros (&lt; 37 semanas), usa-se a idade
             corrigida: diminui-se da idade o tempo que faltou para 40 semanas. Corrige-se até 2 anos

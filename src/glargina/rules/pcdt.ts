@@ -52,7 +52,23 @@ export interface FlowResult {
   notes: string[]
 }
 
+const NOTE_KEEP_METFORMIN =
+  'Manter a metformina (e outros orais, a critério médico), salvo contraindicação (nota h da Figura 2; item 8.3.1).'
+const NOTE_METFORMIN_RENAL =
+  'Metformina: no máximo 1 g/dia com TFG de 30 a 45 mL/min/1,73 m²; suspender se TFG < 30 (item 8.3.1).'
+const NOTE_SU_SAFETY =
+  'Sulfonilureia: contraindicada com TFG < 30 mL/min/1,73 m² (item 8.9). Glibenclamida não é recomendada a partir de 60 anos; nessa idade, preferir gliclazida (item 8.9 e nota f).'
+
+/** Fluxograma da Figura 2 (adulto com DM2), com as notas de segurança do PCDT. */
 export function pcdtFlow(i: FlowInput): FlowResult {
+  const r = flowCore(i)
+  if (r.next === 'insulina') return { ...r, notes: [...r.notes, NOTE_KEEP_METFORMIN] }
+  if (r.next === 'metformina') return { ...r, notes: [...r.notes, NOTE_METFORMIN_RENAL] }
+  if (r.next === 'sulfonilureia') return { ...r, notes: [NOTE_SU_SAFETY] }
+  return r
+}
+
+function flowCore(i: FlowInput): FlowResult {
   const branch: Branch =
     i.monthsSinceDiagnosis === 'menos-3' && !i.hasRiskFactor ? 'recente-sem-risco' : 'demais'
   const notes: string[] = []
@@ -105,7 +121,7 @@ export function pcdtFlow(i: FlowInput): FlowResult {
         branch,
         next: 'sulfonilureia',
         conduct: 'Meta não atingida (ou intolerância): adicionar sulfonilureia.',
-        notes: ['Para idosos, preferir gliclazida à glibenclamida (nota f).'],
+        notes: [],
       }
     case 'metformina-su':
       if (branch === 'recente-sem-risco') {
@@ -158,15 +174,16 @@ export interface DapaInput {
 
 export interface DapaResult {
   eligible: boolean | null
-  /** O texto (8.3.3) diz homens ≥ 55; a nota "g" da Figura 2 diz homens ≥ 65. */
-  maleAgeConflict: boolean
 }
 
-/** Critérios da dapagliflozina (8.3.3 e nota "g" da Figura 2). */
+/**
+ * Critérios da dapagliflozina (item 6 e 8.3.3 do PCDT: homens ≥ 55 anos, mulheres ≥ 60).
+ * Escolha registrada em docs/glargina-regras.md (a nota "g" da Figura 2 traz outra idade para homens).
+ */
 export function dapagliflozinCriteria(i: DapaInput): DapaResult {
-  if (i.age === null) return { eligible: null, maleAgeConflict: false }
-  if (i.age >= 40 && i.establishedCvd) return { eligible: true, maleAgeConflict: false }
-  if (!i.highRiskFactor) return { eligible: false, maleAgeConflict: false }
-  if (i.sex === 'F') return { eligible: i.age >= 60, maleAgeConflict: false }
-  return { eligible: i.age >= 55, maleAgeConflict: i.age >= 55 && i.age < 65 }
+  if (i.age === null) return { eligible: null }
+  if (i.age >= 40 && i.establishedCvd) return { eligible: true }
+  if (!i.highRiskFactor) return { eligible: false }
+  if (i.sex === 'F') return { eligible: i.age >= 60 }
+  return { eligible: i.age >= 55 }
 }

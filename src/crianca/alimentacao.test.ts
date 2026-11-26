@@ -1,4 +1,4 @@
-import { avisoLeiteVaca, colheres, cuidados, etapa, plano } from './alimentacao'
+import { avisoLeiteVaca, colheres, cuidados, etapa, plano, suplementacao } from './alimentacao'
 
 const nomes = (leite: Parameters<typeof plano>[0], m: number) =>
   plano(leite, m).refeicoes.map((r) => r.nome)
@@ -93,5 +93,44 @@ describe('introdução alimentar (Guia alimentar para menores de 2 anos)', () =>
       'Composto lácteo: não é leite em pó nem fórmula',
     )
     expect(t(40)).not.toContain('120 mL')
+  })
+
+  it('sal: não adicionar até 12 meses (SBP); com moderação depois', () => {
+    const t = (m: number) =>
+      cuidados(m)
+        .map((c) => c.texto)
+        .join(' ')
+    expect(t(11)).toContain('Não adicionar sal nas papas e refeições até 1 ano')
+    expect(t(12)).toContain('Sal com moderação')
+    expect(t(12)).not.toContain('Não adicionar sal')
+  })
+
+  it('suplementação de rotina (SBP): vitamina D e ferro, com limites de idade', () => {
+    const t = (m: number) =>
+      suplementacao(m)
+        .map((c) => c.texto)
+        .join(' ')
+    expect(t(0)).toContain('400 UI por dia, da 1ª semana de vida até 12 meses')
+    expect(t(11)).toContain('400 UI')
+    expect(t(12)).toContain('600 UI por dia dos 12 aos 24 meses')
+    expect(t(23)).toContain('600 UI')
+    expect(t(5)).toContain('1 mg/kg por dia')
+    expect(t(5)).toContain('6 meses (180 dias)')
+    expect(suplementacao(24)).toEqual([])
+  })
+
+  it('preparo da fórmula: água bem quente (70 °C), mesmo se filtrada ou mineral', () => {
+    const n = plano('formula', 3).notas.join(' ')
+    expect(n).toContain('mesmo se for filtrada ou mineral')
+    expect(n).toContain('cerca de 70 °C')
+    expect(n).toContain('descartar a sobra')
+  })
+
+  it('ultraprocessados: só iogurtes adoçados ou com sabor', () => {
+    const t = cuidados(8)
+      .map((c) => c.texto)
+      .join(' ')
+    expect(t).toContain('iogurtes adoçados ou com sabor')
+    expect(t).not.toContain('biscoitos, iogurtes, ')
   })
 })

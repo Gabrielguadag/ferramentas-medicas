@@ -1,7 +1,12 @@
 import {
   computeStats,
+  countFuture,
+  countUndated,
+  dayDiffFromToday,
   filterPeriod,
   formatGlucose,
+  formatPct,
+  mmolToMgdl,
   statsByDayPeriod,
   toCsv,
   toReadings,
@@ -96,5 +101,78 @@ describe('análise das medições', () => {
     )
     expect(lines[3]).toBe('24/11/2026;13:00;;acima (HI);;0x0000;4')
     expect(lines[4]).toBe('24/11/2026;09:00;120;;sim;0x0000;6')
+  })
+})
+
+describe('bordas clínicas e unidade', () => {
+  const vals = (vs: number[]) => toReadings(vs.map((v, i) => raw(1 + i, 8, v)))
+
+  it('limiares são estritos: 70 e 180 no alvo; 69 abaixo; 181 acima', () => {
+    const s = computeStats(vals([69, 70, 180, 181]))
+    expect(s.belowN).toBe(1)
+    expect(s.inRangeN).toBe(2)
+    expect(s.aboveN).toBe(1)
+  })
+
+  it('54 não é abaixo de 54; 53 é; 250 não é acima de 250; 251 é', () => {
+    const s = computeStats(vals([53, 54, 250, 251]))
+    expect(s.below54N).toBe(1)
+    expect(s.above250N).toBe(1)
+  })
+
+  it('LO conta como abaixo de 54 e de 70; HI como acima de 250 e de 180', () => {
+    const s = computeStats(
+      toReadings([raw(1, 8, null, 'LO'), raw(2, 8, null, 'HI'), raw(3, 8, 100)]),
+    )
+    expect(s.lo).toBe(1)
+    expect(s.below54N).toBe(1)
+    expect(s.belowN).toBe(1)
+    expect(s.above250N).toBe(1)
+    expect(s.aboveN).toBe(1)
+    expect(s.count).toBe(3)
+  })
+
+  it('converter o alvo de mmol/L não muda a classificação: 3,9 -> 70 e 10,0 -> 180', () => {
+    expect(mmolToMgdl(3.9)).toBe(70)
+    expect(mmolToMgdl(10)).toBe(180)
+    const target = { low: mmolToMgdl(3.9), high: mmolToMgdl(10) }
+    const s = computeStats(vals([70, 180]), target)
+    expect(s.inRangeN).toBe(2)
+    expect(s.belowN).toBe(0)
+    expect(s.aboveN).toBe(0)
+  })
+
+  it('percentual nunca mostra 0% com ocorrência', () => {
+    const many = Array.from({ length: 299 }, () => 100)
+    const s = computeStats(vals([45, ...many]))
+    expect(s.pctBelow54).toBeCloseTo(0.33, 1)
+    expect(formatPct(s.pctBelow54)).toBe('<1%')
+    expect(formatPct(0)).toBe('0%')
+    expect(formatPct(null)).toBe('—')
+    expect(formatPct(99.7)).toBe('>99%')
+    expect(formatPct(62.4)).toBe('62%')
+  })
+
+  it('conta medições sem data e com data futura (relógio do computador)', () => {
+    const rs = toReadings([
+      raw(1, 8, 100),
+      { ...raw(2, 8, 100), time: null },
+      {
+        ...raw(20, 8, 100),
+        time: { year: 2026, month: 12, day: 5, hour: 8, minute: 0, second: 0 },
+      },
+    ])
+    const now = new Date(2026, 10, 25, 12, 0)
+    expect(countUndated(rs)).toBe(1)
+    expect(countFuture(rs, now)).toBe(1)
+    expect(
+      dayDiffFromToday({ year: 2026, month: 11, day: 20, hour: 0, minute: 0, second: 0 }, now),
+    ).toBe(-5)
+  })
+
+  it('registro sem valor numérico é contado à parte', () => {
+    const s = computeStats(toReadings([raw(1, 8, null), raw(2, 8, 100)]))
+    expect(s.invalid).toBe(1)
+    expect(s.count).toBe(1)
   })
 })

@@ -194,6 +194,6 @@ export const MARCOS: readonly Marco[] = [
   { semanas: 28, rotulo: 'Início do 3º trimestre' },
   { semanas: 37, rotulo: 'Termo (fim do pré-termo)' },
   { semanas: 40, rotulo: 'Data provável do parto' },
-  { semanas: 41, rotulo: 'Encaminhar para avaliação do bem-estar fetal' },
+  { semanas: 41, rotulo: 'A partir daqui, encaminhar para avaliação do bem-estar fetal' },
   { semanas: 42, rotulo: 'Pós-termo' },
 ]

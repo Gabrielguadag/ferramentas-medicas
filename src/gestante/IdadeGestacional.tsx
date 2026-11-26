@@ -19,6 +19,7 @@ import {
   dumPorUsg,
   fmtIg,
   fmtIgLongo,
+  igDias,
   igEm,
   trimestre,
   situacao,
@@ -64,15 +65,20 @@ const SITUACAO: Record<Situacao, { tone: Tone; texto: string } | null> = {
   },
   termo: { tone: 'ok', texto: 'Termo (a partir de 37 semanas).' },
   prolongada: {
-    tone: 'warn',
-    texto: 'Gestação prolongada (pós-datismo): entre 40 e 42 semanas.',
+    tone: 'info',
+    texto:
+      'Gestação prolongada é a de 40 a 42 semanas (definição do MS). A avaliação do bem-estar fetal é com 41 semanas.',
   },
   'prolongada-41': {
     tone: 'warn',
     texto:
       'Gestação prolongada com 41 semanas ou mais: encaminhar para avaliação do bem-estar fetal (índice de líquido amniótico e monitoramento cardíaco fetal).',
   },
-  'pos-termo': { tone: 'danger', texto: 'Pós-termo: 42 semanas ou mais.' },
+  'pos-termo': {
+    tone: 'danger',
+    texto:
+      'Pós-termo: 42 semanas ou mais. Encaminhar para avaliação do bem-estar fetal (índice de líquido amniótico e monitoramento cardíaco fetal) e para o centro de referência. Não dar alta do pré-natal antes da internação para o parto.',
+  },
   implausivel: {
     tone: 'warn',
     texto: 'Mais de 44 semanas: a data está fora do período de uma gestação. Confira as datas.',
@@ -136,6 +142,8 @@ export function IdadeGestacionalSection() {
     if (v !== null) dumEq = dumPorTransferencia(v, Number(embriao))
   }
 
+  const usgMenosPreciso =
+    okSemanas(usgS, usgD) && igDias(usgS as number, usgD ?? 0) >= igDias(14, 0)
   const igRef = dumEq !== null && refDia !== null ? igEm(dumEq, refDia) : null
   const sit = igRef ? SITUACAO[situacao(igRef.totalDias)] : null
   const dppDia = dumEq !== null ? dppDe(dumEq) : null
@@ -341,6 +349,13 @@ export function IdadeGestacionalSection() {
               ) : null}
             </Results>
             {sit ? <Alert tone={sit.tone}>{sit.texto}</Alert> : null}
+            {metodo === 'usg' && usandoUsg && usgMenosPreciso ? (
+              <p className="hint-inline">
+                Ultrassonografia depois de 14 semanas data com menos precisão: erro de 7 a 10 dias
+                (14s a 21s 6d), 10 a 14 dias (22s a 27s 6d) e 21 a 30 dias (28s ou mais), segundo a
+                ACOG (CO 700).
+              </p>
+            ) : null}
             {metodo === 'dum' &&
             dppDia !== null &&
             dumEq !== null &&

@@ -8,6 +8,40 @@ export const MGDL_PER_MMOL = 18.016
 
 export type Unit = 'mg/dL' | 'mmol/L'
 
+/**
+ * mmol/L digitado -> mg/dL inteiro. A meta fica sempre em mg/dL inteiro, para que trocar a unidade
+ * não mude a classificação (3,9 mmol/L -> 70 mg/dL, 10,0 -> 180).
+ */
+export function mmolToMgdl(mmol: number): number {
+  return Math.round(mmol * MGDL_PER_MMOL)
+}
+
+/** Percentual para a tela: nunca "0%" se houve ocorrência (usa "<1%") nem "100%" se houve exceção. */
+export function formatPct(v: number | null): string {
+  if (v === null) return '—'
+  if (v > 0 && v < 0.5) return '<1%'
+  if (v >= 99.5 && v < 100) return '>99%'
+  return `${v.toFixed(0)}%`
+}
+
+/** Medições sem data (não entram nos filtros de período). */
+export function countUndated(readings: readonly Reading[]): number {
+  return readings.filter((r) => r.minutes === null).length
+}
+
+/** Medições com data posterior ao dia de hoje no relógio do computador. */
+export function countFuture(readings: readonly Reading[], now: Date = new Date()): number {
+  const todayEnd = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 60_000 + 1440
+  return readings.filter((r) => r.minutes !== null && r.minutes >= todayEnd).length
+}
+
+/** Diferença, em dias de calendário, entre uma data do aparelho e o dia de hoje no computador. */
+export function dayDiffFromToday(d: DeviceDateTime, now: Date = new Date()): number {
+  const dev = Date.UTC(d.year, d.month - 1, d.day)
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
+  return Math.round((dev - today) / 86_400_000)
+}
+
 export interface Reading {
   /** Posição na memória do aparelho (ordem de leitura). */
   index: number
@@ -79,6 +113,15 @@ export interface Stats {
   cv: number | null
   min: number | null
   max: number | null
+  /** Medições de paciente com valor ou HI/LO: base dos percentuais. */
+  count: number
+  /** Medições de paciente sem valor numérico nem HI/LO (registro inválido no aparelho). */
+  invalid: number
+  below54N: number
+  belowN: number
+  inRangeN: number
+  aboveN: number
+  above250N: number
   /** Percentuais sobre medições de paciente (numéricas + HI + LO). */
   pctBelow54: number | null
   pctBelow: number | null
@@ -119,6 +162,13 @@ export function computeStats(readings: readonly Reading[], target: Target = DEFA
     hi,
     lo,
     control: readings.length - patient.length,
+    count: denom,
+    invalid: patient.filter((r) => r.mgdl === null && r.flag === null).length,
+    below54N: below54,
+    belowN: below,
+    inRangeN: denom - below - above,
+    aboveN: above,
+    above250N: above250,
     mean,
     sd,
     cv: mean && sd !== null ? (sd / mean) * 100 : null,

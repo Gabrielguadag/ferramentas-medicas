@@ -36,7 +36,29 @@ Ficam de fora:
   Sem mapa, o leitor usa o layout fixo de 12 bytes que os drivers de referência leem:
   AbsoluteTime (8, BCD) + SFLOAT (2) + status (2).
 - Valores especiais do SFLOAT: `0x07FE` (+INF) é **HI** e `0x0802` (−INF) é **LO**. A
-  transferência é sempre em **mg/dL**. A conversão para mmol/L usa 18,016 e só afeta a exibição.
+  transferência é tratada como **mg/dL**. Se o aparelho declarar mmol/L na configuração, a
+  leitura é **bloqueada** com mensagem (não há conversão testada com aparelho em mmol/L). A
+  conversão para mmol/L (1 mmol/L = 18,016 mg/dL, ou seja, 180,16 g/mol ÷ 10) só afeta a exibição.
+
+## Resumo estatístico e fonte
+
+- Limiares: alvo 70–180 mg/dL (3,9–10,0 mmol/L), abaixo de 70 e de 54, acima de 180 e de 250,
+  todos com comparação estrita. Fonte: Battelino T et al., Clinical Targets for CGM Data
+  Interpretation: Recommendations From the International Consensus on Time in Range. Diabetes
+  Care 2019;42(8):1593–1603 (doi 10.2337/dci19-0028). São metas de CGM, aplicadas aqui por
+  convenção às glicemias capilares; a tela diz isso e que, com poucas medições, os percentuais
+  são só indicativos.
+- A meta é guardada em mg/dL inteiro: o valor digitado em mmol/L é convertido e arredondado
+  (3,9 → 70; 10,0 → 180), então trocar a unidade não muda a classificação (70 fica "no alvo").
+- Percentuais nunca aparecem como "0%" se houve ocorrência ("<1%"), e vêm com a contagem (n de N).
+- Média, desvio padrão, menor e maior não incluem HI/LO; o menor/maior mostra "LO"/"HI" quando há.
+- O filtro "Últimos N dias" conta a partir da última medição, não de hoje. A tela avisa quantas
+  medições sem data ficaram fora do período, medições com data posterior a hoje (relógio do
+  computador) e relógio do aparelho a mais de 1 dia do computador.
+- Privacidade: a página não envia nem guarda nada; ficam no computador só os arquivos exportados
+  (CSV, PDF, diagnóstico), que contêm dado de saúde.
+- Aviso fixo na leitura de aparelho real: leitura ainda não validada com aparelho físico.
+  Sem mapa de entradas, testes com solução de controle não são identificados (aviso na tela).
 
 ## Referências estudadas
 

@@ -50,10 +50,11 @@ describe('pré-natal (Caderneta Brasileira da Gestante 2026)', () => {
     ).toEqual(['t1-eletro', 't1-htlv'])
   })
 
-  it('estreptococo do grupo B: 35s 0d a 37s 6d, depois da urina do 3º trimestre', () => {
+  it('estreptococo do grupo B: 35s 0d a 37s 0d, depois da urina do 3º trimestre', () => {
     expect(st(igDias(34, 6))['t3-gbs']).toBe('proximo')
     expect(st(igDias(35, 0))['t3-gbs']).toBe('agora')
-    expect(st(igDias(37, 6))['t3-gbs']).toBe('agora')
+    expect(st(igDias(37, 0))['t3-gbs']).toBe('agora')
+    expect(st(igDias(37, 1))['t3-gbs']).toBe('atrasado')
     expect(st(igDias(38, 0))['t3-gbs']).toBe('atrasado')
     const ids = ITENS.map((i) => i.id)
     expect(ids.indexOf('t3-gbs')).toBe(ids.indexOf('t3-urina') + 1)

@@ -66,7 +66,7 @@ export function PrenatalNaIg(props: { dum: Dia; data: Dia }) {
       <Check label="Esta é a 1ª consulta de pré-natal" checked={primeira} onChange={setPrimeira} />
       {primeira && total > INICIO_ATE ? (
         <Alert tone="warn" title="Início depois da 12ª semana.">
-          O pré-natal deve começar até a 12ª semana. Peça agora os exames da 1ª consulta.
+          O ideal é começar o pré-natal até a 12ª semana. Peça agora os exames da 1ª consulta.
         </Alert>
       ) : null}
 
@@ -75,8 +75,8 @@ export function PrenatalNaIg(props: { dum: Dia; data: Dia }) {
           {freq.faixa} · próxima por volta de {fmtData(proxima)} ({diaDaSemana(proxima)})
         </Result>
         <Result label="Mínimo na gestação" value={`${MINIMO_CONSULTAS} consultas`}>
-          1ª até a 12ª semana, intercaladas entre médico e enfermeiro, e ao menos 1 consulta
-          odontológica
+          intercaladas entre médico e enfermeiro, mais 1 consulta odontológica; a 1ª, de preferência
+          até a 12ª semana
         </Result>
       </Results>
 
@@ -150,7 +150,7 @@ export function ConsultasExamesSection() {
     <>
       <Card title="Consultas" subtitle="Programação mínima do pré-natal.">
         <ul className="checklist">
-          <li>Começar até a 12ª semana.</li>
+          <li>Começar o quanto antes, de preferência até a 12ª semana.</li>
           <li>
             No mínimo {MINIMO_CONSULTAS} consultas, intercaladas entre médico e enfermeiro, e ao
             menos 1 consulta odontológica.
@@ -178,7 +178,10 @@ export function ConsultasExamesSection() {
             </tr>
             <tr>
               <td>Após o parto</td>
-              <td>No mínimo 2 consultas: a 1ª até 7 dias e a 2ª até 30 dias</td>
+              <td>
+                No mínimo 2 consultas: a 1ª na primeira semana após a saída da maternidade e a 2ª em
+                torno de 30 dias após o parto
+              </td>
             </tr>
           </tbody>
         </table>

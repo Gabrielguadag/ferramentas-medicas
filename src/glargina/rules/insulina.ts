@@ -14,6 +14,11 @@ export function nphStart(weightKg: number | null): {
   }
 }
 
+/** A dose fixa de 10 U passa de 0,2 U/kg em quem pesa menos de 50 kg. */
+export function fixedAboveRange(weightKg: number | null): boolean {
+  return !!weightKg && weightKg > 0 && 10 > 0.2 * weightKg
+}
+
 /** Teto de insulina basal (8.3.4.1): < 0,5 U/kg/dia; até 0,75 U/kg/dia só com obesidade e resistência. */
 export function basalCeiling(weightKg: number | null): { usual: number; obesity: number } | null {
   if (!weightKg || !(weightKg > 0)) return null

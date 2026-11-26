@@ -5,8 +5,8 @@ Página estática, sem cadastro, sem servidor e sem armazenamento. Tudo fica na 
 - **Consulta de diabetes:** migração para glargina (elegibilidade, dose, alerta de basal e
   tubetes), início da NPH, titulação, insulina prandial, metas, fluxograma do PCDT e risco
   cardiovascular (SBC 2025, SBD 2026, PCDT 2026, OMS/HEARTS e PREVENT).
-- **Glicosímetro (USB)**: leitura dos Accu-Chek Guide, Instant e família pelo cabo micro-USB
-  (Chrome ou Edge), com resumo, gráfico, tabela, exportação em CSV e impressão ou PDF.
+- **Glicosímetro (USB)**: leitura dos Accu-Chek em mg/dL com micro-USB (modelos previstos: Guide,
+  Instant e família; ainda não validada com aparelho físico), pelo Chrome ou Edge, com resumo, gráfico, tabela, exportação em CSV e impressão ou PDF.
 - **Gestante → Idade gestacional:** IG e DPP pela DUM, por ultrassonografia (com regra de
   redatação), pela DPP ou por FIV; IG em qualquer data e quando completa uma IG. Em cada IG,
   mostra a frequência de consultas, os exames e vacinas a pedir agora, o que já deveria ter

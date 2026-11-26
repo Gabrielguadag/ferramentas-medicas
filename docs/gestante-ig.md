@@ -80,9 +80,9 @@ feto pequeno pode esconder restrição de crescimento.
 ### Situação na data (MS)
 
 - 37 semanas ou mais: termo.
-- De 40 a 42 semanas: gestação prolongada.
+- De 40 a 42 semanas: gestação prolongada (definição do MS, mostrada como informação; a avaliação do bem-estar fetal é com 41 semanas).
 - 41 semanas ou mais: encaminhar para avaliação do bem-estar fetal.
-- 42 semanas ou mais: pós-termo.
+- 42 semanas ou mais: pós-termo; a tela mantém a conduta (avaliação do bem-estar fetal, centro de referência, sem alta do pré-natal antes do parto; CAB 32, 5.3 e 6.3.5). O cartão de pré-natal não aparece a partir de 42 semanas.
 - Data anterior à DUM: aviso de que ainda não havia gestação.
 - Mais de 44 semanas: aviso para conferir as datas. Este limite de plausibilidade é da
   interface; não vem das fontes.
@@ -114,3 +114,15 @@ feto pequeno pode esconder restrição de crescimento.
 
 `App.test.tsx` cobre o fluxo na tela: DUM → IG numa data → ultrassonografia com redatação e
 escolha manual de manter a DUM.
+
+## Escolhas registradas (revisão de 2026-11-25)
+
+- **Ultrassonografia sem DUM:** com exame a partir de 14s 0d, a tela mostra uma linha sobre a
+  precisão menor da datação. ACOG CO 700: "Gestational age assessment by ultrasonography in the
+  third trimester ... is the least reliable method, with an accuracy of ± 21-30 days"; 14 0/7 a
+  21 6/7: ± 7-10 dias; 22 0/7 a 27 6/7: ± 10-14 dias.
+- **Pós-termo:** o CAB 32 diz "igual ou mais de 42 semanas" (5.4.2) e "ultrapassa 42 semanas"
+  (6.3.5); o app usa 42s 0d.
+- **FIV:** só embrião de 3 e de 5 dias (casos de dia 4 ou 6 ficam fora do escopo).
+- **Redatação:** o limite da Tabela 1 é um corte padronizado; o médico pode escolher manualmente a
+  datação adotada.

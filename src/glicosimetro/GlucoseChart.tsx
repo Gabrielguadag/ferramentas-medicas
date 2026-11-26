@@ -1,5 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { type Reading, type Target, type Unit, formatGlucose, readingLabel } from './analysis'
+import {
+  MGDL_PER_MMOL,
+  type Reading,
+  type Target,
+  type Unit,
+  formatGlucose,
+  formatPct,
+  readingLabel,
+} from './analysis'
 
 // Gráfico de pontos (uma série) ao longo do período ou sobreposto por hora do dia.
 // Cor = estado em relação ao alvo, sempre acompanhada de forma (▼ abaixo, ● alvo, ▲ acima)
@@ -92,8 +100,10 @@ export function GlucoseChart(props: { readings: readonly Reading[]; target: Targ
       : (m: number) => M.left + ((m % 1440) / 1440) * innerW
 
   const yTicks: number[] = []
-  const stepY = yMax > 400 ? 100 : 50
-  for (let v = 0; v <= yMax; v += stepY) yTicks.push(v)
+  // Marcas em valores redondos da unidade escolhida (50/100 mg/dL; 2/5 mmol/L).
+  const stepY =
+    props.unit === 'mmol/L' ? (yMax > 400 ? 5 : 2) * MGDL_PER_MMOL : yMax > 400 ? 100 : 50
+  for (let v = 0; v <= yMax + 0.001; v += stepY) yTicks.push(v)
 
   const xTicks: { pos: number; label: string }[] = []
   if (mode === 'day') {
@@ -269,7 +279,7 @@ export function RangeBar(props: { below: number; inRange: number; above: number 
     { zone: 'in' as const, v: props.inRange },
     { zone: 'high' as const, v: props.above },
   ].filter((p) => p.v > 0)
-  const label = `Distribuição: ${props.below.toFixed(0)}% abaixo, ${props.inRange.toFixed(0)}% no alvo, ${props.above.toFixed(0)}% acima.`
+  const label = `Distribuição: ${formatPct(props.below)} abaixo, ${formatPct(props.inRange)} no alvo, ${formatPct(props.above)} acima.`
   return (
     <div
       role="img"
@@ -279,7 +289,7 @@ export function RangeBar(props: { below: number; inRange: number; above: number 
       {parts.map((p) => (
         <div
           key={p.zone}
-          title={`${ZONE_LABEL[p.zone]}: ${p.v.toFixed(0)}%`}
+          title={`${ZONE_LABEL[p.zone]}: ${formatPct(p.v)}`}
           style={{
             flex: `${p.v} 0 0`,
             background: `var(--g-${p.zone})`,
@@ -293,7 +303,7 @@ export function RangeBar(props: { below: number; inRange: number; above: number 
             whiteSpace: 'nowrap',
           }}
         >
-          {p.v >= 12 ? `${p.v.toFixed(0)}%` : ''}
+          {p.v >= 12 ? formatPct(p.v) : ''}
         </div>
       ))}
     </div>

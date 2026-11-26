@@ -68,6 +68,8 @@ export function PatientBar() {
           value={patient.age}
           onChange={(v) => set('age', v)}
           step={1}
+          min={0}
+          max={120}
         />
         <RadioGroup
           legend="Sexo"
@@ -83,12 +85,16 @@ export function PatientBar() {
           unit="kg"
           value={patient.weight}
           onChange={(v) => set('weight', v)}
+          min={0}
+          max={400}
         />
         <NumberField
           label="Altura"
           unit="cm"
           value={patient.height}
           onChange={(v) => set('height', v)}
+          min={0}
+          max={250}
           hint={bmi ? `IMC ${String(bmi).replace('.', ',')} kg/m²` : undefined}
         />
         <RadioGroup

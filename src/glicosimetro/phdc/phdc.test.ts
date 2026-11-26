@@ -71,6 +71,13 @@ describe('mensagens do manager', () => {
   })
 })
 
+describe('unidade declarada pelo aparelho', () => {
+  it('bloqueia a leitura se o aparelho declara mmol/L', async () => {
+    const meter = new FakeMeter({ readings: sample, unit: 'mmol/L' })
+    await expect(downloadMeter(meter)).rejects.toMatchObject({ code: 'unsupported-unit' })
+  })
+})
+
 describe('download completo contra o glicosímetro simulado', () => {
   it('lê aparelho, medições, HI/LO e libera a sessão', async () => {
     const meter = new FakeMeter({ readings: sample, serialNumber: '12345678', batchSize: 3 })

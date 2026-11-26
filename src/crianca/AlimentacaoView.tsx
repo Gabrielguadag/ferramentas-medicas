@@ -8,19 +8,24 @@ import {
   type Leite,
   avisoLeiteVaca,
   cuidados,
+  SUPLEMENTACAO_PREMATURO,
   etapa,
   plano,
+  suplementacao,
 } from './alimentacao'
+import { fmtIdade } from './idade'
 import { GUIA_MENORES_2, SBP_MANUAL } from './sources'
 
 export function AlimentacaoSection(props: { dados: DadosCrianca }) {
   const [leite, setLeite] = useState<Leite>('materno')
-  const { idade, igNascDias } = props.dados
+  const { idade, igNascDias, correcao } = props.dados
   const meses = idade?.meses ?? null
   const p = meses !== null ? plano(leite, meses) : null
   const e = meses !== null ? etapa(meses) : null
   const avisoVaca = meses !== null ? avisoLeiteVaca(meses) : null
   const prematura = igNascDias !== null && igNascDias < 37 * 7
+  const corrigindo = prematura && correcao?.vale === true
+  const corrigida = corrigindo ? (correcao?.idade ?? null) : null
 
   return (
     <>
@@ -37,8 +42,9 @@ export function AlimentacaoSection(props: { dados: DadosCrianca }) {
         />
         <p className="hint-inline">
           Sem leite materno, o padrão é a fórmula infantil até 1 ano (SBP). A orientação usa a idade
-          cronológica (meses completos). Se recebe leite materno e outro leite, o início dos outros
-          alimentos depende da quantidade de cada um: orientação individual.
+          cronológica (meses completos); no prematuro, vale também o aviso de idade corrigida. Se
+          recebe leite materno e outro leite, o início dos outros alimentos depende da quantidade de
+          cada um: orientação individual.
         </p>
       </Card>
 
@@ -47,10 +53,13 @@ export function AlimentacaoSection(props: { dados: DadosCrianca }) {
       ) : (
         <>
           {leite === 'vaca' && avisoVaca ? <Alert tone="warn">{avisoVaca.aviso}</Alert> : null}
-          {prematura && meses !== null && meses < 12 ? (
+          {corrigindo ? (
             <Alert tone="warn" title="Prematuro:">
-              o momento de começar outros alimentos é indicado pelo profissional de saúde. Depois,
-              os tipos de alimentos e a forma de oferecer são os mesmos.
+              {corrigida ? `idade corrigida de ${fmtIdade(corrigida)}. ` : ''}Os outros alimentos
+              começam depois dos 6 meses de idade cronológica e entre 4 e 6 meses de idade
+              corrigida, com o desenvolvimento neuropsicomotor adequado para comer alimentos
+              pastosos (SBP, pág. 31). Não adiar os alimentos que podem causar alergia. Depois do
+              início, os tipos de alimentos e a forma de oferecer são os mesmos.
             </Alert>
           ) : null}
 
@@ -121,6 +130,19 @@ export function AlimentacaoSection(props: { dados: DadosCrianca }) {
                   </ul>
                 </div>
               </div>
+            </Card>
+          ) : null}
+
+          {meses !== null && meses < 24 ? (
+            <Card title="Suplementação de rotina" subtitle="Criança nascida a termo">
+              <ul className="checklist">
+                {suplementacao(meses).map((c) => (
+                  <li key={c.texto}>
+                    {c.texto} <span className="muted">({c.pagina})</span>
+                  </li>
+                ))}
+                <li>{SUPLEMENTACAO_PREMATURO}</li>
+              </ul>
             </Card>
           ) : null}
 

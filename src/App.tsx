@@ -43,8 +43,9 @@ export function App() {
         <div className="inner">
           <h1>Ferramentas para a consulta</h1>
           <p className="privacy">
-            Sem cadastro e sem servidor: tudo o que você digita ou lê do glicosímetro fica só nesta
-            aba e some ao fechar ou recarregar a página.
+            Sem cadastro: a página não envia nem guarda nada. Tudo o que você digita ou lê do
+            glicosímetro fica só nesta aba e some ao fechar ou recarregar. Só ficam no computador os
+            arquivos que você exportar (CSV, PDF, diagnóstico), que contêm dado de saúde.
           </p>
           <nav className="areas" role="tablist" aria-label="Áreas">
             {AREAS.map((a) => (

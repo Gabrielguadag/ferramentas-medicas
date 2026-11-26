@@ -3,12 +3,18 @@ import { downloadText, nowStamp } from '../shared/download'
 import { NumberField, SelectField } from '../shared/NumberField'
 import {
   DEFAULT_TARGET,
+  MGDL_PER_MMOL,
   type PeriodDays,
   type Reading,
   type Unit,
   computeStats,
+  countFuture,
+  countUndated,
+  dayDiffFromToday,
   filterPeriod,
   formatGlucose,
+  formatPct,
+  mmolToMgdl,
   readingLabel,
   statsByDayPeriod,
   toCsv,
@@ -44,7 +50,7 @@ const PERIODS: { value: string; label: string }[] = [
   { value: 'all', label: 'Toda a memória' },
 ]
 
-const fmtPct = (v: number | null) => (v === null ? '—' : `${v.toFixed(0)}%`)
+const fmtPct = formatPct
 const fmtDate = (key: string | null) =>
   key ? key.slice(0, 10).split('-').reverse().join('/') : '—'
 
@@ -150,9 +156,10 @@ function ConnectPanel(props: {
     <>
       <div className="card">
         <p style={{ marginTop: 0 }}>
-          Lê a memória de glicosímetros Accu-Chek com porta micro-USB (Guide, Guide Me, Instant,
-          Instant S, Performa Connect e Aviva Connect). As medições aparecem só nesta tela: nada é
-          enviado ou gravado.
+          Lê a memória de glicosímetros Accu-Chek em mg/dL com porta micro-USB (modelos previstos:
+          Guide, Guide Me, Instant, Instant S, Performa Connect e Aviva Connect). As medições
+          aparecem só nesta tela: a página não envia nem guarda nada. Fica no computador apenas o
+          que você exportar (CSV, PDF ou diagnóstico), e esses arquivos contêm dado de saúde.
         </p>
         <ol>
           <li>Use Chrome ou Edge no computador (ou Chrome no Android, com adaptador OTG).</li>
@@ -254,7 +261,7 @@ function Report(props: {
 }) {
   const { result, readings, demo, at } = props.state
   const toMgdl = (v: number | null) =>
-    v === null ? null : props.unit === 'mmol/L' ? v * 18.016 : v
+    v === null ? null : props.unit === 'mmol/L' ? mmolToMgdl(v) : v
   const lowMg = toMgdl(props.low) ?? DEFAULT_TARGET.low
   const highMg = toMgdl(props.high) ?? DEFAULT_TARGET.high
   const target = useMemo(
@@ -269,15 +276,17 @@ function Report(props: {
   const deviceLabel =
     d.modelName ?? (d.modelNumber ? `Roche modelo ${d.modelNumber}` : 'Glicosímetro Roche')
   const g = (v: number | null) => (v === null ? '—' : formatGlucose(v, props.unit))
+  const future = useMemo(() => countFuture(readings), [readings])
+  const undated = useMemo(() => countUndated(readings), [readings])
+  const clockOff = d.clock !== null && Math.abs(dayDiffFromToday(d.clock)) > 1
+  const minLabel = (s: { lo: number; min: number | null }) => (s.lo > 0 ? 'LO' : g(s.min))
+  const maxLabel = (s: { hi: number; max: number | null }) => (s.hi > 0 ? 'HI' : g(s.max))
+  const pctN = (p: number | null, n: number) => `${fmtPct(p)} (${n} de ${stats.count})`
 
   function changeUnit(u: Unit) {
     if (u === props.unit) return
     const conv = (v: number | null) =>
-      v === null
-        ? null
-        : u === 'mmol/L'
-          ? Math.round((v / 18.016) * 10) / 10
-          : Math.round(v * 18.016)
+      v === null ? null : u === 'mmol/L' ? Math.round((v / MGDL_PER_MMOL) * 10) / 10 : mmolToMgdl(v)
     props.setLow(conv(props.low))
     props.setHigh(conv(props.high))
     props.setUnit(u)
@@ -318,6 +327,21 @@ function Report(props: {
         </p>
       ) : null}
 
+      {!demo ? (
+        <div className="note warn">
+          <p style={{ margin: 0 }}>
+            <strong>Leitura ainda não validada com aparelho físico.</strong> Confira as medições,
+            datas e horas no visor do aparelho.
+          </p>
+          {result.segments.some((s) => !s.hasEntryMap) ? (
+            <p style={{ margin: '4px 0 0' }}>
+              Este aparelho não informa o tipo de cada teste: testes com solução de controle não são
+              identificados e entram no resumo.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
       <div className="print-only">
         <h1 style={{ fontSize: '1.3rem', margin: 0 }}>Relatório de glicemias capilares</h1>
         {props.patientLabel ? (
@@ -340,6 +364,18 @@ function Report(props: {
               Data e hora são as do relógio do glicosímetro. Se o relógio estiver errado, as datas
               também estarão.
             </p>
+            {clockOff ? (
+              <p className="note warn" style={{ fontSize: 13 }}>
+                O relógio do aparelho difere do relógio deste computador em mais de 1 dia. Confira
+                data e hora no aparelho.
+              </p>
+            ) : null}
+            {future > 0 ? (
+              <p className="note warn" style={{ fontSize: 13 }}>
+                {future} {future === 1 ? 'medição tem' : 'medições têm'} data posterior a hoje
+                (relógio do computador). O relógio do aparelho pode estar errado.
+              </p>
+            ) : null}
           </div>
           <div className="no-print">
             <div className="field">
@@ -351,7 +387,9 @@ function Report(props: {
                 autoComplete="off"
                 onChange={(e) => props.setPatientLabel(e.target.value)}
               />
-              <span className="hint">Fica só nesta tela e no PDF que você gerar.</span>
+              <span className="hint">
+                Fica só nesta tela e no PDF que você gerar (nome de paciente é dado pessoal).
+              </span>
             </div>
             <div className="actions" style={{ marginTop: 12 }}>
               <button type="button" className="primary" onClick={exportCsv}>
@@ -398,6 +436,12 @@ function Report(props: {
             onChange={props.setHigh}
           />
         </div>
+        <p className="hint" style={{ marginTop: 8 }}>
+          Os dias do período contam a partir da última medição, não de hoje.
+          {props.period !== 'all' && undated > 0
+            ? ` ${undated} ${undated === 1 ? 'medição sem data não entra' : 'medições sem data não entram'} neste período.`
+            : ''}
+        </p>
         {lowMg >= highMg ? (
           <p className="note warn">O alvo mínimo precisa ser menor que o máximo; usando 70–180.</p>
         ) : null}
@@ -421,23 +465,23 @@ function Report(props: {
             sub={stats.cv === null ? '' : `CV ${stats.cv.toFixed(0)}%`}
           />
           <Tile
-            label="Medições por dia"
+            label="Média de medições por dia"
             value={stats.perDay === null ? '—' : stats.perDay.toFixed(1).replace('.', ',')}
-            sub={`${stats.days} dias com medição`}
+            sub={`nos ${stats.days} dias com medição`}
           />
           <Tile
-            label="Abaixo de 54 mg/dL"
+            label={`Abaixo de ${g(54)} ${props.unit}`}
             value={fmtPct(stats.pctBelow54)}
-            sub={`LO: ${stats.lo}`}
+            sub={`${stats.below54N} de ${stats.count} (LO: ${stats.lo})`}
           />
           <Tile
-            label="Acima de 250 mg/dL"
+            label={`Acima de ${g(250)} ${props.unit}`}
             value={fmtPct(stats.pctAbove250)}
-            sub={`HI: ${stats.hi}`}
+            sub={`${stats.above250N} de ${stats.count} (HI: ${stats.hi})`}
           />
           <Tile
             label="Menor / maior"
-            value={`${g(stats.min)} / ${g(stats.max)}`}
+            value={`${minLabel(stats)} / ${maxLabel(stats)}`}
             unit={props.unit}
           />
         </div>
@@ -450,13 +494,15 @@ function Report(props: {
             />
             <div className="actions" style={{ gap: 16, fontSize: 14 }}>
               <span className="badge" style={{ fontWeight: 400 }}>
-                <ZoneKey zone="low" /> Abaixo de {g(target.low)}: {fmtPct(stats.pctBelow)}
+                <ZoneKey zone="low" /> Abaixo de {g(target.low)}:{' '}
+                {pctN(stats.pctBelow, stats.belowN)}
               </span>
               <span className="badge" style={{ fontWeight: 400 }}>
-                <ZoneKey zone="in" /> No alvo: {fmtPct(stats.pctInRange)}
+                <ZoneKey zone="in" /> No alvo: {pctN(stats.pctInRange, stats.inRangeN)}
               </span>
               <span className="badge" style={{ fontWeight: 400 }}>
-                <ZoneKey zone="high" /> Acima de {g(target.high)}: {fmtPct(stats.pctAbove)}
+                <ZoneKey zone="high" /> Acima de {g(target.high)}:{' '}
+                {pctN(stats.pctAbove, stats.aboveN)}
               </span>
             </div>
           </>
@@ -466,9 +512,24 @@ function Report(props: {
             {stats.control} testes com solução de controle ficaram fora do resumo.
           </p>
         ) : null}
+        {stats.invalid > 0 ? (
+          <p className="source">
+            {stats.invalid} registros sem valor numérico ficaram fora do resumo.
+          </p>
+        ) : null}
         <p className="source">
-          Percentuais sobre medições capilares pontuais (inclui HI e LO), não sobre tempo contínuo
-          como no sensor (CGM). A média e o desvio padrão não incluem HI/LO.
+          {stats.count} medições capilares (glicemia de ponta de dedo, não sensor CGM). Os
+          percentuais são sobre medições pontuais, não sobre tempo contínuo, e com poucas medições
+          são só indicativos. Média, desvio padrão, menor e maior não incluem HI/LO (que aparecem
+          como HI e LO).
+        </p>
+        <p className="source">
+          Fonte: Battelino T et al. Clinical Targets for CGM Data Interpretation: Recommendations
+          From the International Consensus on Time in Range. Diabetes Care 2019;42(8):1593–1603 (doi
+          10.2337/dci19-0028). Alvo 70–180 mg/dL (3,9–10,0 mmol/L); abaixo de 70 e de 54 mg/dL;
+          acima de 180 e de 250 mg/dL. Definidos para sensor (CGM) e aplicados aqui às glicemias
+          capilares. Conversão: 1 mmol/L = 18,016 mg/dL (massa molar da glicose, 180,16 g/mol, ÷
+          10).
         </p>
       </div>
 
@@ -501,8 +562,8 @@ function Report(props: {
                 <td>{p.label}</td>
                 <td className="num">{p.stats.numeric + p.stats.hi + p.stats.lo}</td>
                 <td className="num">{g(p.stats.mean)}</td>
-                <td className="num">{g(p.stats.min)}</td>
-                <td className="num">{g(p.stats.max)}</td>
+                <td className="num">{minLabel(p.stats)}</td>
+                <td className="num">{maxLabel(p.stats)}</td>
                 <td className="num">{fmtPct(p.stats.pctBelow)}</td>
                 <td className="num">{fmtPct(p.stats.pctAbove)}</td>
               </tr>
@@ -512,7 +573,10 @@ function Report(props: {
       </div>
 
       <div className="card">
-        <h3>Medições ({shown.length})</h3>
+        <h3>
+          Medições ({shown.length}
+          {stats.control > 0 ? `, ${stats.control} de controle` : ''})
+        </h3>
         <div className="table-scroll">
           <table>
             <thead>
@@ -534,8 +598,12 @@ function Report(props: {
                       r.flag === 'HI' ? 'acima da faixa do aparelho' : '',
                       r.flag === 'LO' ? 'abaixo da faixa do aparelho' : '',
                       r.isControl ? 'solução de controle' : '',
-                      !r.flag && r.mgdl !== null && r.mgdl < target.low ? 'abaixo do alvo' : '',
-                      !r.flag && r.mgdl !== null && r.mgdl > target.high ? 'acima do alvo' : '',
+                      !r.isControl && !r.flag && r.mgdl !== null && r.mgdl < target.low
+                        ? 'abaixo do alvo'
+                        : '',
+                      !r.isControl && !r.flag && r.mgdl !== null && r.mgdl > target.high
+                        ? 'acima do alvo'
+                        : '',
                     ]
                       .filter(Boolean)
                       .join('; ')}
