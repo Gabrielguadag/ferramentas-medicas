@@ -10,6 +10,21 @@ export const LEITES: { value: Leite; label: string }[] = [
   { value: 'vaca', label: 'Leite de vaca integral' },
 ]
 
+/**
+ * Leite de vaca integral antes de 12 meses (decisão do usuário, 2026-11-25): o padrão é a SBP,
+ * que não recomenda leite de vaca integral no primeiro ano (sem leite materno, fórmula infantil).
+ * O esquema do Guia do MS, que o admite quando não há acesso à fórmula (e no lugar da fórmula a
+ * partir de 9 meses), aparece como alternativa não indicada em condições gerais.
+ */
+export const ROTULO_ALTERNATIVA_MS = 'alternativa do MS, não indicada em condições gerais'
+
+export const LEITE_VACA_NAO_INDICADO =
+  'Alternativa do MS, não indicada em condições gerais. Padrão (SBP): o leite de vaca integral (líquido ou em pó) não deve ser consumido no primeiro ano de vida; sem leite materno, usar fórmula infantil até 1 ano.'
+
+export function leiteVacaNaoIndicado(meses: number): boolean {
+  return meses < 12
+}
+
 export interface Refeicao {
   nome: string
   oferta: string
@@ -207,15 +222,15 @@ function planoFormula(meses: number): Plano {
       titulo: 'Entre 9 e 11 meses, com fórmula infantil',
       pagina: 'pág. 147 e 150',
       refeicoes: [
-        { nome: 'Café da manhã', oferta: 'leite de vaca integral (ou a fórmula)' },
+        { nome: 'Café da manhã', oferta: 'fórmula infantil' },
         { nome: 'Lanche da manhã', oferta: 'fruta' },
         { nome: 'Almoço', oferta: refeicao(meses) },
-        { nome: 'Lanche da tarde', oferta: 'leite de vaca integral (ou a fórmula) e fruta' },
+        { nome: 'Lanche da tarde', oferta: 'fórmula infantil e fruta' },
         { nome: 'Jantar', oferta: 'igual ao almoço' },
-        { nome: 'Ceia', oferta: 'leite de vaca integral (ou a fórmula)' },
+        { nome: 'Ceia', oferta: 'fórmula infantil' },
       ],
       notas: [
-        'A partir dos 9 meses, a fórmula infantil pode ser substituída pelo leite de vaca integral.',
+        'Padrão (SBP): manter a fórmula infantil até 1 ano. O Guia do MS permite trocá-la pelo leite de vaca integral a partir dos 9 meses: alternativa não indicada em condições gerais.',
         AVISO_QTD,
       ],
     }
@@ -465,11 +480,11 @@ export function cuidados(meses: number): Cuidado[] {
       },
     )
   }
-  if (meses < 9) {
+  if (leiteVacaNaoIndicado(meses)) {
     c.push({
       texto:
-        'Leite de vaca como refeição: não antes dos 9 meses (para quem mama no peito ou usa fórmula). Leite e derivados podem entrar como ingredientes de receitas caseiras a partir dos 6 meses.',
-      pagina: 'pág. 162',
+        'Leite de vaca integral (líquido ou em pó) como bebida ou refeição antes de 1 ano: não indicado em condições gerais (SBP). O Guia do MS o admite como alternativa quando não há acesso à fórmula. Leite e derivados podem entrar como ingredientes de receitas caseiras a partir dos 6 meses.',
+      pagina: 'SBP, pág. 24 e 58; Guia, pág. 162',
     })
   }
   c.push(

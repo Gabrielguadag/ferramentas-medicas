@@ -2,8 +2,18 @@ import { useState } from 'react'
 import { RadioGroup } from '../shared/NumberField'
 import { Alert, Card, Details, Src } from '../shared/ui'
 import type { DadosCrianca } from './CriancaPage'
-import { DOZE_PASSOS, LEITES, type Leite, cuidados, etapa, plano } from './alimentacao'
-import { GUIA_MENORES_2 } from './sources'
+import {
+  DOZE_PASSOS,
+  LEITES,
+  LEITE_VACA_NAO_INDICADO,
+  ROTULO_ALTERNATIVA_MS,
+  type Leite,
+  cuidados,
+  etapa,
+  leiteVacaNaoIndicado,
+  plano,
+} from './alimentacao'
+import { GUIA_MENORES_2, SBP_MANUAL } from './sources'
 
 export function AlimentacaoSection(props: { dados: DadosCrianca }) {
   const [leite, setLeite] = useState<Leite>('materno')
@@ -16,11 +26,20 @@ export function AlimentacaoSection(props: { dados: DadosCrianca }) {
   return (
     <>
       <Card title="Leite que a criança recebe">
-        <RadioGroup legend="Leite principal" value={leite} options={LEITES} onChange={setLeite} />
+        <RadioGroup
+          legend="Leite principal"
+          value={leite}
+          options={LEITES.map((o) =>
+            o.value === 'vaca' && (meses === null || leiteVacaNaoIndicado(meses))
+              ? { ...o, label: `${o.label} (${ROTULO_ALTERNATIVA_MS})` }
+              : o,
+          )}
+          onChange={setLeite}
+        />
         <p className="hint-inline">
-          A orientação usa a idade cronológica (meses completos). Se recebe leite materno e outro
-          leite, o início dos outros alimentos depende da quantidade de cada um: orientação
-          individual.
+          Sem leite materno, o padrão é a fórmula infantil até 1 ano (SBP). A orientação usa a idade
+          cronológica (meses completos). Se recebe leite materno e outro leite, o início dos outros
+          alimentos depende da quantidade de cada um: orientação individual.
         </p>
       </Card>
 
@@ -28,6 +47,12 @@ export function AlimentacaoSection(props: { dados: DadosCrianca }) {
         <p className="empty">Preencha a data de nascimento para ver a orientação da idade.</p>
       ) : (
         <>
+          {leite === 'vaca' && meses !== null && leiteVacaNaoIndicado(meses) ? (
+            <Alert tone="warn">
+              {LEITE_VACA_NAO_INDICADO} O esquema abaixo é o do Guia do MS para quando a família não
+              tem acesso à fórmula.
+            </Alert>
+          ) : null}
           {prematura && meses !== null && meses < 12 ? (
             <Alert tone="warn" title="Prematuro:">
               o momento de começar outros alimentos é indicado pelo profissional de saúde. Depois,
@@ -129,7 +154,13 @@ export function AlimentacaoSection(props: { dados: DadosCrianca }) {
           é única; o Guia pede para adaptar as orientações e avaliar a quantidade pelo crescimento
           na Caderneta da Criança.
         </p>
+        <p>
+          Leite de vaca integral antes de 1 ano: o padrão segue a SBP, que não o recomenda no
+          primeiro ano de vida. O esquema do Guia do MS, que o admite quando não há acesso à
+          fórmula, aparece como alternativa não indicada em condições gerais.
+        </p>
         <Src href={GUIA_MENORES_2.url}>{GUIA_MENORES_2.titulo}</Src>
+        <Src href={SBP_MANUAL.url}>{SBP_MANUAL.titulo}</Src>
       </Details>
     </>
   )

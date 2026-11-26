@@ -124,7 +124,12 @@ describe('App', () => {
     ).toHaveTextContent('6 meses e 14 dias')
     const alim = within(panel).getByRole('region', { name: 'Introdução alimentar' })
     expect(within(alim).getByRole('heading', { name: 'Aos 6 meses' })).toBeInTheDocument()
-    await user.click(within(alim).getByRole('radio', { name: 'Leite de vaca integral' }))
+    await user.click(
+      within(alim).getByRole('radio', {
+        name: /Leite de vaca integral \(alternativa do MS, não indicada em condições gerais\)/,
+      }),
+    )
+    expect(within(alim).getByText(/Padrão \(SBP\): o leite de vaca integral/)).toBeInTheDocument()
     expect(
       within(alim).getByRole('heading', { name: 'Entre 5 e 11 meses, com leite de vaca' }),
     ).toBeInTheDocument()

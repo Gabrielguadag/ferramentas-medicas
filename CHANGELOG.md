@@ -2,6 +2,13 @@
 
 ## Não lançado
 
+- Criança, leite de vaca antes de 1 ano:
+  - o padrão segue a SBP (Manual de alimentação, 5ª ed., 2024): sem leite materno, fórmula
+    infantil até 1 ano;
+  - o esquema do Guia do MS com leite de vaca integral continua disponível, marcado como
+    alternativa não indicada em condições gerais;
+  - com fórmula, o plano de 9 a 11 meses mantém a fórmula.
+
 - Nova área **Criança**, separada das demais, com um cartão de dados da criança (nascimento,
   data da consulta e IG ao nascer, opcional) comum aos dois módulos:
   - **Introdução alimentar:** pela idade em meses completos e pelo leite principal (materno,

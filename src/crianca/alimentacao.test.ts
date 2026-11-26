@@ -28,11 +28,14 @@ describe('introdução alimentar (Guia alimentar para menores de 2 anos)', () =>
     expect(colheres(24)).toBeNull()
   })
 
-  it('fórmula: novos alimentos aos 6 meses; leite de vaca integral a partir de 9 meses', () => {
+  it('fórmula: novos alimentos aos 6 meses; fórmula até 1 ano (leite de vaca não indicado)', () => {
     expect(plano('formula', 5).refeicoes).toHaveLength(0)
     expect(nomes('formula', 6)).toContain('Entre o lanche e a ceia')
     expect(plano('formula', 8).refeicoes[0]?.oferta).toBe('fórmula infantil')
-    expect(plano('formula', 9).refeicoes[0]?.oferta).toContain('leite de vaca integral')
+    expect(plano('formula', 9).refeicoes[0]?.oferta).toBe('fórmula infantil')
+    expect(plano('formula', 9).notas.join(' ')).toContain(
+      'alternativa não indicada em condições gerais',
+    )
   })
 
   it('leite de vaca: modificado antes de 4 meses; alimentos a partir de 4; até 500 mL/dia', () => {
@@ -63,9 +66,10 @@ describe('introdução alimentar (Guia alimentar para menores de 2 anos)', () =>
         .map((c) => c.texto)
         .join(' ')
     expect(t(8)).toContain('não oferecer antes de 1 ano')
-    expect(t(8)).toContain('não antes dos 9 meses')
+    expect(t(8)).toContain('antes de 1 ano: não indicado em condições gerais')
+    expect(t(11)).toContain('antes de 1 ano: não indicado em condições gerais')
     expect(t(13)).toContain('120 mL')
-    expect(t(13)).not.toContain('não antes dos 9 meses')
+    expect(t(13)).not.toContain('antes de 1 ano: não indicado em condições gerais')
     expect(t(13)).toContain('Mel')
     expect(t(30)).not.toContain('Mel')
     expect(t(30)).toContain('ultraprocessados')

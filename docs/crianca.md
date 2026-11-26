@@ -37,6 +37,8 @@ Cada arquivo de regras tem o seu `*.test.ts`.
      - pág. 80: instrumento de classificação e conduta;
      - pág. 81 a 85: marcos;
      - pág. 86: a partir de 6 anos.
+3. **Sociedade Brasileira de Pediatria. Manual de alimentação, 5ª edição (2024)**, pág. 24, 26,
+   27 e 58: leite de vaca no primeiro ano. Ver abaixo.
 
 ## Idade
 
@@ -62,12 +64,12 @@ tela mostra o esquema do Guia para essa idade.
 
 ### Plano do dia por leite e idade (meses completos)
 
-| Leite         | Fases e páginas                                                                                                                                             |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Materno       | < 6 (exclusivo); 6 (pág. 113–117); 7–8 (pág. 118–120); 9–11 (pág. 121–123); 12–23 (pág. 124–128)                                                            |
-| Fórmula       | < 6 (só fórmula, sem água; pág. 139, 142–147); 6 (pág. 148); 7–8 (pág. 149); 9–11 (pág. 150; a fórmula pode virar leite de vaca integral); 12–23 (pág. 151) |
-| Leite de vaca | < 4 (leite modificado em casa, com orientação; pág. 138–146); 4 (pág. 152–153); 5–11 (pág. 154; até 500 mL/dia); 12–23 (pág. 155)                           |
-| Qualquer      | ≥ 24: orientações dos 2 anos (pág. 130–133) e indicação do Guia Alimentar para a População Brasileira                                                       |
+| Leite         | Fases e páginas                                                                                                                                                                   |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Materno       | < 6 (exclusivo); 6 (pág. 113–117); 7–8 (pág. 118–120); 9–11 (pág. 121–123); 12–23 (pág. 124–128)                                                                                  |
+| Fórmula       | < 6 (só fórmula, sem água; pág. 139, 142–147); 6 (pág. 148); 7–8 (pág. 149); 9–11 (pág. 150; mantém a fórmula, padrão SBP); 12–23 (pág. 151)                                      |
+| Leite de vaca | alternativa do MS, não indicada antes de 1 ano; < 4 (leite modificado em casa, com orientação; pág. 138–146); 4 (pág. 152–153); 5–11 (pág. 154; até 500 mL/dia); 12–23 (pág. 155) |
+| Qualquer      | ≥ 24: orientações dos 2 anos (pág. 130–133) e indicação do Guia Alimentar para a População Brasileira                                                                             |
 
 Quantidade aproximada no almoço e no jantar:
 
@@ -102,14 +104,39 @@ quantidade é só referência e não deve ser seguida de forma rígida.
 
 - **Os doze passos** (pág. 219 a 227).
 
+### Leite de vaca antes de 1 ano: padrão SBP, alternativa do MS
+
+Decisão do usuário (2026-11-25): **o padrão é a SBP**, e o esquema do MS aparece como
+**alternativa não indicada em condições gerais**.
+
+- **SBP**, Manual de alimentação, 5ª ed. (2024):
+  - "O leite de vaca integral não deve ser consumido no primeiro ano de vida" (pág. 24);
+  - o leite de vaca "não é considerado alimento apropriado para crianças menores de um ano"
+    (pág. 26 e 27);
+  - na impossibilidade do aleitamento materno, usar fórmula infantil (pág. 57 e 58).
+  - <https://www.sbp.com.br/fileadmin/user_upload/24607c-ManAlim-OrientAlim_Lactente_ao_adl_na_escola-gest.pdf>
+- **Guia do MS:** admite o leite de vaca integral antes de 1 ano quando não há acesso à fórmula.
+  - Antes de 4 meses, modificado em casa.
+  - A partir de 4 meses, integral, até 500 mL por dia.
+  - Com fórmula, ela pode ser trocada pelo leite de vaca a partir de 9 meses (pág. 142 a 155).
+
+Como isso aparece na tela:
+
+- **Escolha "Leite de vaca integral" antes de 12 meses:**
+  - a opção leva o rótulo "(alternativa do MS, não indicada em condições gerais)";
+  - um aviso mostra o padrão da SBP;
+  - o esquema do MS aparece logo abaixo, para quando a família não tem acesso à fórmula.
+- **Fórmula de 9 a 11 meses:** o plano mantém a fórmula. Uma nota cita a troca pelo leite de
+  vaca permitida pelo MS como alternativa não indicada.
+- **"Não oferecer e cuidados", antes de 1 ano:** um item diz que o leite de vaca integral como
+  bebida ou refeição não é indicado em condições gerais. Leite e derivados continuam podendo
+  entrar como ingredientes de receitas caseiras desde os 6 meses (Guia, pág. 162).
+
 ### Escolhas da interface
 
 - O Guia não tem um esquema próprio para a criança em leite materno mais outro leite. A tela
   avisa que, nesse caso, o início depende da quantidade de cada leite e pede orientação
   individual (pág. 139).
-- O esquema da fórmula de 9 a 11 meses mostra "leite de vaca integral (ou a fórmula)". O quadro
-  do Guia traz leite de vaca integral, e o texto da pág. 147 diz que a fórmula "pode ser
-  substituída".
 
 ## Marcos do desenvolvimento
 
