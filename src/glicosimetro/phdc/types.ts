@@ -72,7 +72,9 @@ export function decodeAbsoluteTime(bytes: Uint8Array): DeviceDateTime | null {
   ]
   const dt = { year: c * 100 + y, month: mo, day: d, hour: h, minute: mi, second: s }
   if (Object.values(dt).some((n) => Number.isNaN(n))) return null
-  if (dt.month < 1 || dt.month > 12 || dt.day < 1 || dt.day > 31) return null
+  if (dt.month < 1 || dt.month > 12 || dt.day < 1) return null
+  if (dt.year < 2000 || dt.year > 2099) return null
+  if (dt.day > new Date(Date.UTC(dt.year, dt.month, 0)).getUTCDate()) return null
   if (dt.hour > 23 || dt.minute > 59 || dt.second > 60) return null
   return dt
 }

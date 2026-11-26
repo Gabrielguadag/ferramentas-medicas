@@ -2,7 +2,7 @@
 
 export const CAB_32 = {
   titulo:
-    'Ministério da Saúde. Cadernos de Atenção Básica nº 32 — Atenção ao pré-natal de baixo risco (2012), itens 5.3, 5.4.2, 5.5, 5.6 e 6.3.5',
+    'Ministério da Saúde. Cadernos de Atenção Básica nº 32 — Atenção ao pré-natal de baixo risco (2012), itens 5.3, 5.4.2, 5.5, 5.6, 6.3.4 e 6.3.5',
   url: 'https://bvsms.saude.gov.br/bvs/publicacoes/cadernos_atencao_basica_32_prenatal.pdf',
 }
 

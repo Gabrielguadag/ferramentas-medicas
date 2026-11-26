@@ -12,7 +12,6 @@ import {
   compararDumUsg,
   dataParaIg,
   dppDe,
-  dppNaegele,
   dumPorDpp,
   dumPorPeriodo,
   dumPorTransferencia,
@@ -49,6 +48,10 @@ const okSemanas = (s: number | null, d: number | null) =>
   s <= 44 &&
   (d === null || (Number.isInteger(d) && d >= 0 && d <= 6))
 
+/** Erro da datação por ultrassonografia depois de 14 semanas (ACOG CO 700). */
+const erroUsg = (semanas: number) =>
+  semanas < 22 ? '7 a 10' : semanas < 28 ? '10 a 14' : '21 a 30'
+
 const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`
 
 function quando(data: Dia, hoje: Dia | null): string {
@@ -67,17 +70,17 @@ const SITUACAO: Record<Situacao, { tone: Tone; texto: string } | null> = {
   prolongada: {
     tone: 'info',
     texto:
-      'Gestação prolongada é a de 40 a 42 semanas (definição do MS). A avaliação do bem-estar fetal é com 41 semanas.',
+      'Data provável do parto atingida (40 semanas). Consultas semanais; com 41 semanas, avaliar o bem-estar fetal.',
   },
   'prolongada-41': {
     tone: 'warn',
     texto:
-      'Gestação prolongada com 41 semanas ou mais: encaminhar para avaliação do bem-estar fetal (índice de líquido amniótico e monitoramento cardíaco fetal).',
+      '41 semanas ou mais: encaminhar para avaliação do bem-estar fetal (índice de líquido amniótico e monitoramento cardíaco fetal) e para o centro de referência. Não dar alta do pré-natal antes da internação para o parto.',
   },
   'pos-termo': {
     tone: 'danger',
     texto:
-      'Pós-termo: 42 semanas ou mais. Encaminhar para avaliação do bem-estar fetal (índice de líquido amniótico e monitoramento cardíaco fetal) e para o centro de referência. Não dar alta do pré-natal antes da internação para o parto.',
+      'Pós-termo: 42 semanas ou mais. Se ainda não foi feito, encaminhar já para avaliação do bem-estar fetal no centro de referência; sem alta do pré-natal antes da internação para o parto.',
   },
   implausivel: {
     tone: 'warn',
@@ -182,6 +185,11 @@ export function IdadeGestacionalSection() {
               ]}
               onChange={setDumCerta}
             />
+            <p className="hint-inline">
+              {dumCerta === 'certa'
+                ? 'A DUM é confiável com ciclos regulares e sem anticoncepcional hormonal.'
+                : 'A data fica aproximada. Se houver ultrassonografia precoce (até 13s 6d), use "Ultrassonografia" em "Calcular por".'}
+            </p>
             <div className="fields">
               {dumCerta === 'certa' ? (
                 <DateField
@@ -230,7 +238,7 @@ export function IdadeGestacionalSection() {
                 min={0}
                 max={6}
                 step={1}
-                hint="0 a 6"
+                hint="0 a 6 (em branco = 0)"
               />
               <DateField
                 label="DUM (opcional, para comparar)"
@@ -351,19 +359,8 @@ export function IdadeGestacionalSection() {
             {sit ? <Alert tone={sit.tone}>{sit.texto}</Alert> : null}
             {metodo === 'usg' && usandoUsg && usgMenosPreciso ? (
               <p className="hint-inline">
-                Ultrassonografia depois de 14 semanas data com menos precisão: erro de 7 a 10 dias
-                (14s a 21s 6d), 10 a 14 dias (22s a 27s 6d) e 21 a 30 dias (28s ou mais), segundo a
-                ACOG (CO 700).
-              </p>
-            ) : null}
-            {metodo === 'dum' &&
-            dppDia !== null &&
-            dumEq !== null &&
-            dppNaegele(dumEq) !== dppDia ? (
-              <p className="hint-inline">
-                Pela regra de Näegele (gestograma): {fmtData(dppNaegele(dumEq))}. A DPP acima usa os
-                280 dias do calendário; a diferença é de{' '}
-                {plural(Math.abs(dppNaegele(dumEq) - dppDia), 'dia', 'dias')}.
+                Ultrassonografia a partir de 14 semanas data com menos precisão: erro de{' '}
+                {erroUsg(usgS as number)} dias, segundo a ACOG (CO 700).
               </p>
             ) : null}
           </>
@@ -389,7 +386,7 @@ export function IdadeGestacionalSection() {
             min={0}
             max={6}
             step={1}
-            hint="0 a 6"
+            hint="0 a 6 (em branco = 0)"
           />
         </div>
         {dumEq === null ? (
@@ -445,8 +442,7 @@ export function IdadeGestacionalSection() {
             (fim).
           </li>
           <li>
-            <strong>DPP:</strong> DUM + 280 dias (40 semanas), pelo calendário. A regra de Näegele
-            (+7 dias, −3 meses) é mostrada só como conferência.
+            <strong>DPP:</strong> DUM + 280 dias (40 semanas), pelo calendário.
           </li>
           <li>
             <strong>Ultrassonografia:</strong> DUM equivalente = data do exame − IG do laudo. Com a

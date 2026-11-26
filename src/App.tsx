@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { type KeyboardEvent, useCallback, useEffect, useState } from 'react'
 import { CriancaPage } from './crianca/CriancaPage'
 import { GestantePage } from './gestante/GestantePage'
 import { ConsultaPage } from './glargina/ConsultaPage'
@@ -17,6 +17,27 @@ const TOOLS: { id: Tool; label: string }[] = [
   { id: 'consulta', label: 'Consulta de diabetes' },
   { id: 'glicosimetro', label: 'Glicosímetro (USB)' },
 ]
+
+/** Navegação por setas entre abas (WAI-ARIA): Esquerda/Direita, Início e Fim; foco e seleção juntos. */
+function tabKeys<T extends string>(
+  e: KeyboardEvent,
+  ids: readonly T[],
+  current: T,
+  select: (id: T) => void,
+  prefix: string,
+) {
+  const i = ids.indexOf(current)
+  let next = -1
+  if (e.key === 'ArrowRight') next = (i + 1) % ids.length
+  else if (e.key === 'ArrowLeft') next = (i - 1 + ids.length) % ids.length
+  else if (e.key === 'Home') next = 0
+  else if (e.key === 'End') next = ids.length - 1
+  if (next < 0) return
+  e.preventDefault()
+  const id = ids[next] as T
+  select(id)
+  document.getElementById(`${prefix}${id}`)?.focus()
+}
 
 export function App() {
   const [area, setArea] = useState<Area>('diabetes')
@@ -47,7 +68,20 @@ export function App() {
             glicosímetro fica só nesta aba e some ao fechar ou recarregar. Só ficam no computador os
             arquivos que você exportar (CSV, PDF, diagnóstico), que contêm dado de saúde.
           </p>
-          <nav className="areas" role="tablist" aria-label="Áreas">
+          <nav
+            className="areas"
+            role="tablist"
+            aria-label="Áreas"
+            onKeyDown={(e) =>
+              tabKeys(
+                e,
+                AREAS.map((a) => a.id),
+                area,
+                setArea,
+                'area-',
+              )
+            }
+          >
             {AREAS.map((a) => (
               <button
                 key={a.id}
@@ -55,6 +89,7 @@ export function App() {
                 role="tab"
                 id={`area-${a.id}`}
                 aria-selected={area === a.id}
+                tabIndex={area === a.id ? 0 : -1}
                 aria-controls={`area-panel-${a.id}`}
                 onClick={() => setArea(a.id)}
               >
@@ -63,7 +98,20 @@ export function App() {
             ))}
           </nav>
           {area === 'diabetes' ? (
-            <nav className="tabs" role="tablist" aria-label="Ferramentas de diabetes">
+            <nav
+              className="tabs"
+              role="tablist"
+              aria-label="Ferramentas de diabetes"
+              onKeyDown={(e) =>
+                tabKeys(
+                  e,
+                  TOOLS.map((t) => t.id),
+                  tool,
+                  setTool,
+                  'tab-',
+                )
+              }
+            >
               {TOOLS.map((t) => (
                 <button
                   key={t.id}
@@ -71,6 +119,7 @@ export function App() {
                   role="tab"
                   id={`tab-${t.id}`}
                   aria-selected={tool === t.id}
+                  tabIndex={tool === t.id ? 0 : -1}
                   aria-controls={`panel-${t.id}`}
                   onClick={() => setTool(t.id)}
                 >

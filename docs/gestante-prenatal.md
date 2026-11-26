@@ -62,7 +62,7 @@ A lista nacional continua no código como `ITENS_MS`.
 | Teste rápido de gravidez                                | 1º trimestre                                                        | sai (no pré-natal, já foi feito)                                                                            |
 | Ultrassonografia obstétrica                             | uma, idealmente entre 7 e 12 semanas                                | duas: 1º trimestre de 11 a 13 semanas (11s 0d a 13s 6d) e 2º trimestre de 20 a 24 semanas (20s 0d a 24s 6d) |
 
-A tela mostra esse resumo nos dois cartões. No módulo "Consultas e exames", cada trimestre
+A tela mostra só a linha "Lista ajustada ao protocolo do município" nos dois cartões; o contraste com o MS fica nesta tabela. No módulo "Consultas e exames", cada trimestre
 vem em bloco próprio, um abaixo do outro, com duas colunas: na 1ª os exames para todas e
 feitos no município; na 2ª os condicionais (Rh negativo, IgG não reagente) e os sem oferta
 local. Na 1ª consulta, a ultrassonografia de 1º
@@ -92,8 +92,8 @@ Os trimestres seguem os mesmos limites do módulo de idade gestacional (ACOG CO 
   exame não foi feito, pedir agora.
 - **Próximos:** a janela ainda vai abrir. Os itens são agrupados pela data de abertura,
   calculada a partir da DUM equivalente.
-- Os exames do parto aparecem só no módulo de referência.
-- O teste rápido de gravidez também fica só na referência: é o diagnóstico, não uma pendência.
+- Os exames do parto e o teste rápido de gravidez saem da lista inteira (protocolo do município), inclusive do módulo "Consultas e exames".
+- Como a tela não guarda histórico, "Solicitar agora" traz uma nota: pedir só o que ainda não foi feito.
 
 ### 1ª consulta
 
@@ -108,7 +108,7 @@ Há uma caixa "Esta é a 1ª consulta de pré-natal". Quando marcada:
 
 ### Próxima consulta (escolha da interface)
 
-A data sugerida soma à IG o intervalo da frequência atual: 28 dias (mensal), 14 (quinzenal) ou
+A tela diz "sugestão para a próxima" e "frequência mínima". A data sugerida soma à IG o intervalo da frequência atual: 28 dias (mensal), 14 (quinzenal) ou
 7 (semanal). Há dois ajustes:
 
 - a soma não passa das mudanças de frequência, em 28 e 36 semanas;
@@ -133,7 +133,7 @@ interpretação da interface e não está escrito na fonte.
 - a classificação dos itens com 10, 25 e 30 semanas;
 - a 1ª consulta tardia, com 20 e com 30 semanas;
 - a próxima consulta;
-- a exclusão do teste de gravidez.
+- a exclusão do teste de gravidez e dos exames do parto.
 
 `App.test.tsx` cobre o cartão com 24s 2d:
 
@@ -144,6 +144,9 @@ interpretação da interface e não está escrito na fonte.
 
 ## Escolhas registradas (revisão de 2026-11-25)
 
+- **Vacinas:** dTpa e influenza, se não aplicadas na gestação, até 45 dias após o parto (MS, página da
+  dTpa; Calendário Nacional 2026, nota 2); VSR "o mais precocemente possível" a partir da 28ª semana
+  (Calendário 2026, nota 3).
 - **Coombs indireto:** a tela segue a Caderneta 2026 (por trimestre, para Rh negativo com Coombs
   negativo no 1º trimestre). Sem mudança de regra.
 - **Estreptococo do grupo B:** janela de 35s 0d a 37s 0d, com o fim inclusivo (com 37s 1d já

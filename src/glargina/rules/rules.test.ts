@@ -26,6 +26,9 @@ describe('migração (NT 169, Quadros 3 e 4)', () => {
     expect(basalAlert('DM2', 36, 70, null).active).toBe(true)
     expect(basalAlert('DM2', 35, 70, null).active).toBe(false)
     expect(basalAlert('DM1', 31, 70, 60).active).toBe(true)
+    // o critério de DTDI é da NT para crianças e adolescentes
+    expect(basalAlert('DM1', 31, 70, 60, 15).active).toBe(true)
+    expect(basalAlert('DM1', 31, 70, 60, 72).active).toBe(false)
   })
   it('DM1: a DTDI do alerta já tem a glargina no lugar da NPH', () => {
     // NPH 30 U (2x) + rápida 20 U: DTDI 50; glargina 24; DTDI nova 44; 24/44 = 54,5% (> 50%)
@@ -46,6 +49,7 @@ describe('migração (NT 169, Quadros 3 e 4)', () => {
     expect(eligibility(70, 'DM2').kind).toBe('eligible')
     expect(eligibility(69, 'DM2').kind).toBe('not-eligible')
     expect(eligibility(30, 'DM1').kind).toBe('not-eligible')
+    expect(eligibility(30, 'DM1')).toMatchObject({ reason: expect.stringContaining('não cobre') })
   })
 })
 
@@ -98,14 +102,22 @@ describe('insulinização (PCDT 8.3.4)', () => {
   })
   it('NPH inicial: 10 U ou 0,1–0,2 U/kg; teto de basal', () => {
     expect(nphStart(70)).toEqual({ fixed: 10, range: [7, 14] })
-    expect(basalCeiling(80)).toEqual({ usual: 40, obesity: 60 })
+    expect(basalCeiling(80)).toBe(40)
+    expect(basalCeiling(71)).toBe(35.5)
+    expect(basalCeiling(null)).toBeNull()
   })
   it('segunda dose: 80% dividido 2/3 e 1/3', () => {
     expect(secondNphDose(30)).toEqual({ total: 24, morning: 16, bedtime: 8 })
+    // as duas doses somam o total (33 × 0,8 = 26,4 → 26 = 18 + 8)
+    expect(secondNphDose(33)).toEqual({ total: 26, morning: 18, bedtime: 8 })
   })
   it('Quadro 8: algoritmo de correção', () => {
     expect([45, 60, 100, 130, 131, 180, 200, 250, 300, 350].map(correctionByAlgorithm)).toEqual([
       -2, -1, 0, 0, 1, 1, 2, 3, 4, 5,
+    ])
+    // bordas
+    expect([49, 50, 69, 70, 230, 231, 280, 281, 330, 331].map(correctionByAlgorithm)).toEqual([
+      -2, -1, -1, 0, 2, 3, 3, 4, 4, 5,
     ])
   })
   it('Quadro 7: exemplo do PCDT (190, LSOG 130, FC 50, prandial 7 → 8 U)', () => {
@@ -161,6 +173,7 @@ describe('fluxograma do PCDT (Figura 2)', () => {
   it('conduta de insulina mantém a metformina; metformina e sulfonilureia trazem os limites de TFG', () => {
     const ins = pcdtFlow({ ...base, stage: 'inicio', insulinIndication: true })
     expect(ins.notes.join(' ')).toContain('Manter a metformina')
+    expect(ins.notes.join(' ')).toContain('sulfonilureia')
     expect(pcdtFlow({ ...base, stage: 'inicio' }).notes.join(' ')).toContain('TFG < 30')
     const su = pcdtFlow({ ...base, stage: 'metformina' }).notes.join(' ')
     expect(su).toContain('TFG < 30')
@@ -183,5 +196,30 @@ describe('fluxograma do PCDT (Figura 2)', () => {
       dapagliflozinCriteria({ age: 59, sex: 'F', establishedCvd: false, highRiskFactor: true })
         .eligible,
     ).toBe(false)
+  })
+  it('dapagliflozina: resposta em branco não vira "não"', () => {
+    const d = (o: Partial<Parameters<typeof dapagliflozinCriteria>[0]>) =>
+      dapagliflozinCriteria({
+        age: 57,
+        sex: 'F',
+        establishedCvd: null,
+        highRiskFactor: null,
+        ...o,
+      }).eligible
+    expect(d({})).toBeNull()
+    expect(d({ age: null })).toBeNull()
+    expect(d({ establishedCvd: false, highRiskFactor: false })).toBe(false)
+    expect(d({ sex: 'M', establishedCvd: false, highRiskFactor: null })).toBeNull()
+    expect(d({ establishedCvd: true })).toBe(true)
+    // 55–59 anos depende do sexo; sexo não informado não decide
+    expect(d({ sex: null, establishedCvd: false, highRiskFactor: true })).toBeNull()
+    expect(d({ sex: 'M', establishedCvd: false, highRiskFactor: true })).toBe(true)
+    expect(d({ sex: null, age: 62, establishedCvd: false, highRiskFactor: true })).toBe(true)
+    expect(d({ sex: null, age: 50, establishedCvd: false, highRiskFactor: true })).toBe(false)
+  })
+  it('sulfonilureia com resposta pendente pede para completar, sem concluir insulina', () => {
+    const r = pcdtFlow({ ...base, stage: 'metformina-su', dapagliflozinEligible: null })
+    expect(r.next).toBe('avaliar-dapagliflozina')
+    expect(r.conduct).toContain('complete')
   })
 })

@@ -3,8 +3,8 @@
 // Fontes:
 // - Ministério da Saúde. Cadernos de Atenção Básica nº 32 — Atenção ao pré-natal de baixo risco
 //   (2012), 5.5 (cálculo da IG: DUM certa; DUM incerta com período do mês → dias 5, 15 e 25),
-//   5.6 (DPP = 280 dias a partir da DUM; regra de Näegele), 5.4.2 (pré-termo < 37 semanas;
-//   pós-termo ≥ 42 semanas), 6.3.5 (gestação prolongada 40–42 semanas) e 5.3 (com 41 semanas,
+//   5.6 (DPP = 280 dias a partir da DUM; regra de Näegele), 5.4.2 (histórico obstétrico:
+//   pré-termo < 37 semanas; pós-termo ≥ 42 semanas), 6.3.4 (pré-termo), 6.3.5 (pós-datismo) e 5.3 (com 41 semanas,
 //   encaminhar para avaliação do bem-estar fetal).
 // - ACOG/AIUM/SMFM. Committee Opinion nº 700 — Methods for Estimating the Due Date (2017,
 //   reafirmada em 2022): Tabela 1 (quando a ultrassonografia redata a gestação), trimestres
@@ -93,7 +93,7 @@ export function trimestre(totalDias: number): Trimestre {
 export type Situacao =
   'antes-dum' | 'em-curso' | 'termo' | 'prolongada' | 'prolongada-41' | 'pos-termo' | 'implausivel'
 
-/** Situação na data (MS): termo ≥ 37s; prolongada 40–42s; com 41s, avaliar bem-estar fetal; pós-termo ≥ 42s. */
+/** Situação na data (MS): termo ≥ 37s; 40s: DPP atingida (CAB 32 a chama de gestação prolongada, 40–42s); com 41s, avaliar bem-estar fetal; pós-termo ≥ 42s. */
 export function situacao(totalDias: number): Situacao {
   if (totalDias < 0) return 'antes-dum'
   if (totalDias > igDias(44, 0)) return 'implausivel'

@@ -31,14 +31,15 @@ Cada arquivo de regras tem o seu `*.test.ts`.
      comparado e é idêntico.
    - Páginas usadas:
      - pág. 19 e 88: idade corrigida;
-     - pág. 53: sinais de alerta;
-     - pág. 78: fatores de risco e alterações fenotípicas;
-     - pág. 79: como avaliar;
-     - pág. 80: instrumento de classificação e conduta;
-     - pág. 81 a 85: marcos;
-     - pág. 86: a partir de 6 anos.
+     - pág. 36: ferro e NutriSUS;
+   - pág. 53: sinais de alerta;
+   - pág. 78: fatores de risco e alterações fenotípicas;
+   - pág. 79: como avaliar;
+   - pág. 80: instrumento de classificação e conduta;
+   - pág. 81 a 85: marcos;
+   - pág. 86: a partir de 6 anos.
 3. **Sociedade Brasileira de Pediatria. Manual de alimentação, 5ª edição (2024)**, pág. 24, 27, 28, 31,
-   51 e 59 (páginas impressas): leite de vaca no primeiro ano, sal, preparo da fórmula, prematuros e
+   50 a 53, 58 e 59 (páginas impressas): leite de vaca no primeiro ano, sal, preparo da fórmula, prematuros e
    suplementação. Ver abaixo.
 
 ## Idade
@@ -55,8 +56,11 @@ Cada arquivo de regras tem o seu `*.test.ts`.
     semanas.
 - Os marcos usam a idade corrigida enquanto ela vale.
 - A introdução alimentar usa a idade cronológica para o plano do dia. Para prematuros, enquanto a
-  correção vale (até 24 ou 36 meses), a tela mostra a idade corrigida e o início dos outros
-  alimentos conforme a SBP (pág. 31): "após seis meses de idade cronológica e entre quatro e seis
+  correção vale (até 24 ou 36 meses) e a idade corrigida é menor que 6 meses, a tela mostra o aviso de
+  início. Enquanto não chegou o início (cronológica ≥ 6 meses e corrigida ≥ 4 meses), o plano do dia
+  é o "antes do início" (5 meses; com leite de vaca, antes de 4 meses). A SBP traz também uma
+  outra faixa ("entre cinco e oito meses de idade cronológica ou três meses de idade corrigida"); o
+  app adotou a da pág. 31, sem mostrar a divergência. Início conforme a SBP (pág. 31): "após seis meses de idade cronológica e entre quatro e seis
   meses de idade corrigida", com desenvolvimento neuropsicomotor adequado; alimentos
   potencialmente alergênicos não devem ser adiados. (O Guia, pág. 94, só diz que o momento é
   indicado pelo profissional de saúde.)
@@ -107,14 +111,31 @@ quantidade é só referência e não deve ser seguida de forma rígida.
 
   Cada item mostra a página do Guia de onde veio.
 
-- **Suplementação de rotina** (criança nascida a termo; escolha: padrão SBP, pág. 51 e 59):
-  vitamina D 400 UI/dia da 1ª semana até 12 meses e 600 UI/dia de 12 a 24 meses; ferro
-  elementar 1 mg/kg/dia a partir dos 180 dias (90 dias se houver fator de risco) até 24 meses,
-  com qualquer leite. Prematuro ou baixo peso: a tela só diz que o esquema é próprio, sem doses.
-  Vitamina A (regiões de alta prevalência) não entra. O Guia (pág. 91) fala só em suplementos
-  de ferro e vitamina A para 6 meses a 2 anos, prescritos por profissional.
-- **Sal** (escolha: padrão SBP, pág. 24): não adicionar sal nas papas e refeições até 12 meses;
-  depois, sal com moderação. O Guia (pág. 103) diz "quantidade mínima de sal".
+- **Suplementação de rotina** (criança nascida a termo; escolha: padrão SBP, pág. 50 a 53 e 59):
+  - vitamina D 400 UI/dia da 1ª semana até 12 meses e 600 UI/dia de 12 a 24 meses (pág. 53 e 59);
+    a SBP dispensa em quem toma fórmula em 1.000 mL ou mais por dia (pág. 53), e a tela diz isso
+    quando o leite escolhido é a fórmula;
+  - ferro elementar 1 mg/kg/dia até 24 meses. Leitura adotada: com leite materno, a partir dos
+    180 dias; aos 90 dias se já recebe outro leite (desmame precoce) ou se há fator de risco; com
+    fórmula ou leite de vaca, a partir dos 90 dias (pág. 50, quadros 10 e 11; pág. 59, item 14).
+    A tela lista os fatores de risco mais comuns do Quadro 12 (pág. 51): cordão clampeado em
+    menos de 60 s, Apgar ≤ 5 no 1º minuto, doença hipertensiva da gestação, placenta prévia ou
+    descolamento, má nutrição da mãe. A pág. 50 (antecipar no desmame precoce) e a pág. 59
+    (90 ou 180 dias "independentemente" do leite) não coincidem totalmente; a escolha acima é do app;
+  - a partir dos 6 meses, a tela avisa que quem recebe os sachês NutriSUS não deve receber outro
+    suplemento de ferro (Caderneta, pág. 36). O programa do MS (PNSF) usa dose fixa de 10 a
+    12,5 mg por dia em ciclos (SBP, pág. 52); a divergência foi resolvida a favor da SBP e não
+    aparece na tela;
+  - com IG ao nascer < 37 semanas, a tela mostra só "prematuro ou baixo peso: esquema próprio",
+    sem doses (SBP, pág. 51 e 52: ferro a partir dos 30 dias, 2 a 4 mg/kg/dia conforme o peso;
+    vitamina D só com peso > 1.500 g e dieta enteral plena). Sem IG informada, a tela mantém as doses
+    e lembra que não valem para prematuro ou menos de 2.500 g.
+  - Vitamina A (regiões de alta prevalência) não entra. O Guia (pág. 91) fala só em suplementos
+    de ferro e vitamina A para 6 meses a 2 anos, prescritos por profissional.
+- **Sal** (escolha: padrão SBP, pág. 24, item 6): não adicionar sal nas papas e refeições até 12
+  meses; depois, sal com moderação. O Guia (pág. 103) diz "quantidade mínima de sal". A própria SBP
+  também diz, na pág. 24 (item 7) e na pág. 59 (item 9), para excluir sal e açúcar nos dois
+  primeiros anos; a tela adota a leitura mais branda.
 - **Preparo da fórmula** (Guia, pág. 145 e 146; SBP, pág. 27): ferver a água por 5 minutos, mesmo
   se filtrada ou mineral; misturar o pó na água ainda bem quente (cerca de 70 °C pela SBP; o Guia
   diz no máximo 15 minutos após a fervura, nunca fervendo), o que descontamina o pó; testar a
@@ -135,7 +156,7 @@ só orienta como usar o leite de vaca quando não há outra opção (leitura def
   - "O leite de vaca integral não deve ser consumido no primeiro ano de vida" (pág. 24);
   - o leite de vaca "não é considerado alimento apropriado para crianças menores de um ano"
     (fim da pág. 27 e início da 28);
-  - na impossibilidade do aleitamento materno, usar fórmula infantil (pág. 57 e 58).
+  - na impossibilidade do aleitamento materno, usar fórmula infantil (pág. 58).
   - <https://www.sbp.com.br/fileadmin/user_upload/24607c-ManAlim-OrientAlim_Lactente_ao_adl_na_escola-gest.pdf>
 - **Guia do MS:** admite o leite de vaca integral antes de 1 ano quando não há acesso à fórmula.
   - Antes de 4 meses, modificado em casa.
@@ -160,6 +181,17 @@ Como isso aparece na tela:
 
 ### Escolhas da interface
 
+- **Limite da idade corrigida:** a Caderneta traz "até 2 anos (3 se IG < 28 semanas)" na pág. 88,
+  que trata do crescimento; a pág. 19 manda corrigir para avaliar o desenvolvimento sem dar
+  limite. O app estende o limite de 2 e 3 anos aos marcos (extrapolação do texto) e o limite é
+  exclusivo (aos 24 meses exatos a correção termina).
+- **Plano com fórmula aos 12 meses:** o Guia (pág. 151) passa a usar leite de vaca integral; a
+  tela avisa a troca. A SBP aceita o leite de vaca depois de 1 ano (pág. 28).
+- **Sucos:** o app usa "de preferência em um lanche" da pág. 132; a pág. 85 diz "ao término da refeição".
+- **Prematuridade nos marcos:** é fator de risco permanente (Caderneta, pág. 78, item 5); um
+  ex-prematuro com todos os marcos presentes cai sempre em "alerta". É a regra da fonte.
+- **Menores de 6 meses:** "Não oferecer e cuidados" mostra só os itens que cabem à idade.
+- **Leite de vaca:** a tela mostra só o rótulo definido pelo usuário; o contraste MS × SBP fica aqui.
 - **Marcos na fronteira da faixa:** a Caderneta não diz qual faixa usar na idade exata do limite.
   O app usa a faixa dos meses completos (`de <= meses < ate`); por isso um marco ausente na
   fronteira dá "alerta", e a tela explica isso em uma linha. A regra de só considerar a

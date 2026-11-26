@@ -78,3 +78,35 @@ describe('PREVENT reproduz os casos de teste do pacote de referência', () => {
     }
   })
 })
+
+describe('PREVENT sem diabetes (ramo hba1c_no_dm)', () => {
+  // Atenção: não há fonte independente (artigo/suplemento/calculadora) com valores para dm = 0 e
+  // HbA1c. Estes testes só protegem a coerência do ramo; não verificam os coeficientes.
+  const base = {
+    age: 55,
+    sex: 'M' as const,
+    totalChol: 200,
+    hdl: 45,
+    sbp: 140,
+    bpTx: false,
+    statin: false,
+    diabetes: false,
+    smoker: false,
+    egfr: 90,
+    bmi: 28,
+    hba1c: 5.8,
+    uacr: null,
+  }
+  it('usa o modelo com HbA1c e dá risco válido, menor que o do mesmo caso com diabetes', () => {
+    expect(selectModel(base)).toBe('hba1c')
+    const noDm = preventRisk(base, 'ascvd', '10yr')
+    const dm = preventRisk({ ...base, diabetes: true }, 'ascvd', '10yr')
+    expect(noDm).toBeGreaterThan(0)
+    expect(noDm).toBeLessThan(dm)
+  })
+  it('HbA1c maior eleva o risco sem diabetes', () => {
+    const lo = preventRisk({ ...base, hba1c: 5.0 }, 'ascvd', '10yr')
+    const hi = preventRisk({ ...base, hba1c: 6.4 }, 'ascvd', '10yr')
+    expect(hi).toBeGreaterThan(lo)
+  })
+})

@@ -11,6 +11,7 @@ import {
   hasCkd,
   hasHypertension,
   hasMajorEvent,
+  hasNephropathy,
   renalGrid,
 } from './inputs'
 import { type PreventResult } from './prevent'
@@ -213,7 +214,7 @@ function dm1NoStrat(i: RiskInputs, scale: 'sbc' | 'sbd'): ScaleResult | null {
 export const HF_NOTE =
   'Com insuficiência cardíaca (NYHA II a IV) e LDL-c < 130 mg/dL: não iniciar estatina; manter se já usava (SBD R11).'
 
-/** Diálise (TFGe < 15): SBD R10. Insuficiência cardíaca: SBD R11 (nota fixa no diabetes). */
+/** Diálise (SBD R10; só texto condicional, o app não tem campo de diálise). Insuficiência cardíaca: SBD R11 (nota fixa no diabetes). */
 function dialysisNote(i: RiskInputs, r0: ScaleResult): ScaleResult {
   const r = r0.applicable && i.diabetes ? { ...r0, notes: [...r0.notes, HF_NOTE] } : r0
   if (!r.applicable || !i.diabetes || i.egfr === null || i.egfr >= 15) return r
@@ -221,7 +222,7 @@ function dialysisNote(i: RiskInputs, r0: ScaleResult): ScaleResult {
     ...r,
     notes: [
       ...r.notes,
-      'TFGe < 15 (diálise): a SBD não recomenda iniciar estatina em diálise sem doença arterial clínica; se já usava, manter. Avaliação individualizada.',
+      'Se estiver em diálise e sem doença arterial clínica: a SBD não recomenda iniciar estatina; se já usava, manter (R10).',
     ],
   }
 }
@@ -248,7 +249,7 @@ function sbcResult(
   const extra =
     category === 'baixo'
       ? [
-          'No risco baixo, fármaco só com LDL-c persistentemente acima de 145 mg/dL apesar do estilo de vida.',
+          'No risco baixo, a SBC indica fármaco com LDL-c acima de 145 mg/dL apesar do estilo de vida.',
         ]
       : []
   return {
@@ -367,7 +368,8 @@ function sbc2025Core(i: RiskInputs, prev: PreventResult | null): ScaleResult {
       applicable: true,
     }
   }
-  const pct = prev.tenYear.ascvd * 100
+  // Arredonda a 1 casa antes de classificar, para o número mostrado e a categoria coincidirem.
+  const pct = Math.round(prev.tenYear.ascvd * 1000 + 1e-9) / 10
   const pctTxt = `PREVENT ASCVD 10 anos ${pct.toFixed(1).replace('.', ',')}%`
   if (pct >= 20) return sbcResult('alto', [`${pctTxt} (≥ 20%)`])
   if (pct >= 5) {
@@ -403,7 +405,7 @@ export const SBD_TARGETS: Record<'baixo' | 'intermediario' | 'alto' | 'muito-alt
     nonHdl: '< 80',
     reduction: '≥ 50%',
     statin:
-      'Estatina de alta potência. Se a meta não for atingida com a dose máxima tolerada: considerar ezetimiba; depois, se ainda não atingida, pode-se considerar iPCSK9.',
+      'Estatina de alta potência. Se a meta não for atingida com a dose máxima tolerada: considerar ezetimiba; depois, se ainda não atingida, pode-se considerar iPCSK9 (decisão com análise de custo-benefício).',
   },
 }
 
@@ -469,15 +471,13 @@ export interface OmsPreclass {
  * Fluxo da calculadora HEARTS/OPAS: antes de calcular, três perguntas (doença cardiovascular
  * estabelecida, doença renal crônica, diabetes). Resposta "sim" classifica direto, sem percentual:
  * só doença cardiovascular = "Paciente de Risco Muito Alto"; doença renal ou diabetes = "Paciente
- * de Alto Risco". O diabetes entra só para DM2 de 40 a 74 anos (PCDT DM2 2026, item 5.5); nos
- * demais casos a calculadora segue com o diabetes como variável.
+ * de Alto Risco". Qualquer diabetes (tipo e idade) segue esse fluxo oficial.
  */
 export function omsPreclass(i: RiskInputs): OmsPreclass | null {
   if (hasAscvdEvent(i))
     return { category: 'Muito alto', reason: 'doença cardiovascular estabelecida' }
   if (hasCkd(i)) return { category: 'Alto', reason: 'doença renal crônica (TFGe < 60)' }
-  if (i.diabetes && i.dmType === 'DM2' && i.age !== null && i.age >= 40 && i.age <= 74)
-    return { category: 'Alto', reason: 'DM2 de 40 a 74 anos' }
+  if (i.diabetes) return { category: 'Alto', reason: 'diabetes' }
   return null
 }
 
@@ -486,10 +486,7 @@ export function omsPreclass(i: RiskInputs): OmsPreclass | null {
 
 export function pcdt2026(i: RiskInputs): ScaleResult {
   if (isMinor(i)) return na(OUT_OF_SCOPE_AGE)
-  if (!i.diabetes)
-    return na(
-      'A regra do PCDT DM2 é para pessoas com DM2. Sem diabetes, use a calculadora OMS/HEARTS.',
-    )
+  if (!i.diabetes) return na('O PCDT DM2 é para pessoas com DM2.')
   if (i.dmType === 'DM1') {
     return {
       category: 'individual',
@@ -502,7 +499,7 @@ export function pcdt2026(i: RiskInputs): ScaleResult {
   if (i.age === null) return { ...na('Informe a idade.'), applicable: true }
   const dcv = hasAscvdEvent(i)
   if (Math.floor(i.age) <= 39) {
-    if (i.nephropathy || i.retinopathy !== 'nenhuma') {
+    if (hasNephropathy(i) || i.retinopathy !== 'nenhuma') {
       return {
         category: 'alto',
         reasons: ['≤ 39 anos com nefropatia ou retinopatia'],
@@ -525,7 +522,9 @@ export function pcdt2026(i: RiskInputs): ScaleResult {
     return {
       category: 'individual',
       reasons: ['≥ 75 anos'],
-      notes: ['Avaliação individualizada.'],
+      notes: [
+        'Avaliação individualizada; autocuidado, alimentação, atividade física, cessar tabagismo e reduzir álcool.',
+      ],
       target: null,
       applicable: true,
     }

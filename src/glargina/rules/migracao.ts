@@ -45,19 +45,20 @@ export interface BasalAlert {
 
 /**
  * Quadro 4 da NT 169 (excesso de insulina basal), critérios calculáveis na tela:
- * DM2 → basal > 0,5 UI/kg/dia; DM1 (criança/adolescente) → basal > 50% da DTDI.
+ * DM2 → basal > 0,5 UI/kg/dia; DM1 (criança/adolescente, < 18 anos) → basal > 50% da DTDI.
  */
 export function basalAlert(
   type: DiabetesType,
   basal: number,
   weightKg: number | null,
   dtdi: number | null,
+  age: number | null = null,
 ): BasalAlert {
   const reasons: string[] = []
   if (type === 'DM2' && weightKg && weightKg > 0 && basal / weightKg > 0.5) {
     reasons.push('Insulina basal > 0,5 UI/kg/dia.')
   }
-  if (type === 'DM1' && dtdi && dtdi > 0 && basal / dtdi > 0.5) {
+  if (type === 'DM1' && (age === null || age < 18) && dtdi && dtdi > 0 && basal / dtdi > 0.5) {
     reasons.push('Insulina basal > 50% da dose total diária (DTDI).')
   }
   return { active: reasons.length > 0, reasons }

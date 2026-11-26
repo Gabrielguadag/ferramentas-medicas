@@ -1,5 +1,5 @@
 import { omsPreclass, pcdt2026, sbc2025, sbd2026 } from './escalas'
-import { ckdEpi2021, emptyInputs, renalGrid } from './inputs'
+import { ckdEpi2021, emptyInputs, renalGrid, sanitizeInputs } from './inputs'
 import type { PreventResult } from './prevent'
 
 const base = (over: Partial<ReturnType<typeof emptyInputs>> = {}) => ({
@@ -97,6 +97,11 @@ describe('PCDT DM2 2026', () => {
 })
 
 describe('correções da revisão (RCV)', () => {
+  it('SBC: hipercolesterolemia familiar com CAC > 100 é muito alto (Fig. 4.1)', () => {
+    const fh = { diabetes: false, familialHypercholesterolemia: true }
+    expect(sbc2025(base({ ...fh, cac: 101 }), null).category).toBe('muito-alto')
+    expect(sbc2025(base({ ...fh, cac: 100 }), null).category).not.toBe('muito-alto')
+  })
   it('insuficiência cardíaca: nota da SBD R11 só para quem tem diabetes', () => {
     expect(sbd2026(base({})).notes.join(' ')).toContain('SBD R11')
     // nota da SBD só na escala da SBD
@@ -156,8 +161,11 @@ describe('correções da revisão (RCV)', () => {
     expect(r.reasons[0]).toContain('nenhum estratificador marcado')
     expect(r.notes.join(' ')).toContain('Não informado')
   })
-  it('TFGe < 15 (diálise): aviso sobre estatina (SBD R10)', () => {
-    expect(sbd2026(base({ egfr: 10 })).notes.join(' ')).toContain('diálise')
+  it('TFGe < 15: texto condicional de diálise, sem afirmar que está em diálise (SBD R10)', () => {
+    const n = sbd2026(base({ egfr: 10 })).notes.join(' ')
+    expect(n).toContain('Se estiver em diálise')
+    expect(n).not.toContain('TFGe < 15 (diálise)')
+    expect(sbd2026(base({ egfr: 15, uacr: 10 })).notes.join(' ')).not.toContain('diálise')
     expect(sbd2026(base({ egfr: 40, uacr: 10 })).notes.join(' ')).not.toContain('diálise')
   })
 })
@@ -170,10 +178,58 @@ describe('OMS/HEARTS: classificação direta', () => {
     expect(omsPreclass(base({ egfr: 60, age: 50 }))?.category).toBe('Alto') // DM2 40-74
     expect(omsPreclass(base({ diabetes: false, egfr: 60 }))).toBeNull()
   })
-  it('DM1 ou fora de 40–74 anos não é classificado direto', () => {
-    expect(omsPreclass(base({ dmType: 'DM1' }))).toBeNull()
-    expect(omsPreclass(base({ age: 39 }))).toBeNull()
-    expect(omsPreclass(base({ age: 75 }))).toBeNull()
+  it('qualquer diabetes (DM1, qualquer idade) é alto risco pelo fluxo HEARTS', () => {
+    expect(omsPreclass(base({ dmType: 'DM1' }))?.category).toBe('Alto')
+    expect(omsPreclass(base({ age: 39 }))?.category).toBe('Alto')
+    expect(omsPreclass(base({ age: 75 }))?.category).toBe('Alto')
     expect(omsPreclass(base({ age: 74 }))?.category).toBe('Alto')
+    expect(omsPreclass(base({ diabetes: false }))).toBeNull()
+  })
+})
+
+describe('PCDT: mensagens e nefropatia derivada', () => {
+  it('sem diabetes: só diz que é para DM2', () => {
+    const r = pcdt2026(base({ diabetes: false }))
+    expect(r.applicable).toBe(false)
+    expect(r.notes.join(' ')).toBe('O PCDT DM2 é para pessoas com DM2.')
+  })
+  it('≤ 39 anos: nefropatia derivada de TFGe < 60 ou albuminúria ≥ 30', () => {
+    expect(pcdt2026(base({ age: 35 })).category).toBe('individual')
+    expect(pcdt2026(base({ age: 35, egfr: 59 })).category).toBe('alto')
+    expect(pcdt2026(base({ age: 35, egfr: 60 })).category).toBe('individual')
+    expect(pcdt2026(base({ age: 35, uacr: 30 })).category).toBe('alto')
+    expect(pcdt2026(base({ age: 35, uacr: 29 })).category).toBe('individual')
+  })
+  it('≥ 75 anos traz a frase de autocuidado', () => {
+    expect(pcdt2026(base({ age: 75 })).notes.join(' ')).toContain('autocuidado')
+  })
+})
+
+describe('SBC: PREVENT arredondado antes de classificar', () => {
+  it('4,96% vira 5,0% e entra em 5 a < 20%; 19,96% vira 20,0%', () => {
+    const nd = { diabetes: false }
+    expect(sbc2025(base(nd), prev(4.96)).category).toBe('intermediario')
+    expect(sbc2025(base(nd), prev(4.94)).category).toBe('baixo')
+    expect(sbc2025(base(nd), prev(19.96)).category).toBe('alto')
+    expect(sbc2025(base(nd), prev(19.94)).category).toBe('intermediario')
+  })
+})
+
+describe('entradas fora da faixa plausível', () => {
+  it('não usa e avisa (colesterol em mmol/L, PA absurda, TFGe negativa)', () => {
+    const { inputs, problems } = sanitizeInputs(
+      base({ totalChol: 5.2, sbp: 300, egfr: -3, hdl: 50 }),
+    )
+    expect(inputs.totalChol).toBeNull()
+    expect(inputs.sbp).toBeNull()
+    expect(inputs.egfr).toBeNull()
+    expect(inputs.hdl).toBe(50)
+    expect(problems).toHaveLength(3)
+    expect(problems[0]).toContain('confira a unidade')
+  })
+  it('bordas aceitas', () => {
+    const { problems } = sanitizeInputs(base({ sbp: 60, totalChol: 800, ldl: 20 }))
+    expect(problems).toEqual([])
+    expect(sanitizeInputs(base({ sbp: 59 })).problems).toHaveLength(1)
   })
 })

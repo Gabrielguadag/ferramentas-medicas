@@ -30,14 +30,14 @@ export function avisoLeiteVaca(meses: number): AvisoLeiteVaca | null {
     return {
       rotulo: 'não recomendado; só quando não há outra opção',
       aviso:
-        'Não recomendado antes dos 6 meses: sem leite materno, usar fórmula infantil. Abaixo, a orientação do Guia do MS para quando não há outra opção.',
+        'Não recomendado antes dos 6 meses: sem leite materno, usar fórmula infantil. Abaixo, a orientação para quando não há outra opção.',
     }
   }
   if (meses < 12) {
     return {
       rotulo: 'alternativa do MS, não indicada em condições gerais',
       aviso:
-        'Alternativa do MS, não indicada em condições gerais. Padrão (SBP): o leite de vaca integral (líquido ou em pó) não deve ser consumido no primeiro ano de vida; sem leite materno, usar fórmula infantil até 1 ano. O esquema abaixo é o do Guia do MS para quando a família não tem acesso à fórmula.',
+        'Alternativa do MS, não indicada em condições gerais: o leite de vaca integral (líquido ou em pó) não deve ser consumido no primeiro ano de vida; sem leite materno, usar fórmula infantil até 1 ano. O esquema abaixo é para quando a família não tem acesso à fórmula.',
     }
   }
   return null
@@ -252,7 +252,7 @@ function planoFormula(meses: number): Plano {
         { nome: 'Ceia', oferta: 'fórmula infantil' },
       ],
       notas: [
-        'Padrão (SBP): manter a fórmula infantil até 1 ano. O Guia do MS permite trocá-la pelo leite de vaca integral a partir dos 9 meses: alternativa não indicada em condições gerais.',
+        'Manter a fórmula infantil até 1 ano. Trocá-la pelo leite de vaca integral antes disso é alternativa não indicada em condições gerais.',
         AVISO_QTD,
       ],
     }
@@ -268,7 +268,10 @@ function planoFormula(meses: number): Plano {
       { nome: 'Jantar', oferta: 'igual ao almoço' },
       { nome: 'Ceia', oferta: 'leite de vaca integral' },
     ],
-    notas: [AVISO_QTD],
+    notas: [
+      'A partir de 1 ano, o esquema do Guia usa leite de vaca integral no lugar da fórmula infantil.',
+      AVISO_QTD,
+    ],
   }
 }
 
@@ -438,6 +441,8 @@ export function etapa(meses: number): Etapa | null {
 export interface Cuidado {
   texto: string
   pagina: string
+  /** Mantido na lista dos menores de 6 meses (os demais ficam fora de contexto). */
+  antes6?: true
 }
 
 /** O que não oferecer e cuidados de segurança, conforme a idade em meses completos. */
@@ -449,22 +454,25 @@ export function cuidados(meses: number): Cuidado[] {
         texto:
           'Açúcar de qualquer tipo (branco, mascavo, cristal, demerara, de coco, rapadura, melado, xarope de milho), nem preparações com açúcar (bolos, biscoitos, doces, geleias): não oferecer até 2 anos.',
         pagina: 'pág. 104 e 222',
+        antes6: true,
       },
       {
         texto:
           'Mel: não oferecer até 2 anos. Além do açúcar, há risco de botulismo, maior antes de 1 ano.',
         pagina: 'pág. 104',
+        antes6: true,
       },
       {
         texto: 'Adoçantes: não usar até 2 anos.',
         pagina: 'pág. 71 e 222',
+        antes6: true,
       },
     )
   }
   c.push({
     texto:
-      'Alimentos ultraprocessados (refrigerantes, achocolatados, farinhas instantâneas com açúcar, bolos prontos, biscoitos, iogurtes adoçados ou com sabor, sucos de caixinha, entre outros): não oferecer. Iogurte natural sem açúcar pode.',
-    pagina: 'pág. 87, 88, 104 e 223',
+      'Alimentos ultraprocessados (refrigerantes, achocolatados, farinhas instantâneas para mingau (com ou sem açúcar), bolos prontos, biscoitos, iogurtes adoçados ou com sabor, sucos de caixinha, entre outros): não oferecer. Iogurte natural sem açúcar pode.',
+    pagina: 'pág. 78, 87, 88, 104 e 223',
   })
   if (meses < 12) {
     c.push({
@@ -495,8 +503,9 @@ export function cuidados(meses: number): Cuidado[] {
         texto:
           'Leite desnatado ou semidesnatado: não serve para menores de 2 anos (tem pouca gordura, importante para o desenvolvimento neurológico).',
         pagina: 'pág. 143',
+        antes6: true,
       },
-      { texto: COMPOSTO_LACTEO, pagina: 'pág. 144' },
+      { texto: COMPOSTO_LACTEO, pagina: 'pág. 144', antes6: true },
       {
         texto: 'Pipoca: não oferecer antes de 2 anos (risco de engasgo e sufocamento).',
         pagina: 'pág. 78',
@@ -508,11 +517,12 @@ export function cuidados(meses: number): Cuidado[] {
       texto:
         'Leite de vaca integral (líquido ou em pó): não recomendado antes dos 6 meses. Sem leite materno, a primeira alternativa é a fórmula infantil.',
       pagina: 'Guia, pág. 142; SBP, pág. 24',
+      antes6: true,
     })
   } else if (meses < 12) {
     c.push({
       texto:
-        'Leite de vaca integral (líquido ou em pó) como bebida ou refeição antes de 1 ano: não indicado em condições gerais (SBP). O Guia do MS o admite como alternativa quando não há acesso à fórmula. Leite e derivados podem entrar como ingredientes de receitas caseiras a partir dos 6 meses.',
+        'Leite de vaca integral (líquido ou em pó) como bebida ou refeição antes de 1 ano: não indicado em condições gerais (SBP). Só como alternativa quando não há acesso à fórmula. Leite e derivados podem entrar como ingredientes de receitas caseiras a partir dos 6 meses.',
       pagina: 'SBP, pág. 24 e 59; Guia, pág. 162',
     })
   }
@@ -543,6 +553,7 @@ export function cuidados(meses: number): Cuidado[] {
       texto:
         'Mamadeira e chuquinha: evitar; líquidos em copo. Prejudicam a regulação do apetite e a mastigação, a deglutição e a fala, e podem levar ao desmame.',
       pagina: 'pág. 105 e 106',
+      antes6: true,
     },
   )
   if (meses < 24) {
@@ -550,9 +561,10 @@ export function cuidados(meses: number): Cuidado[] {
       texto:
         'Televisão, celular, computador e tablet: crianças menores de 2 anos não devem usá-los, nem durante as refeições.',
       pagina: 'pág. 97 e 226',
+      antes6: true,
     })
   }
-  return c
+  return meses < 6 ? c.filter((x) => x.antes6) : c
 }
 
 /** Doze passos para uma alimentação saudável (pág. 220 a 226). */
@@ -572,29 +584,66 @@ export const DOZE_PASSOS = [
 ]
 
 /** Caso excepcional: sem doses (esquema próprio). */
-export const SUPLEMENTACAO_PREMATURO = 'Prematuro ou baixo peso: esquema próprio de suplementação.'
+export const SUPLEMENTACAO_PREMATURO =
+  'Prematuro (menos de 37 semanas) ou baixo peso (menos de 2.500 g): esquema próprio de suplementação.'
+
+/** Lembrete para quem não informou a IG: as doses abaixo não valem para prematuro ou baixo peso. */
+export const SUPLEMENTACAO_SEM_IG =
+  'Se nasceu prematuro (menos de 37 semanas) ou com menos de 2.500 g, as doses acima não valem: esquema próprio.'
+
+const NUTRISUS =
+  'Se a criança recebe os sachês de micronutrientes (NutriSUS), não dar outro suplemento de ferro.'
 
 /**
  * Suplementação de rotina da criança nascida a termo (SBP, Manual de Alimentação, 5ª ed.):
- * vitamina D 400 UI/dia da 1ª semana até 12 meses e 600 UI/dia de 12 a 24 meses (pág. 59, item 11);
- * ferro elementar 1 mg/kg/dia a partir dos 180 dias, ou dos 90 dias se houver fator de risco,
- * até 24 meses (pág. 51, quadros 10 e 11; pág. 59, item 14). Vale com leite materno, fórmula ou
- * leite de vaca. A vitamina A (regiões de alta prevalência) não entra.
+ * vitamina D 400 UI/dia da 1ª semana até 12 meses e 600 UI/dia de 12 a 24 meses (pág. 53 e 59,
+ * item 11; fórmula em volume >= 1.000 mL/dia dispensa); ferro elementar 1 mg/kg/dia até 24 meses,
+ * a partir dos 180 dias no aleitamento materno exclusivo e dos 90 dias se há desmame precoce
+ * (fórmula, leite de vaca ou outro leite junto) ou fator de risco (quadros 10 a 12, pág. 50 e 51;
+ * pág. 59, item 14). Prematuro/baixo peso: só a linha do esquema próprio. A vitamina A não entra.
  */
-export function suplementacao(meses: number): Cuidado[] {
+export function suplementacao(
+  meses: number,
+  leite: Leite = 'materno',
+  prematuro = false,
+): Cuidado[] {
   if (meses >= 24) return []
-  return [
+  if (prematuro) return [{ texto: SUPLEMENTACAO_PREMATURO, pagina: 'SBP, pág. 51 e 52' }]
+  const out: Cuidado[] = [
     {
       texto:
-        meses < 12
+        (meses < 12
           ? 'Vitamina D: 400 UI por dia, da 1ª semana de vida até 12 meses.'
-          : 'Vitamina D: 600 UI por dia dos 12 aos 24 meses.',
-      pagina: 'SBP, pág. 59',
+          : 'Vitamina D: 600 UI por dia dos 12 aos 24 meses.') +
+        (leite === 'formula'
+          ? ' Não precisa se a criança toma fórmula em 1.000 mL ou mais por dia.'
+          : ''),
+      pagina: 'SBP, pág. 53 e 59',
     },
     {
       texto:
-        'Ferro elementar: 1 mg/kg por dia, a partir dos 6 meses (180 dias), ou dos 3 meses (90 dias) se houver fator de risco de deficiência de ferro, até 2 anos.',
-      pagina: 'SBP, pág. 51 e 59',
+        leite === 'materno'
+          ? 'Ferro elementar: 1 mg/kg por dia, a partir dos 6 meses (180 dias) até 2 anos. Começar aos 3 meses (90 dias) se já recebe outro leite além do materno ou se houve fator de risco: cordão clampeado em menos de 60 segundos, Apgar de 5 ou menos no 1º minuto, doença hipertensiva da gestação, placenta prévia ou descolamento da placenta, má nutrição da mãe.'
+          : 'Ferro elementar: 1 mg/kg por dia, a partir dos 3 meses (90 dias) até 2 anos.',
+      pagina: 'SBP, pág. 50, 51 e 59',
     },
   ]
+  if (meses >= 6) out.push({ texto: NUTRISUS, pagina: 'Caderneta, pág. 36' })
+  return out
+}
+
+export interface InicioPrematuro {
+  /** Já chegou a idade de iniciar os outros alimentos (>= 6 meses cronológicos e >= 4 corrigidos). */
+  iniciou: boolean
+  /** O aviso ainda faz sentido (até 6 meses corrigidos). */
+  mostrarAviso: boolean
+}
+
+/**
+ * Início dos outros alimentos no prematuro (SBP, pág. 31): "após seis meses de idade cronológica e
+ * entre quatro e seis meses de idade corrigida". `corrigidaMeses` é null antes das 40 semanas corrigidas.
+ */
+export function inicioPrematuro(cronMeses: number, corrigidaMeses: number | null): InicioPrematuro {
+  const corr = corrigidaMeses ?? -1
+  return { iniciou: cronMeses >= 6 && corr >= 4, mostrarAviso: corr < 6 }
 }

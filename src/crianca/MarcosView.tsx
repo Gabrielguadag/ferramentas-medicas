@@ -85,8 +85,10 @@ export function MarcosSection(props: { dados: DadosCrianca }) {
       corpo = (
         <>
           <Card
-            title={`Marcos de ${rotuloFaixa(faixa)}`}
-            subtitle={`Faixa da idade${usaCorrigida ? ' corrigida' : ''} (${meses} ${meses === 1 ? 'mês' : 'meses'} completos). Ao final da faixa, a criança deve ter todos.`}
+            title={
+              faixa.de === 0 ? 'Marcos do nascimento a 1 mês' : `Marcos de ${rotuloFaixa(faixa)}`
+            }
+            subtitle={`Faixa da idade${usaCorrigida ? ' corrigida' : ''} (${meses} ${meses === 1 ? 'mês' : 'meses'} completos). A ausência de qualquer marco da faixa é alerta, mesmo no início dela.`}
           >
             <MarcosLista marcos={faixa.marcos} respostas={respostas} onResposta={responder} />
           </Card>

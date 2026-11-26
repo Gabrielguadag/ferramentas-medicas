@@ -11,6 +11,8 @@ import {
   toCsv,
   dedupeReadings,
   periodDayCount,
+  resolveTarget,
+  sanitizeReadings,
   toReadings,
 } from './analysis'
 import type { RawReading } from './phdc/segments'
@@ -96,7 +98,7 @@ describe('análise das medições', () => {
     expect(csv).not.toContain('#')
     const lines = csv.slice(1).trim().split('\r\n')
     expect(lines[0]).toBe(
-      'Data;Hora;Glicemia (mg/dL);Fora da faixa do aparelho;Solução de controle;Status bruto do aparelho;Posição na memória',
+      'Data;Hora;Glicemia (mg/dL);Fora da faixa do aparelho;Solução de controle;Status bruto do aparelho;Ordem de leitura',
     )
     expect(lines[1]).toBe('24/11/2026;13:00;;acima (HI);;0x0000;4')
     expect(lines[2]).toBe('24/11/2026;09:00;120;;sim;0x0000;6')
@@ -129,7 +131,10 @@ describe('duplicatas e dias do período', () => {
 
   it('conta dias do período: N para filtro; primeiro ao último dia para "todas"', () => {
     const rs = toReadings([raw(1, 8, 100), raw(5, 8, 110), raw(10, 8, 120)])
-    expect(periodDayCount(filterPeriod(rs, 7), 7)).toBe(7)
+    // M limitado ao intervalo coberto pela memória (do 1º ao último dia com medição, no máximo N).
+    expect(periodDayCount(filterPeriod(rs, 7), 7)).toBe(6)
+    expect(periodDayCount(filterPeriod(rs, 30), 30)).toBe(10)
+    expect(periodDayCount(filterPeriod(toReadings([raw(9, 8, 100)]), 14), 14)).toBe(1)
     expect(periodDayCount(rs, 'all')).toBe(10)
     expect(periodDayCount([], 'all')).toBe(0)
     expect(computeStats(rs).days).toBe(3)
@@ -206,5 +211,54 @@ describe('bordas clínicas e unidade', () => {
     const s = computeStats(toReadings([raw(1, 8, null), raw(2, 8, 100)]))
     expect(s.invalid).toBe(1)
     expect(s.count).toBe(1)
+  })
+})
+
+describe('período, alvo e plausibilidade', () => {
+  const now = new Date(2026, 10, 25, 12, 0)
+
+  it('data futura não desloca a janela do período', () => {
+    const rs = toReadings([
+      raw(20, 8, 100),
+      raw(24, 8, 110),
+      { ...raw(1, 8, 120), time: { year: 2099, month: 1, day: 1, hour: 8, minute: 0, second: 0 } },
+    ])
+    const shown = filterPeriod(rs, 14, now)
+    expect(shown.map((r) => r.mgdl)).toEqual([110, 100])
+    expect(filterPeriod(rs, 'all', now)).toHaveLength(3)
+  })
+
+  it('só com datas futuras, ancora na mais recente', () => {
+    const rs = toReadings([
+      { ...raw(1, 8, 120), time: { year: 2099, month: 1, day: 1, hour: 8, minute: 0, second: 0 } },
+    ])
+    expect(filterPeriod(rs, 7, now)).toHaveLength(1)
+  })
+
+  it('alvo: vazio usa o padrão; fora de 54–250 ou invertido é recusado', () => {
+    expect(resolveTarget(null, 160)).toMatchObject({
+      target: { low: 70, high: 160 },
+      lowEmpty: true,
+    })
+    expect(resolveTarget(54, 250)).toMatchObject({ target: { low: 54, high: 250 }, invalid: false })
+    expect(resolveTarget(50, 180)).toMatchObject({ target: { low: 70, high: 180 }, invalid: true })
+    expect(resolveTarget(70, 300)).toMatchObject({ invalid: true })
+    expect(resolveTarget(180, 70)).toMatchObject({ invalid: true })
+  })
+
+  it('o alvo em mg/dL não muda ao trocar a unidade (100 -> 5,6 -> 100)', () => {
+    const shownMmol = Math.round((100 / 18.016) * 10) / 10
+    expect(shownMmol).toBe(5.6)
+    // O valor guardado continua 100; só a exibição é arredondada.
+    expect(resolveTarget(100, 180).target.low).toBe(100)
+    expect(formatGlucose(100, 'mmol/L')).toBe('5,6')
+  })
+
+  it('valores típicos de mmol/L são suspeitos; fora de 10–600 vira inválido', () => {
+    expect(sanitizeReadings(toReadings([raw(1, 8, 5.6), raw(2, 8, 7.2)])).mmolSuspect).toBe(true)
+    const ok = sanitizeReadings(toReadings([raw(1, 8, 100), raw(2, 8, 700), raw(3, 8, 5)]))
+    expect(ok.mmolSuspect).toBe(false)
+    expect(ok.implausible).toBe(2)
+    expect(computeStats(ok.readings).invalid).toBe(2)
   })
 })

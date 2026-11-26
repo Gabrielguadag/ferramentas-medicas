@@ -31,6 +31,13 @@ import { titrate } from './rules/titulacao'
 import { ELIGIBILITY_LITERAL, GUIA_GLARGINA, NT_169, PCDT_DM2, eligibility } from './sources'
 import { Alert, Card, Check, Details, Result, Results, Src, fmt } from '../shared/ui'
 
+/** Glicemia capilar plausível (mg/dL); fora da faixa, o valor não entra no cálculo. */
+const GLUCOSE_MIN = 20
+const GLUCOSE_MAX = 600
+const GLUCOSE_NOTE = `Glicemia fora de ${GLUCOSE_MIN} a ${GLUCOSE_MAX} mg/dL: não usada no cálculo; confira o valor.`
+const plausibleGlucose = (v: number | null): number | null =>
+  v !== null && v >= GLUCOSE_MIN && v <= GLUCOSE_MAX ? v : null
+
 function ScopeNote() {
   return <Alert tone="info">{OUT_OF_SCOPE_TEXT}</Alert>
 }
@@ -46,8 +53,13 @@ export function MigracaoSection() {
 
   const conv = nph !== null && nph > 0 ? convertNphToGlargine(nph, apps === '1' ? 1 : 2) : null
   const perKg = conv ? uiPerKg(conv.glargine, patient.weight) : null
-  const dtdiNew = conv ? dtdiAfterSwitch(dtdi, nph ?? 0, conv.glargine) : null
-  const alert = conv ? basalAlert(patient.type, conv.glargine, patient.weight, dtdiNew) : null
+  const dtdiBelowNph = dtdi !== null && nph !== null && dtdi < nph
+  const dtdiNew = conv && !dtdiBelowNph ? dtdiAfterSwitch(dtdi, nph ?? 0, conv.glargine) : null
+  const alert = conv
+    ? basalAlert(patient.type, conv.glargine, patient.weight, dtdiNew, patient.age)
+    : null
+  // O critério "basal > 50% da DTDI" é da NT para crianças e adolescentes com DM1.
+  const askDtdi = patient.type === 'DM1' && (patient.age === null || patient.age < 18)
   const tub = conv && days ? tubetesFor(conv.glargine, days, priming ?? 0) : null
   const elig = eligibility(patient.age, patient.type)
 
@@ -59,7 +71,7 @@ export function MigracaoSection() {
           title={
             elig.kind === 'eligible'
               ? 'Elegível à glargina (NT 169/2026).'
-              : 'Fora da elegibilidade da NT 169/2026.'
+              : 'Não coberto pela NT 169/2026.'
           }
         >
           {elig.reason}
@@ -90,7 +102,7 @@ export function MigracaoSection() {
             ]}
             onChange={setApps}
           />
-          {patient.type === 'DM1' ? (
+          {askDtdi ? (
             <NumberField
               label="DTDI atual (NPH + rápida)"
               unit="UI/dia"
@@ -124,8 +136,13 @@ export function MigracaoSection() {
             necessário, cuidado compartilhado com a Atenção Especializada.
           </Alert>
         ) : null}
-        {conv && patient.type === 'DM1' && dtdi === null ? (
+        {conv && askDtdi && dtdi === null ? (
           <Alert tone="info">No DM1, informe a DTDI para avaliar o excesso de basal.</Alert>
+        ) : null}
+        {conv && askDtdi && dtdiBelowNph ? (
+          <Alert tone="info">
+            A DTDI não pode ser menor que a dose de NPH: confira os valores.
+          </Alert>
         ) : null}
         <Details>
           <ul>
@@ -197,7 +214,7 @@ export function InicioNphSection() {
   const start = nphStart(patient.weight)
   const ceiling = basalCeiling(patient.weight)
   const second = bedtime ? secondNphDose(bedtime) : null
-  if (outOfScope(patient.age, patient.type)) return <ScopeNote />
+  if (outOfScope(patient.age, patient.type, patient.profile)) return <ScopeNote />
   return (
     <>
       <Card
@@ -218,11 +235,11 @@ export function InicioNphSection() {
           </Result>
           <Result
             label="Teto de basal"
-            value={ceiling ? `< ${ceiling.usual}` : '—'}
+            value={ceiling !== null ? `< ${fmt(ceiling, Number.isInteger(ceiling) ? 0 : 1)}` : '—'}
             unit={ceiling ? 'U/dia' : undefined}
           >
-            {ceiling
-              ? `< 0,5 U/kg/dia; até ${ceiling.obesity} U/dia (0,75 U/kg) só com obesidade e resistência à insulina.`
+            {ceiling !== null
+              ? 'Basal abaixo de 0,5 U/kg/dia; acima disso, reavaliar o esquema (NT 169, Quadro 4).'
               : null}
           </Result>
         </Results>
@@ -231,8 +248,19 @@ export function InicioNphSection() {
           hipoglicemia noturna: reduzir 2 a 4 U. Use a seção <strong>Titulação</strong> com os
           jejuns do paciente.
         </p>
+        <p className="lead">
+          Neste momento, reforçar a educação: técnica de aplicação, automonitorização e como
+          identificar e tratar hipoglicemia, mais frequente ao iniciar e intensificar a insulina.
+        </p>
+        <p className="lead">
+          Pessoa com 70 anos ou mais, ou com hipoglicemia noturna ou grave: a glargina pode ser a
+          basal (elegibilidade e conversão na seção <strong>Migração para glargina</strong>).
+        </p>
         <Details>
-          <Src href={PCDT_DM2.url}>{PCDT_DM2.short}, item 8.3.4.1 e Figura 3.</Src>
+          <Src href={PCDT_DM2.url}>
+            {PCDT_DM2.short}, itens 8.3.4, 8.3.4.1 e 8.3.4.2 e Figura 3.
+          </Src>
+          <Src href={NT_169.url}>{NT_169.short}, item 3.1.</Src>
         </Details>
       </Card>
       <Card
@@ -250,10 +278,10 @@ export function InicioNphSection() {
         {second ? (
           <Results>
             <Result label="Antes do desjejum" value={second.morning} unit="U" tone="info">
-              2/3 de 80% da dose atual.
+              2/3 de 80% da dose atual (arredondado).
             </Result>
             <Result label="Ao deitar" value={second.bedtime} unit="U" tone="info">
-              1/3 de 80% da dose atual.
+              O restante dos 80% da dose atual.
             </Result>
           </Results>
         ) : null}
@@ -276,7 +304,9 @@ export function TitulacaoSection() {
   const [nocturnal, setNocturnal] = useState(false)
   const [dose, setDose] = useState<number | null>(null)
   const goal = goalOf(patient.profile)
-  const t = titrate(g, patient.profile, nocturnal)
+  const gValid = g.map(plausibleGlucose)
+  const gInvalid = g.some((v, i) => v !== null && gValid[i] === null)
+  const t = titrate(gValid, patient.profile, nocturnal)
   const excess =
     dose !== null && dose > 0 ? basalAlert('DM2', dose, patient.weight, null).active : false
   const blocked = t?.action === 'aumentar-2' && excess
@@ -313,6 +343,7 @@ export function TitulacaoSection() {
           hint="Com o peso do painel, confere o limite de 0,5 UI/kg/dia antes de aumentar."
         />
       </div>
+      {gInvalid ? <p className="hint-inline">{GLUCOSE_NOTE}</p> : null}
       <Check label="Hipoglicemia noturna relatada" checked={nocturnal} onChange={setNocturnal} />
       {t ? (
         <Results>
@@ -336,9 +367,9 @@ export function TitulacaoSection() {
       )}
       {blocked ? (
         <Alert tone="danger" title="Insulina basal > 0,5 UI/kg/dia.">
-          “Recomenda-se reavaliar o esquema terapêutico, evitando o aumento adicional da insulina
-          basal e, quando necessário, realizar o cuidado compartilhado com a Atenção Especializada”
-          (NT 169, Quadro 4).
+          “Nessas situações, recomenda-se reavaliar o esquema terapêutico, evitando o aumento
+          adicional da insulina basal e, quando necessário, realizar o cuidado compartilhado com a
+          Atenção Especializada” (NT 169, Quadro 4).
         </Alert>
       ) : null}
       <p className="hint-inline">{PREGNANCY_TEXT}</p>
@@ -347,7 +378,18 @@ export function TitulacaoSection() {
           <li>Aumentar 2 U a cada 3 dias até atingir a meta de jejum.</li>
           <li>Jejum &lt; 70 mg/dL ou hipoglicemia noturna: reduzir a dose diária em 2 a 4 U.</li>
           <li>Glicemia &lt; 80 mg/dL de madrugada ou em jejum: reduzir 2 U.</li>
-          <li>Vale para NPH e para glargina (“iniciar e titular os AIAP da mesma forma”).</li>
+          <li>
+            Vale para NPH e para glargina (“Sugere-se iniciar e titular os AIAP da mesma forma da
+            insulina humana NPH”).
+          </li>
+          <li>
+            Hipoglicemia noturna ou grave: pode-se trocar a NPH pela glargina (seção Migração para
+            glargina; elegibilidade na NT 169).
+          </li>
+          <li>
+            Jejum próximo do limite superior da meta: avaliar a glicemia durante o sono (PCDT
+            8.3.4.1).
+          </li>
           <li>
             Excesso de basal: &gt; 0,5 U/kg/dia, queda &gt; 50 mg/dL entre deitar e acordar, HbA1c
             fora da meta com jejum no alvo, hipoglicemias. Nessas situações: “recomenda-se reavaliar
@@ -367,7 +409,8 @@ export function TitulacaoSection() {
 export function PrandialSection() {
   const { patient } = usePatient()
   const [prandial, setPrandial] = useState<number | null>(null)
-  const [glucose, setGlucose] = useState<number | null>(null)
+  const [glucoseInput, setGlucose] = useState<number | null>(null)
+  const glucose = plausibleGlucose(glucoseInput)
   const [mode, setMode] = useState<'algoritmo' | 'fator'>('algoritmo')
   const [upperInput, setUpper] = useState<number | null | undefined>(undefined)
   const [factorKind, setFactorKind] = useState<'50' | 'dtdi'>('50')
@@ -375,9 +418,10 @@ export function PrandialSection() {
   // Limite superior pré-preenchido com o teto de jejum/pré-prandial do perfil (NT 169, Quadro 5).
   const upper = upperInput === undefined ? goalOf(patient.profile).fasting[1] : upperInput
   const factor = factorKind === '50' ? 50 : dtdi && dtdi > 0 ? factorFromDtdi(dtdi) : null
-  // Com glicemia < 70 no modo "fator de correção", o Quadro 7 não se aplica (só corrige acima do
-  // alvo): a tela pede para tratar a hipoglicemia e não calcula dose.
-  const hypoInFactorMode = mode === 'fator' && glucose !== null && glucose < 70
+  // Glicemia < 70: o alerta aparece sempre (qualquer modo, com ou sem dose prandial). No modo
+  // "fator de correção", o Quadro 7 não se aplica (só corrige acima do alvo): não calcula dose.
+  const hypo = glucose !== null && glucose < 70
+  const hypoInFactorMode = mode === 'fator' && hypo
   const correction =
     glucose === null || hypoInFactorMode
       ? null
@@ -396,12 +440,12 @@ export function PrandialSection() {
     <>
       <Card
         title="Início do bolus"
-        subtitle="HbA1c fora da meta com jejum adequado, em uso de basal (NPH 2x/dia ou glargina)."
+        subtitle="HbA1c fora da meta, jejum e glicemia antes das refeições adequados e pós-prandial > 180 mg/dL, em uso de basal (NPH 2x/dia ou glargina)."
       >
         <ol className="steps">
           <li>
             Medir 6 glicemias no dia (antes e 2 h depois de café, almoço e jantar) e achar a maior
-            pós-prandial.
+            pós-prandial. Se for ≤ 180 mg/dL, não iniciar bolus.
           </li>
           <li>
             Nessa refeição, iniciar <strong>3 a 4 U</strong> de insulina regular, 30 minutos antes.
@@ -410,8 +454,11 @@ export function PrandialSection() {
           <li>Segunda e terceira doses nas refeições com pós-prandial &gt; 180 mg/dL.</li>
           <li>Depois de ajustar o jantar, avaliar redução da NPH de deitar.</li>
         </ol>
+        <p className="lead">
+          Com esquema basal/bolus, não se recomenda manter sulfonilureia (Figura 3, nota b).
+        </p>
         <Details>
-          <Src href={PCDT_DM2.url}>{PCDT_DM2.short}, item 8.3.4.3 e Figura 3.</Src>
+          <Src href={PCDT_DM2.url}>{PCDT_DM2.short}, itens 8.3.4.1 e 8.3.4.3 e Figura 3.</Src>
         </Details>
       </Card>
       <Card
@@ -428,7 +475,7 @@ export function PrandialSection() {
           <NumberField
             label="Glicemia antes da refeição"
             unit="mg/dL"
-            value={glucose}
+            value={glucoseInput}
             onChange={setGlucose}
           />
           <RadioGroup
@@ -469,16 +516,14 @@ export function PrandialSection() {
             </>
           ) : null}
         </div>
-        {hypoInFactorMode ? (
-          <Alert tone="danger" title="Glicemia abaixo de 70 mg/dL.">
-            Tratar a hipoglicemia. O fator de correção só se aplica acima do alvo; não calcular
-            correção por ele.
-          </Alert>
+        {glucoseInput !== null && glucose === null ? (
+          <p className="hint-inline">{GLUCOSE_NOTE}</p>
         ) : null}
-        {r?.hypo ? (
+        {hypo ? (
           <Alert tone="danger" title="Glicemia abaixo de 70 mg/dL.">
-            Tratar a hipoglicemia primeiro. O algoritmo reduz 1 U (&lt; 70) ou 2 U (&lt; 50) do
-            bolus prandial.
+            {mode === 'fator'
+              ? 'Tratar a hipoglicemia. O fator de correção só se aplica acima do alvo; não calcular correção por ele.'
+              : 'Tratar a hipoglicemia primeiro. O algoritmo reduz 1 U (< 70) ou 2 U (< 50) do bolus prandial.'}
           </Alert>
         ) : null}
         {mode === 'algoritmo' && goalUpper !== 130 ? (
@@ -513,7 +558,7 @@ export function PrandialSection() {
             <tbody>
               {[
                 ['< 50', '−2 U'],
-                ['< 70', '−1 U'],
+                ['50 a 69', '−1 U'],
                 ['70 a 130', '0'],
                 ['131 a 180', '+1 U'],
                 ['181 a 230', '+2 U'],
@@ -628,6 +673,13 @@ export function MetasSection() {
 }
 
 // ---------------------------------------------------------------------------------------------
+type YesNo = '' | 'sim' | 'nao'
+const YES_NO: readonly { value: YesNo; label: string }[] = [
+  { value: 'sim', label: 'Sim' },
+  { value: 'nao', label: 'Não' },
+]
+const yesNo = (v: YesNo): boolean | null => (v === '' ? null : v === 'sim')
+
 export function TratamentoSection() {
   const { patient, bmi } = usePatient()
   const [months, setMonths] = useState<'menos-3' | '3-ou-mais'>('3-ou-mais')
@@ -635,13 +687,13 @@ export function TratamentoSection() {
   const [stage, setStage] = useState<Stage>('inicio')
   const [atGoal, setAtGoal] = useState(false)
   const [insulin, setInsulin] = useState(false)
-  const [cvd, setCvd] = useState(false)
-  const [highRisk, setHighRisk] = useState(false)
+  const [cvd, setCvd] = useState<YesNo>('')
+  const [highRisk, setHighRisk] = useState<YesNo>('')
   const dapa = dapagliflozinCriteria({
     age: patient.age,
-    sex: patient.sex,
-    establishedCvd: cvd,
-    highRiskFactor: highRisk,
+    sex: patient.sexKnown ? patient.sex : null,
+    establishedCvd: yesNo(cvd),
+    highRiskFactor: yesNo(highRisk),
   })
   const flow = pcdtFlow({
     monthsSinceDiagnosis: months,
@@ -652,7 +704,7 @@ export function TratamentoSection() {
     dapagliflozinEligible: dapa.eligible,
   })
   const tone = flow.next === 'insulina' ? 'warn' : flow.next === 'monitorar' ? 'ok' : 'info'
-  if (outOfScope(patient.age, patient.type)) return <ScopeNote />
+  if (outOfScope(patient.age, patient.type, patient.profile)) return <ScopeNote />
   return (
     <>
       <Card title="Situação do paciente">
@@ -735,16 +787,26 @@ export function TratamentoSection() {
       </Card>
 
       <Card title="Critérios para dapagliflozina" subtitle="Segunda intensificação do tratamento.">
-        <div className="checks">
-          <Check
-            label="Doença cardiovascular estabelecida (IAM, revascularização, angioplastia, angina, AVC isquêmico, AIT, IC com FE < 40%)"
-            checked={cvd}
+        <div className="fields">
+          <RadioGroup
+            legend="Doença cardiovascular estabelecida (IAM, revascularização, angioplastia, angina, AVC isquêmico, AIT, IC com FE < 40%)"
+            value={cvd}
+            options={YES_NO}
             onChange={setCvd}
           />
-          <Check label="HAS, dislipidemia ou tabagismo" checked={highRisk} onChange={setHighRisk} />
+          <RadioGroup
+            legend="HAS, dislipidemia ou tabagismo"
+            value={highRisk}
+            options={YES_NO}
+            onChange={setHighRisk}
+          />
         </div>
         {dapa.eligible === null ? (
-          <p className="empty">Informe a idade no painel do paciente.</p>
+          <p className="empty">
+            {patient.age === null
+              ? 'Informe a idade no painel do paciente.'
+              : 'Responda os critérios acima (e o sexo no painel, se tiver de 55 a 59 anos) para concluir.'}
+          </p>
         ) : (
           <Alert
             tone={dapa.eligible ? 'ok' : 'neutral'}

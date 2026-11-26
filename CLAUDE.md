@@ -1,7 +1,7 @@
 # ferramentas-diabetes
 
 Projeto paralelo ao Smedic, que será absorvido por ele no futuro (`smedic/apps/web`). É uma
-página **100% frontend**, sem cadastro, sem backend e sem armazenamento, com duas áreas
+página **100% frontend**, sem cadastro, sem backend e sem armazenamento, com três áreas
 separadas (sem estado compartilhado): **Diabetes**, **Gestante** e **Criança**.
 
 Área Diabetes:
@@ -11,7 +11,8 @@ separadas (sem estado compartilhado): **Diabetes**, **Gestante** e **Criança**.
    NPH, titulação, insulina prandial, metas, tratamento do DM2 e risco cardiovascular. O risco CV
    tem cinco escalas selecionáveis: SBC 2025, SBD 2026, PCDT 2026, OMS/HEARTS e PREVENT. Os
    detalhes estão em `docs/glargina-regras.md` e `docs/risco-cv.md`.
-2. **Glicosímetro**: leitura da memória dos Accu-Chek com micro-USB (Guide, Instant e família)
+2. **Glicosímetro**: leitura da memória dos Accu-Chek com micro-USB (Guide, Guide Me, Instant, Instant S, Performa Connect,
+   Aviva Connect e ReliOn Platinum)
    via WebUSB e protocolo IEEE 11073-20601 próprio. A tela exibe as medições, exporta CSV e
    imprime ou gera PDF. O detalhe está em `docs/accu-chek.md`.
 

@@ -115,7 +115,7 @@ export function CriancaPage() {
             refDia={refDia}
             idade={idade}
             corr={corr}
-            igInvalida={igS !== null && igNascDias === null}
+            igInvalida={(igS !== null || igD !== null) && igNascDias === null}
           />
         </Card>
 

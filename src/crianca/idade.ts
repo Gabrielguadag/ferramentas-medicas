@@ -44,7 +44,7 @@ export function idadeEm(nasc: Dia, ref: Dia): Idade | null {
 
 const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`
 
-/** "12 dias", "4 meses e 3 dias", "1 ano e 5 meses", "2 anos". */
+/** "12 dias", "4 meses e 3 dias", "17 meses e 3 dias" (até 23 meses), "2 anos e 5 meses", "2 anos". */
 export function fmtIdade(i: Idade): string {
   if (i.meses === 0) return plural(i.dias, 'dia', 'dias')
   if (i.meses < 24) {

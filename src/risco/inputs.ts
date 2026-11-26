@@ -142,6 +142,49 @@ export function hasCkd(i: RiskInputs): boolean {
   return i.egfr !== null && i.egfr < 60
 }
 
+/** Nefropatia para o PCDT (≤ 39 anos): marcada à mão ou derivada de TFGe < 60 ou albuminúria ≥ 30 mg/g. */
+export function hasNephropathy(i: RiskInputs): boolean {
+  return i.nephropathy || (i.egfr !== null && i.egfr < 60) || (i.uacr !== null && i.uacr >= 30)
+}
+
+/** Faixas plausíveis das entradas numéricas (fora delas, quase sempre é erro de unidade ou digitação). */
+const PLAUSIBLE: {
+  key: 'sbp' | 'totalChol' | 'hdl' | 'ldl' | 'egfr' | 'uacr' | 'bmi' | 'lpaMgDl' | 'lpaNmolL'
+  label: string
+  unit: string
+  lo: number
+  hi: number
+}[] = [
+  { key: 'sbp', label: 'PA sistólica', unit: 'mmHg', lo: 60, hi: 260 },
+  { key: 'totalChol', label: 'Colesterol total', unit: 'mg/dL', lo: 80, hi: 800 },
+  { key: 'hdl', label: 'HDL', unit: 'mg/dL', lo: 10, hi: 200 },
+  { key: 'ldl', label: 'LDL', unit: 'mg/dL', lo: 20, hi: 600 },
+  { key: 'egfr', label: 'TFGe', unit: 'mL/min/1,73 m²', lo: 2, hi: 150 },
+  { key: 'uacr', label: 'Albuminúria', unit: 'mg/g', lo: 0, hi: 30000 },
+  { key: 'bmi', label: 'IMC', unit: 'kg/m²', lo: 12, hi: 70 },
+  { key: 'lpaMgDl', label: 'Lp(a)', unit: 'mg/dL', lo: 0, hi: 600 },
+  { key: 'lpaNmolL', label: 'Lp(a)', unit: 'nmol/L', lo: 0, hi: 1500 },
+]
+
+/**
+ * Valores fora da faixa plausível não entram no cálculo (viram "não informado") e geram um aviso.
+ * Os avisos são curtos e pedem para conferir a unidade.
+ */
+export function sanitizeInputs(i: RiskInputs): { inputs: RiskInputs; problems: string[] } {
+  const inputs = { ...i }
+  const problems: string[] = []
+  for (const { key, label, unit, lo, hi } of PLAUSIBLE) {
+    const v = inputs[key]
+    if (v !== null && (v < lo || v > hi)) {
+      problems.push(
+        `${label} ${v} ${unit} fora da faixa esperada (${lo} a ${hi}): confira a unidade. Não foi usado no cálculo.`,
+      )
+      inputs[key] = null
+    }
+  }
+  return { inputs, problems }
+}
+
 /** SBC Tab. 4.3 — fatores agravantes (Lp(a) é avaliada pelo valor informado). */
 export const AGGRAVATORS = [
   'História familiar de DCV prematura (parente de 1º grau: homem < 55, mulher < 65 anos)',

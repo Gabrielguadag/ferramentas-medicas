@@ -21,9 +21,10 @@ import {
   emptyInputs,
   hasAscvdEvent,
   renalGrid,
+  sanitizeInputs,
 } from './inputs'
 import { PREVENT_LIMITS, type PreventResult, checkPrevent, prevent } from './prevent'
-import { type WhoResult, whoHearts } from './who2019'
+import { type WhoResult, whoHearts, whoProblems } from './who2019'
 
 type ScaleId = 'sbc' | 'sbd' | 'pcdt' | 'oms' | 'prevent'
 
@@ -104,16 +105,18 @@ export function RiscoSection() {
   const creatinineOk = creatinine !== null && creatinine >= 0.3 && creatinine <= 15
   const egfrCalc =
     creatinine && creatinineOk && age ? ckdEpi2021(creatinine, age, patient.sex) : null
-  const i: RiskInputs = useMemo(
-    () => ({
-      ...f,
-      age,
-      sex: patient.sex,
-      dmType: patient.type,
-      bmi,
-      egfr: egfrCalc ?? f.egfr,
-    }),
-    [f, age, patient.sex, patient.type, bmi, egfrCalc],
+  const { inputs: i, problems: rangeProblems } = useMemo(
+    () =>
+      sanitizeInputs({
+        ...f,
+        age,
+        sex: patient.sex,
+        dmType: patient.type,
+        bmi,
+        // Com creatinina digitada, a TFGe vem dela; o campo "ou TFGe" fica oculto e não vale.
+        egfr: creatinine !== null ? egfrCalc : f.egfr,
+      }),
+    [f, age, patient.sex, patient.type, bmi, egfrCalc, creatinine],
   )
 
   const prevCheck = checkPrevent({
@@ -233,15 +236,27 @@ export function RiscoSection() {
         </Alert>
       ) : null}
 
-      <ScaleView
-        scale={scale}
-        i={i}
-        results={results}
-        prev={prev}
-        prevProblems={prevCheck.ok ? [] : prevCheck.problems}
-        whoLab={whoLab}
-        whoNonLab={whoNonLab}
-      />
+      {rangeProblems.map((p) => (
+        <Alert key={p} tone="warn">
+          {p}
+        </Alert>
+      ))}
+
+      {patient.sexKnown ? (
+        <ScaleView
+          scale={scale}
+          i={i}
+          results={results}
+          prev={prev}
+          prevProblems={prevCheck.ok ? [] : prevCheck.problems}
+          whoLab={whoLab}
+          whoNonLab={whoNonLab}
+        />
+      ) : (
+        <div className="card">
+          <p className="empty">Escolha o sexo no painel do paciente: as escalas dependem dele.</p>
+        </div>
+      )}
 
       <div className="card">
         <h3>Dados para o cálculo</h3>
@@ -371,7 +386,7 @@ export function RiscoSection() {
                 unit="pg/mL"
                 value={i.ntProBnp}
                 onChange={(v) => set('ntProBnp', v)}
-                hint="Corte: ≥ 125; ≥ 190 a partir de 60 anos (idosos)"
+                hint="Usado só na SBD. Corte: ≥ 125; ≥ 190 a partir de 60 anos (idosos)"
               />
               <NumberField
                 label="Escore de cálcio (CAC)"
@@ -513,7 +528,7 @@ export function RiscoSection() {
                 onChange={(v) => set('metabolicSyndrome', v)}
               />
               <Check
-                label="Nefropatia (PCDT, ≤ 39 anos)"
+                label="Nefropatia (usada só até 39 anos, no PCDT; TFGe < 60 ou albuminúria ≥ 30 mg/g já contam sozinhas)"
                 checked={i.nephropathy}
                 onChange={(v) => set('nephropathy', v)}
               />
@@ -568,14 +583,16 @@ export function RiscoSection() {
         )}
       </div>
 
-      <Comparison
-        i={i}
-        results={results}
-        prev={prev}
-        whoLab={whoLab}
-        whoNonLab={whoNonLab}
-        current={scale}
-      />
+      {patient.sexKnown ? (
+        <Comparison
+          i={i}
+          results={results}
+          prev={prev}
+          whoLab={whoLab}
+          whoNonLab={whoNonLab}
+          current={scale}
+        />
+      ) : null}
     </>
   )
 }
@@ -597,7 +614,7 @@ function TargetBlock({ r }: { r: ScaleResult }) {
   )
 }
 
-function CategoryView({ r, scale }: { r: ScaleResult; scale: ScaleId }) {
+function CategoryView({ r, scale, fertile }: { r: ScaleResult; scale: ScaleId; fertile: boolean }) {
   return (
     <div className="card">
       {!r.applicable ? (
@@ -620,6 +637,11 @@ function CategoryView({ r, scale }: { r: ScaleResult; scale: ScaleId }) {
             </Result>
             <TargetBlock r={r} />
           </Results>
+          {r.target && fertile ? (
+            <p className="hint-inline">
+              Não se aplica a gestantes: estatina é contraindicada na gestação (SBD, nota 7; SBC).
+            </p>
+          ) : null}
           {r.notes.map((n) => (
             <Alert key={n} tone="info">
               {n}
@@ -647,7 +669,11 @@ function ScaleView(props: {
   if (scale === 'sbc' || scale === 'sbd' || scale === 'pcdt') {
     return (
       <>
-        <CategoryView r={props.results[scale]} scale={scale} />
+        <CategoryView
+          r={props.results[scale]}
+          scale={scale}
+          fertile={i.sex === 'F' && i.age !== null && i.age < 50}
+        />
         {scale === 'pcdt' &&
         i.diabetes &&
         i.dmType === 'DM2' &&
@@ -672,6 +698,8 @@ function ScaleView(props: {
         </div>
       )
     }
+    const labProblems = whoProblems('lab', i.sbp, i.totalChol)
+    const nonLabProblems = whoProblems('nonlab', i.sbp, null)
     const w = (r: WhoResult | null, title: string, missing: string, extra?: string) =>
       r ? (
         <Result label={title} value={`${r.pct}%`} tone={WHO_TONE[r.category]}>
@@ -700,13 +728,17 @@ function ScaleView(props: {
               {w(
                 props.whoLab,
                 'Com exames (colesterol)',
-                'Informe idade, PA sistólica e colesterol total.',
+                labProblems.length
+                  ? `Não calculado: ${labProblems.join('; ')}.`
+                  : 'Informe idade, PA sistólica e colesterol total.',
                 i.diabetes ? 'Inclui diabetes.' : 'Sem diabetes.',
               )}
               {w(
                 props.whoNonLab,
                 'Sem exames (IMC)',
-                'Informe idade, PA sistólica e altura/peso (IMC).',
+                nonLabProblems.length
+                  ? `Não calculado: ${nonLabProblems.join('; ')}.`
+                  : 'Informe idade, PA sistólica e altura/peso (IMC).',
                 'Não considera diabetes.',
               )}
             </Results>
@@ -715,22 +747,17 @@ function ScaleView(props: {
                 A calculadora vale de 40 a 74 anos; fora disso o valor é só ilustrativo.
               </Alert>
             ) : null}
-            {i.diabetes ? (
-              <Alert tone="info">
-                Com diabetes tipo 1, ou fora de 40 a 74 anos, o PCDT pede avaliação individualizada.
-              </Alert>
-            ) : null}
           </>
         )}
         <Details summary="Como foi calculado e fonte">
           <p>
             Antes de calcular, a calculadora HEARTS pergunta sobre doença cardiovascular
             estabelecida, doença renal crônica e diabetes: quem tem doença cardiovascular é de risco
-            muito alto; quem tem doença renal ou diabetes (DM2 de 40 a 74 anos, pelo PCDT) é de alto
-            risco, sem percentual. Aqui, doença renal crônica é TFGe &lt; 60. Para os demais: modelo
-            da OMS 2019 recalibrado para a América Latina Tropical (Brasil). O valor principal usa a
-            faixa de idade, PA e colesterol (ou IMC); o “valor exato” usa os números informados.
-            Categorias: &lt; 5% baixo; 5–9% moderado; 10–19% alto; 20–29% muito alto; ≥ 30% crítico.
+            muito alto; quem tem doença renal ou diabetes é de alto risco, sem percentual. Aqui,
+            doença renal crônica é TFGe &lt; 60. Para os demais: modelo da OMS 2019 recalibrado para
+            a América Latina Tropical (Brasil). O valor principal usa a faixa de idade, PA e
+            colesterol (ou IMC); o “valor exato” usa os números informados. Categorias: &lt; 5%
+            baixo; 5–9% moderado; 10–19% alto; 20–29% muito alto; ≥ 30% crítico.
           </p>
           <Src href={SOURCES.oms.href}>{SOURCES.oms.text}.</Src>
         </Details>
@@ -752,13 +779,9 @@ function ScaleView(props: {
       ) : (
         <>
           <Results>
-            <Result
-              label="Aterosclerótica (ASCVD) 10 anos"
-              value={pct(p.tenYear.ascvd)}
-              tone={p.tenYear.ascvd >= 0.2 ? 'danger' : p.tenYear.ascvd >= 0.05 ? 'warn' : 'ok'}
-            >
-              Infarto, AVC ou morte coronária. Faixas da SBC 2025: &lt; 5% baixo; 5 a &lt; 20%
-              intermediário; ≥ 20% alto.
+            <Result label="Aterosclerótica (ASCVD) 10 anos" value={pct(p.tenYear.ascvd)}>
+              Infarto, AVC ou morte coronária. A categoria final de risco (com agravantes e LDL)
+              está na escala SBC 2025.
             </Result>
             <Result label="DCV total 10 anos" value={p.bmiMissing ? '—' : pct(p.tenYear.total_cvd)}>
               {p.bmiMissing
@@ -838,7 +861,7 @@ function Comparison(props: {
   const pre = omsPreclass(props.i)
   return (
     <div className="card">
-      <h3>Comparação entre as escalas</h3>
+      <h3>Comparação entre as escalas{props.i.diabetes ? '' : ' (calculada sem diabetes)'}</h3>
       <table>
         <thead>
           <tr>

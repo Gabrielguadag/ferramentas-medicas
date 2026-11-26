@@ -148,7 +148,8 @@ export const ITENS_MS: readonly Item[] = [
     periodo: 'qualquer',
     nome: 'dTpa',
     janela: { de: igDias(20, 0), ate: null },
-    quando: 'a partir da 20ª semana, em toda gestação',
+    quando:
+      'a partir da 20ª semana, em toda gestação; se não tomar na gestação, até 45 dias após o parto',
   },
   {
     id: 'v-vsr',
@@ -156,7 +157,7 @@ export const ITENS_MS: readonly Item[] = [
     periodo: 'qualquer',
     nome: 'VSR (vírus sincicial respiratório)',
     janela: { de: igDias(28, 0), ate: null },
-    quando: 'a partir da 28ª semana, dose única em cada gestação',
+    quando: 'a partir da 28ª semana, o mais cedo possível; dose única em cada gestação',
   },
   {
     id: 'v-hbv',
@@ -251,8 +252,7 @@ export const PROTOCOLO_LOCAL = {
       } as Item,
     },
   ],
-  resumo:
-    'Ajustado ao protocolo do município: HTLV e eletroforese de hemoglobina aparecem no fim da lista, sem oferta local; sem Chagas e malária; toxoplasmose só no 1º e no 3º trimestre; estreptococo do grupo B de 35s 0d a 37s 0d (não está na lista do MS); sem os exames do parto; ultrassonografia obstétrica de 11 a 13 e de 20 a 24 semanas (a Caderneta do MS indica uma, idealmente entre 7 e 12 semanas).',
+  resumo: 'Lista ajustada ao protocolo do município.',
 }
 
 function aplicarProtocolo(base: readonly Item[]): Item[] {

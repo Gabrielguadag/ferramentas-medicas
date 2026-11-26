@@ -23,8 +23,9 @@ fica em `src/gestante/IdadeGestacional.tsx`.
    - 5.6: DPP = 280 dias (40 semanas) a partir da DUM, pelo calendário. A regra de Näegele é
      dada como alternativa (+7 dias; −3 meses ou +9 meses; os dias que passam do fim do mês vão
      para o mês seguinte).
-   - 5.4.2: pré-termo é antes da 37ª semana; pós-termo, 42 semanas ou mais.
-   - 6.3.5: gestação prolongada (pós-datismo) fica entre 40 e 42 semanas.
+   - 5.4.2 (histórico obstétrico): pré-termo é antes da 37ª semana; pós-termo, 42 semanas ou mais.
+   - 6.3.4: pré-termo entre 22 semanas e 37 semanas.
+   - 6.3.5: "gestação prolongada, também referida como pós-datismo" fica entre 40 e 42 semanas; pós-termo "ultrapassa 42 semanas".
    - 5.3: com 41 semanas, encaminhar para avaliação do bem-estar fetal.
    - Link: <https://bvsms.saude.gov.br/bvs/publicacoes/cadernos_atencao_basica_32_prenatal.pdf>
 2. **ACOG/AIUM/SMFM. Committee Opinion nº 700: Methods for Estimating the Due Date (2017,
@@ -74,26 +75,29 @@ diferença é **maior** que o limite da faixa:
 A tela sugere a datação pela regra, mas o médico pode adotar a DUM ou a ultrassonografia.
 
 Se a DUM informada for posterior ao exame, a tela avisa que as datas são inconsistentes e não
-calcula a comparação. A 3ª linha da tabela tem um aviso próprio: no 3º trimestre, redatar um
+calcula a comparação. A última linha da tabela (28s 0d em diante) tem um aviso próprio: no 3º trimestre, redatar um
 feto pequeno pode esconder restrição de crescimento.
 
 ### Situação na data (MS)
 
 - 37 semanas ou mais: termo.
-- De 40 a 42 semanas: gestação prolongada (definição do MS, mostrada como informação; a avaliação do bem-estar fetal é com 41 semanas).
-- 41 semanas ou mais: encaminhar para avaliação do bem-estar fetal.
-- 42 semanas ou mais: pós-termo; a tela mantém a conduta (avaliação do bem-estar fetal, centro de referência, sem alta do pré-natal antes do parto; CAB 32, 5.3 e 6.3.5). O cartão de pré-natal não aparece a partir de 42 semanas.
+- De 40s 0d a 40s 6d: a tela diz só que a DPP foi atingida, com consultas semanais e avaliação do bem-estar fetal com 41 semanas. O CAB 32 (6.3.5) chama o intervalo de 40 a 42 semanas de "gestação prolongada"; o rótulo não aparece na tela para não soar como alerta aos 40s 0d.
+- 41 semanas ou mais: encaminhar para avaliação do bem-estar fetal (índice de líquido amniótico e monitoramento cardíaco fetal) e para o centro de referência; não dar alta do pré-natal antes da internação para o parto (CAB 32, 5.3 e 6.3.5). O CAB 32 também admite a indução com 41 semanas; a escolha entre avaliar e induzir é do serviço de referência e fica fora do escopo.
+- 42 semanas ou mais: pós-termo; a tela repete a conduta de forma curta. O cartão de pré-natal não aparece a partir de 42 semanas.
 - Data anterior à DUM: aviso de que ainda não havia gestação.
 - Mais de 44 semanas: aviso para conferir as datas. Este limite de plausibilidade é da
   interface; não vem das fontes.
 
 ## Escolhas e limites
 
-- A DPP adotada é a de 280 dias. A regra de Näegele aparece só como conferência e pode diferir
-  em até 3 dias, conforme os meses.
+- A DPP adotada é a de 280 dias, e é a única mostrada na tela. A regra de Näegele (`dppNaegele`
+  em `ig.ts`, testada) fica só como registro: pode diferir em até 3 dias, conforme os meses.
 - Com DUM incerta (só o período do mês), a comparação com a ultrassonografia fica a cargo do
   médico. O campo de comparação pede DUM exata, e a ACOG recomenda datar pela ultrassonografia
-  quando a DUM é incerta.
+  quando a DUM é incerta; por isso a aba DUM mostra uma linha: DUM confiável com ciclos regulares
+  e sem anticoncepcional hormonal (CAB 32, 5.5) e, com só o período do mês, usar a ultrassonografia
+  precoce (até 13s 6d) quando houver (ACOG CO 700).
+- Campos de semanas e dias: dias em branco valem 0, e a tela avisa nos campos.
 - A ultrassonografia entra pela IG do laudo. A tela não calcula IG a partir do CCN ou da
   biometria.
 - Gestação múltipla e outros cenários de FIV (embrião de 6 dias, ovócito doado com outras
@@ -118,7 +122,7 @@ escolha manual de manter a DUM.
 ## Escolhas registradas (revisão de 2026-11-25)
 
 - **Ultrassonografia sem DUM:** com exame a partir de 14s 0d, a tela mostra uma linha sobre a
-  precisão menor da datação. ACOG CO 700: "Gestational age assessment by ultrasonography in the
+  precisão menor da datação, só com a faixa do exame. ACOG CO 700: "Gestational age assessment by ultrasonography in the
   third trimester ... is the least reliable method, with an accuracy of ± 21-30 days"; 14 0/7 a
   21 6/7: ± 7-10 dias; 22 0/7 a 27 6/7: ± 10-14 dias.
 - **Pós-termo:** o CAB 32 diz "igual ou mais de 42 semanas" (5.4.2) e "ultrapassa 42 semanas"

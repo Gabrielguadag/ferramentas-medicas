@@ -43,7 +43,7 @@ export function dayDiffFromToday(d: DeviceDateTime, now: Date = new Date()): num
 }
 
 export interface Reading {
-  /** Posição na memória do aparelho (ordem de leitura). */
+  /** Ordem de leitura (não é a posição física na memória do aparelho). */
   index: number
   time: DeviceDateTime | null
   /** "AAAA-MM-DD HH:MM:SS" ou "" sem data. */
@@ -103,27 +103,98 @@ export function dedupeReadings(readings: readonly Reading[]): {
   return { readings: out, duplicates: readings.length - out.length }
 }
 
-/** Dias do período: N para "últimos N dias"; para "todas", do primeiro ao último dia com medição. */
+/**
+ * Dias que a memória cobre dentro do período: do primeiro ao último dia com medição (nunca mais
+ * que N). Não conta dias anteriores à primeira medição guardada, para não sugerir dias "sem teste".
+ */
 export function periodDayCount(shown: readonly Reading[], days: PeriodDays): number {
-  if (days !== 'all') return days
   const d = shown.flatMap((r) => (r.minutes === null ? [] : [Math.floor(r.minutes / 1440)]))
-  return d.length ? Math.max(...d) - Math.min(...d) + 1 : 0
+  if (!d.length) return 0
+  const span = Math.max(...d) - Math.min(...d) + 1
+  return days === 'all' ? span : Math.min(days, span)
 }
 
 export type PeriodDays = 7 | 14 | 30 | 90 | 'all'
 
-/** Filtra pelos últimos N dias contados a partir da medição mais recente (não do relógio do PC). */
-export function filterPeriod(readings: readonly Reading[], days: PeriodDays): Reading[] {
+/**
+ * Filtra pelos últimos N dias contados a partir da última medição que NÃO seja futura (relógio do
+ * computador). Medições com data futura ficam fora dos períodos de N dias (não deslocam a janela);
+ * "Toda a memória" as inclui. Se todas forem futuras, ancora na mais recente.
+ */
+export function filterPeriod(
+  readings: readonly Reading[],
+  days: PeriodDays,
+  now: Date = new Date(),
+): Reading[] {
   if (days === 'all') return [...readings]
-  const latest = readings.reduce<number | null>(
-    (m, r) => (r.minutes !== null && (m === null || r.minutes > m) ? r.minutes : m),
-    null,
-  )
+  const todayEnd = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 60_000 + 1440
+  const latestOf = (pred: (m: number) => boolean) =>
+    readings.reduce<number | null>(
+      (m, r) =>
+        r.minutes !== null && pred(r.minutes) && (m === null || r.minutes > m) ? r.minutes : m,
+      null,
+    )
+  const pastLatest = latestOf((m) => m < todayEnd)
+  const latest = pastLatest ?? latestOf(() => true)
   if (latest === null) return [...readings]
   // Do início do dia (N-1) dias antes do dia da última medição.
   const lastDayStart = Math.floor(latest / 1440) * 1440
   const from = lastDayStart - (days - 1) * 1440
-  return readings.filter((r) => r.minutes !== null && r.minutes >= from)
+  const upper = pastLatest === null ? Infinity : todayEnd
+  return readings.filter((r) => r.minutes !== null && r.minutes >= from && r.minutes < upper)
+}
+
+/** Faixa em que o alvo pode ser ajustado: entre os limiares fixos <54 e >250 da fonte. */
+export const TARGET_BOUNDS = { min: 54, max: 250 } as const
+
+/**
+ * Alvo em uso a partir do que foi digitado (mg/dL; null = campo vazio). Fora de 54–250 ou invertido
+ * é recusado e volta ao padrão 70–180.
+ */
+export function resolveTarget(
+  lowMg: number | null,
+  highMg: number | null,
+): { target: Target; lowEmpty: boolean; highEmpty: boolean; invalid: boolean } {
+  const low = lowMg ?? DEFAULT_TARGET.low
+  const high = highMg ?? DEFAULT_TARGET.high
+  const invalid =
+    !Number.isFinite(low) ||
+    !Number.isFinite(high) ||
+    low < TARGET_BOUNDS.min ||
+    high > TARGET_BOUNDS.max ||
+    low >= high
+  return {
+    target: invalid ? DEFAULT_TARGET : { low, high },
+    lowEmpty: lowMg === null,
+    highEmpty: highMg === null,
+    invalid,
+  }
+}
+
+/** Faixa de valores possível para um glicosímetro capilar (mg/dL); fora dela o registro é inválido. */
+export const PLAUSIBLE_MGDL = { min: 10, max: 600 } as const
+
+/**
+ * Plausibilidade dos valores lidos. `mmolSuspect`: todos os valores numéricos são menores que 30,
+ * típico de mmol/L lido como mg/dL (a leitura não deve ser interpretada). Valores fora de 10–600
+ * viram "sem valor" (contados em `implausible`).
+ */
+export function sanitizeReadings(readings: readonly Reading[]): {
+  readings: Reading[]
+  implausible: number
+  mmolSuspect: boolean
+} {
+  const nums = readings.flatMap((r) => (r.mgdl !== null && r.flag === null ? [r.mgdl] : []))
+  const mmolSuspect = nums.length > 0 && nums.every((v) => v < 30)
+  let implausible = 0
+  const out = readings.map((r) => {
+    if (r.mgdl !== null && (r.mgdl < PLAUSIBLE_MGDL.min || r.mgdl > PLAUSIBLE_MGDL.max)) {
+      implausible++
+      return { ...r, mgdl: null }
+    }
+    return r
+  })
+  return { readings: out, implausible, mmolSuspect }
 }
 
 export interface Target {
@@ -262,7 +333,7 @@ export function toCsv(readings: readonly Reading[], unit: Unit): string {
     'Fora da faixa do aparelho',
     'Solução de controle',
     'Status bruto do aparelho',
-    'Posição na memória',
+    'Ordem de leitura',
   ]
   const lines = [
     header.join(';'),

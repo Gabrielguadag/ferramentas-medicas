@@ -32,6 +32,28 @@ describe('App', () => {
     expect(within(panel).getByRole('alert')).toHaveTextContent('Insulina basal > 0,5 UI/kg/dia')
   })
 
+  it('consulta: perfil criança bloqueia as quatro seções do DM2 adulto; hipoglicemia sempre alerta', async () => {
+    render(<App />)
+    const user = userEvent.setup()
+    const panel = screen.getByRole('tabpanel', { name: 'Consulta de diabetes' })
+    await user.type(within(panel).getByLabelText('Idade (anos)'), '30')
+    // adulto: glicemia 55 mostra o alerta mesmo sem dose prandial
+    await user.click(within(panel).getByRole('button', { name: /Insulina prandial/ }))
+    await user.type(within(panel).getByLabelText('Glicemia antes da refeição (mg/dL)'), '55')
+    expect(within(panel).getByText('Glicemia abaixo de 70 mg/dL.')).toBeInTheDocument()
+    await user.selectOptions(within(panel).getByLabelText('Perfil (metas)'), 'crianca')
+    for (const nome of [
+      'Insulina prandial',
+      'Início da NPH',
+      'Titulação da basal',
+      'Tratamento do DM2',
+    ]) {
+      await user.click(within(panel).getByRole('button', { name: new RegExp(nome) }))
+      const sec = within(panel).getByRole('region', { name: nome })
+      expect(within(sec).getByText(/Fora do escopo/)).toBeInTheDocument()
+    }
+  })
+
   it('risco: escolhe a escala e desmarca o diabetes', async () => {
     render(<App />)
     const user = userEvent.setup()
@@ -39,6 +61,9 @@ describe('App', () => {
     await user.type(within(panel).getByLabelText('Idade (anos)'), '45')
     await user.click(within(panel).getByRole('button', { name: /Risco cardiovascular/ }))
     const risk = within(panel).getByRole('region', { name: 'Risco cardiovascular' })
+    // sem sexo escolhido, as escalas não calculam
+    expect(within(risk).getByText(/Escolha o sexo no painel do paciente/)).toBeInTheDocument()
+    await user.click(within(panel).getByRole('radio', { name: 'Masc.' }))
     // SBC 2025, DM2, homem 45 anos sem estratificadores → intermediário
     expect(within(risk).getAllByText('Intermediário').length).toBeGreaterThan(0)
     await user.click(within(risk).getByRole('radio', { name: /SBD 2026/ }))
@@ -129,7 +154,9 @@ describe('App', () => {
         name: /Leite de vaca integral \(alternativa do MS, não indicada em condições gerais\)/,
       }),
     )
-    expect(within(alim).getByText(/Padrão \(SBP\): o leite de vaca integral/)).toBeInTheDocument()
+    expect(
+      within(alim).getByText(/não deve ser consumido no primeiro ano de vida/),
+    ).toBeInTheDocument()
     expect(
       within(alim).getByRole('heading', { name: 'Entre 5 e 11 meses, com leite de vaca' }),
     ).toBeInTheDocument()

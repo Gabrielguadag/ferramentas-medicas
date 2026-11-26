@@ -7,7 +7,9 @@ import type { DiabetesType } from './sources'
 
 export interface Patient {
   age: number | null
+  /** Valor usado nos cálculos; vale só se `sexKnown` (o painel começa sem sexo escolhido). */
   sex: 'M' | 'F'
+  sexKnown: boolean
   weight: number | null
   height: number | null
   type: DiabetesType
@@ -42,6 +44,7 @@ export function PatientProvider(props: { children: ReactNode }) {
   const [raw, setPatient] = useState<Patient>({
     age: null,
     sex: 'M',
+    sexKnown: false,
     weight: null,
     height: null,
     type: 'DM2',
@@ -100,12 +103,16 @@ export function PatientBar() {
         />
         <RadioGroup
           legend="Sexo"
-          value={patient.sex}
+          value={patient.sexKnown ? patient.sex : ''}
           options={[
             { value: 'M', label: 'Masc.' },
             { value: 'F', label: 'Fem.' },
           ]}
-          onChange={(v) => set('sex', v)}
+          onChange={(v) => {
+            if (v === '') return
+            set('sex', v)
+            set('sexKnown', true)
+          }}
         />
         <NumberField
           label="Peso"
@@ -113,7 +120,7 @@ export function PatientBar() {
           value={raw.weight}
           onChange={(v) => set('weight', v)}
           min={0}
-          max={400}
+          max={300}
         />
         <NumberField
           label="Altura"

@@ -32,12 +32,12 @@ export function eligibility(age: number | null, type: DiabetesType): Eligibility
     return { kind: 'eligible', reason: 'DM1 entre 2 e 17 anos.' }
   if (age >= 70) return { kind: 'eligible', reason: `${type} com 70 anos ou mais.` }
   if (type === 'DM1' && age < 2)
-    return { kind: 'not-eligible', reason: 'A NT contempla DM1 a partir de 2 anos.' }
+    return { kind: 'not-eligible', reason: 'A NT 169 inclui o DM1 a partir de 2 anos.' }
   return {
     kind: 'not-eligible',
     reason:
       type === 'DM1'
-        ? 'DM1 de 18 a 69 anos não está na estratégia (quem completou 18 anos durante a estratégia pode manter o esquema, item 3.3).'
-        : 'DM2 só é elegível a partir de 70 anos.',
+        ? 'A NT 169 não cobre DM1 de 18 a 69 anos (quem completou 18 anos durante a estratégia pode manter o esquema, item 3.3).'
+        : 'A NT 169 inclui o DM2 só a partir de 70 anos.',
   }
 }

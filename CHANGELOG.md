@@ -2,6 +2,43 @@
 
 ## Não lançado
 
+- Correções da 2ª revisão clínica (`docs/revisao-2-2026-11-25.md`):
+  - Insulinas:
+    - o perfil criança fica fora de todas as seções do PCDT DM2 adulto;
+    - o alerta de glicemia < 70 aparece sempre;
+    - dapagliflozina e sexo sem resposta pedem para completar, em vez de virar "não";
+    - teto de basal único de 0,5 U/kg/dia;
+    - notas da Figura 3: sulfonilureia no basal/bolus, gatilho do bolus e troca pela glargina;
+    - glicemias implausíveis não entram no cálculo.
+  - Risco CV:
+    - na aba OMS, qualquer diabetes é "alto", sem percentual;
+    - cortes de colesterol iguais aos do app da OPAS;
+    - validação de PA, colesterol, IMC e demais entradas;
+    - "não se aplica a gestantes";
+    - nefropatia do PCDT ligada à TFGe e à albuminúria;
+    - nota de diálise condicional;
+    - as escalas pedem o sexo antes de calcular.
+  - Gestante:
+    - uma só DPP;
+    - linha curta do protocolo do município;
+    - quando a DUM é confiável;
+    - conduta completa com 41 semanas;
+    - texto neutro na DPP.
+  - Criança:
+    - suplementação só para o nascido a termo (prematuro: esquema próprio);
+    - início do ferro conforme o leite e os fatores de risco (SBP);
+    - alerta do NutriSUS;
+    - plano do prematuro coerente com o início dos alimentos;
+    - farinhas instantâneas;
+    - subtítulo dos marcos.
+  - Glicosímetro:
+    - alvo canônico em mg/dL;
+    - "N de M dias" limitado ao que a memória cobre;
+    - data futura não desloca o período;
+    - plausibilidade da unidade;
+    - alvo fora de 54–250 recusado;
+    - navegação das abas por setas.
+
 - Correções da revisão clínica de 25/11/2026 (detalhes em `docs/revisao-2026-11-25.md`). Regra do
   produto: guia geral, sem polêmicas nem casos excepcionais na tela.
   - Insulinas: titulação, início da NPH, insulina prandial e fluxograma do DM2 ficam fora do

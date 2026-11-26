@@ -19,10 +19,10 @@ export function fixedAboveRange(weightKg: number | null): boolean {
   return !!weightKg && weightKg > 0 && 10 > 0.2 * weightKg
 }
 
-/** Teto de insulina basal (8.3.4.1): < 0,5 U/kg/dia; até 0,75 U/kg/dia só com obesidade e resistência. */
-export function basalCeiling(weightKg: number | null): { usual: number; obesity: number } | null {
+/** Teto geral de insulina basal (8.3.4.1 e NT 169, Quadro 4): 0,5 U/kg/dia. */
+export function basalCeiling(weightKg: number | null): number | null {
   if (!weightKg || !(weightKg > 0)) return null
-  return { usual: Math.round(0.5 * weightKg), obesity: Math.round(0.75 * weightKg) }
+  return Math.round(0.5 * weightKg * 10) / 10
 }
 
 /**
@@ -34,12 +34,10 @@ export function secondNphDose(bedtimeDose: number): {
   morning: number
   bedtime: number
 } {
-  const total = bedtimeDose * 0.8
-  return {
-    total: Math.round(total),
-    morning: Math.round((total * 2) / 3),
-    bedtime: Math.round(total / 3),
-  }
+  const total = Math.round(bedtimeDose * 0.8)
+  // A manhã é arredondada e a noite fecha a conta, para que as duas doses somem o total.
+  const morning = Math.round((bedtimeDose * 0.8 * 2) / 3)
+  return { total, morning, bedtime: total - morning }
 }
 
 // ---------------------------------------------------------------------------------------------

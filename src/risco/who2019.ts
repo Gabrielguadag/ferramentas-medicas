@@ -40,7 +40,7 @@ interface Coef {
 const COEF = P.coefficients as unknown as Record<WhoModel, Record<string, Coef>>
 const RECAL = P.recalibration as unknown as Record<'male' | 'female', Record<string, number>>
 
-/** Conversão usada pelos autores e pela calculadora (cortes 155/193/232/270 mg/dL = 4/5/6/7 mmol/L). */
+/** Conversão mg/dL → mmol/L usada pelos autores e pela calculadora (só no valor contínuo). */
 export const MG_DL_PER_MMOL = 38.67
 
 /** Risco contínuo (fração 0–1) para valores exatos. */
@@ -100,8 +100,9 @@ export function ageBand(age: number): number {
   return Math.floor((age - 45) / 5) + 2
 }
 export const sbpBand = (v: number) => (v < 120 ? 1 : v < 140 ? 2 : v < 160 ? 3 : v < 180 ? 4 : 5)
-export const cholBand = (mmol: number) =>
-  mmol < 4 ? 1 : mmol < 5 ? 2 : mmol < 6 ? 3 : mmol < 7 ? 4 : 5
+/** Colesterol total em mg/dL: cortes 155/193/232/270, iguais aos do aplicativo HEARTS/OPAS. */
+export const cholBand = (mgDl: number) =>
+  mgDl < 155 ? 1 : mgDl < 193 ? 2 : mgDl < 232 ? 3 : mgDl < 270 ? 4 : 5
 export const bmiBand = (v: number) => (v < 20 ? 1 : v < 25 ? 2 : v < 30 ? 3 : v < 35 ? 4 : 5)
 
 /** Valor da célula da tabela (risco % inteiro), igual à calculadora HEARTS. */
@@ -132,6 +133,25 @@ export function whoCategory(pct: number): WhoCategory {
   return 'Crítico'
 }
 
+/** Faixas aceitas pelo aplicativo HEARTS/OPAS (fora delas ele não calcula). */
+export const WHO_LIMITS = { sbp: [90, 200], totalChol: [140, 300] } as const
+
+/** Entradas fora das faixas do aplicativo oficial (sem calcular, avisar). */
+export function whoProblems(
+  model: WhoModel,
+  sbp: number | null,
+  totalCholMgDl: number | null,
+): string[] {
+  const p: string[] = []
+  const [s0, s1] = WHO_LIMITS.sbp
+  if (sbp !== null && (sbp < s0 || sbp > s1))
+    p.push(`PA sistólica fora da faixa da calculadora (${s0} a ${s1} mmHg): confira o valor`)
+  const [c0, c1] = WHO_LIMITS.totalChol
+  if (model === 'lab' && totalCholMgDl !== null && (totalCholMgDl < c0 || totalCholMgDl > c1))
+    p.push(`colesterol total fora da faixa da calculadora (${c0} a ${c1} mg/dL): confira a unidade`)
+  return p
+}
+
 export interface WhoResult {
   pct: number
   category: WhoCategory
@@ -142,8 +162,9 @@ export interface WhoResult {
 export function whoHearts(i: WhoInput): WhoResult | null {
   if (i.model === 'lab' && (i.totalCholMgDl === null || i.totalCholMgDl === undefined)) return null
   if (i.model === 'nonlab' && (i.bmi === null || i.bmi === undefined)) return null
+  if (whoProblems(i.model, i.sbp, i.totalCholMgDl ?? null).length) return null
   const x = i.model === 'lab' ? (i.totalCholMgDl as number) / MG_DL_PER_MMOL : (i.bmi as number)
-  const xb = i.model === 'lab' ? cholBand(x) : bmiBand(x)
+  const xb = i.model === 'lab' ? cholBand(i.totalCholMgDl as number) : bmiBand(x)
   const dm = i.model === 'lab' && Boolean(i.diabetes)
   const pct = whoCell(i.model, i.sex, i.smoker, dm, ageBand(i.age), sbpBand(i.sbp), xb)
   return {

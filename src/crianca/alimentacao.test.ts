@@ -1,4 +1,12 @@
-import { avisoLeiteVaca, colheres, cuidados, etapa, plano, suplementacao } from './alimentacao'
+import {
+  avisoLeiteVaca,
+  colheres,
+  cuidados,
+  etapa,
+  inicioPrematuro,
+  plano,
+  suplementacao,
+} from './alimentacao'
 
 const nomes = (leite: Parameters<typeof plano>[0], m: number) =>
   plano(leite, m).refeicoes.map((r) => r.nome)
@@ -132,5 +140,56 @@ describe('introdução alimentar (Guia alimentar para menores de 2 anos)', () =>
       .join(' ')
     expect(t).toContain('iogurtes adoçados ou com sabor')
     expect(t).not.toContain('biscoitos, iogurtes, ')
+  })
+
+  it('suplementação: prematuro só mostra o esquema próprio, sem doses', () => {
+    const t = suplementacao(5, 'materno', true)
+    expect(t).toHaveLength(1)
+    expect(t[0]?.texto).toContain('esquema próprio')
+    expect(t[0]?.texto).not.toContain('UI')
+  })
+
+  it('suplementação: ferro aos 90 dias sem aleitamento exclusivo; NutriSUS; fórmula e vitamina D', () => {
+    const j = (m: number, l: 'materno' | 'formula' | 'vaca') =>
+      suplementacao(m, l)
+        .map((c) => c.texto)
+        .join(' ')
+    expect(j(7, 'formula')).toContain('a partir dos 3 meses (90 dias)')
+    expect(j(7, 'materno')).toContain('Apgar')
+    expect(j(5, 'materno')).not.toContain('NutriSUS')
+    expect(j(6, 'materno')).toContain('NutriSUS')
+    expect(j(3, 'formula')).toContain('1.000 mL')
+    expect(j(3, 'materno')).not.toContain('1.000 mL')
+  })
+
+  it('farinhas instantâneas: com ou sem açúcar', () => {
+    const t = cuidados(8)
+      .map((c) => c.texto)
+      .join(' ')
+    expect(t).toContain('farinhas instantâneas para mingau (com ou sem açúcar)')
+  })
+
+  it('antes de 6 meses: só os cuidados que cabem à idade', () => {
+    const t = cuidados(2)
+      .map((c) => c.texto)
+      .join(' ')
+    expect(t).toContain('Mel')
+    expect(t).toContain('Leite de vaca integral')
+    expect(t).not.toContain('Amendoim')
+    expect(t).not.toContain('Carnes e ovos')
+    expect(t).not.toContain('sal')
+  })
+
+  it('prematuro: início dos outros alimentos (>= 6 meses cronológicos e >= 4 corrigidos)', () => {
+    expect(inicioPrematuro(6, 3).iniciou).toBe(false)
+    expect(inicioPrematuro(6, null).iniciou).toBe(false)
+    expect(inicioPrematuro(5, 4).iniciou).toBe(false)
+    expect(inicioPrematuro(6, 4).iniciou).toBe(true)
+    expect(inicioPrematuro(8, 5)).toEqual({ iniciou: true, mostrarAviso: true })
+    expect(inicioPrematuro(12, 6).mostrarAviso).toBe(false)
+  })
+
+  it('fórmula aos 12 meses: avisa a troca pelo leite de vaca', () => {
+    expect(plano('formula', 12).notas.join(' ')).toContain('A partir de 1 ano')
   })
 })

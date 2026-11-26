@@ -8,7 +8,8 @@ import {
   type Leite,
   avisoLeiteVaca,
   cuidados,
-  SUPLEMENTACAO_PREMATURO,
+  SUPLEMENTACAO_SEM_IG,
+  inicioPrematuro,
   etapa,
   plano,
   suplementacao,
@@ -20,12 +21,17 @@ export function AlimentacaoSection(props: { dados: DadosCrianca }) {
   const [leite, setLeite] = useState<Leite>('materno')
   const { idade, igNascDias, correcao } = props.dados
   const meses = idade?.meses ?? null
-  const p = meses !== null ? plano(leite, meses) : null
-  const e = meses !== null ? etapa(meses) : null
-  const avisoVaca = meses !== null ? avisoLeiteVaca(meses) : null
   const prematura = igNascDias !== null && igNascDias < 37 * 7
   const corrigindo = prematura && correcao?.vale === true
   const corrigida = corrigindo ? (correcao?.idade ?? null) : null
+  const inicio =
+    corrigindo && meses !== null ? inicioPrematuro(meses, corrigida?.meses ?? null) : null
+  // Prematuro que ainda não chegou à idade de iniciar: plano "antes do início".
+  const mesesPlano =
+    meses !== null && inicio && !inicio.iniciou && meses >= 4 ? (leite === 'vaca' ? 3 : 5) : meses
+  const p = mesesPlano !== null ? plano(leite, mesesPlano) : null
+  const e = mesesPlano !== null ? etapa(mesesPlano) : null
+  const avisoVaca = meses !== null ? avisoLeiteVaca(meses) : null
 
   return (
     <>
@@ -53,13 +59,13 @@ export function AlimentacaoSection(props: { dados: DadosCrianca }) {
       ) : (
         <>
           {leite === 'vaca' && avisoVaca ? <Alert tone="warn">{avisoVaca.aviso}</Alert> : null}
-          {corrigindo ? (
+          {corrigindo && inicio?.mostrarAviso ? (
             <Alert tone="warn" title="Prematuro:">
-              {corrigida ? `idade corrigida de ${fmtIdade(corrigida)}. ` : ''}Os outros alimentos
-              começam depois dos 6 meses de idade cronológica e entre 4 e 6 meses de idade
-              corrigida, com o desenvolvimento neuropsicomotor adequado para comer alimentos
-              pastosos (SBP, pág. 31). Não adiar os alimentos que podem causar alergia. Depois do
-              início, os tipos de alimentos e a forma de oferecer são os mesmos.
+              {corrigida ? `idade corrigida de ${fmtIdade(corrigida)}. ` : ''}
+              {inicio.iniciou
+                ? 'Já está na idade de iniciar os outros alimentos (depois dos 6 meses de idade cronológica e entre 4 e 6 meses de idade corrigida). O número de refeições e as colheres abaixo são da idade cronológica: adaptar ao tempo desde o início. '
+                : 'Ainda não é a idade de iniciar os outros alimentos: começam depois dos 6 meses de idade cronológica e entre 4 e 6 meses de idade corrigida, com o desenvolvimento neuropsicomotor adequado para comer alimentos pastosos. '}
+              Não adiar os alimentos que podem causar alergia (SBP, pág. 31).
             </Alert>
           ) : null}
 
@@ -84,9 +90,13 @@ export function AlimentacaoSection(props: { dados: DadosCrianca }) {
               </table>
             ) : null}
             <ul className="checklist">
-              {p.notas.map((n) => (
-                <li key={n}>{n}</li>
-              ))}
+              {p.notas
+                .filter(
+                  (n) => !(inicio && !inicio.iniciou && n.startsWith('Outros alimentos a partir')),
+                )
+                .map((n) => (
+                  <li key={n}>{n}</li>
+                ))}
             </ul>
             {p.refeicoes.length ? (
               <p className="hint-inline">
@@ -134,21 +144,24 @@ export function AlimentacaoSection(props: { dados: DadosCrianca }) {
           ) : null}
 
           {meses !== null && meses < 24 ? (
-            <Card title="Suplementação de rotina" subtitle="Criança nascida a termo">
+            <Card
+              title="Suplementação de rotina"
+              subtitle={prematura ? 'Nascida prematura' : 'Criança nascida a termo'}
+            >
               <ul className="checklist">
-                {suplementacao(meses).map((c) => (
+                {suplementacao(meses, leite, prematura).map((c) => (
                   <li key={c.texto}>
                     {c.texto} <span className="muted">({c.pagina})</span>
                   </li>
                 ))}
-                <li>{SUPLEMENTACAO_PREMATURO}</li>
+                {prematura ? null : <li>{SUPLEMENTACAO_SEM_IG}</li>}
               </ul>
             </Card>
           ) : null}
 
           <Card title="Não oferecer e cuidados" subtitle="Para a idade atual">
             <ul className="checklist">
-              {cuidados(meses as number).map((c) => (
+              {cuidados(mesesPlano as number).map((c) => (
                 <li key={c.texto}>
                   {c.texto} <span className="muted">({c.pagina})</span>
                 </li>
@@ -171,9 +184,9 @@ export function AlimentacaoSection(props: { dados: DadosCrianca }) {
           na Caderneta da Criança.
         </p>
         <p>
-          Leite de vaca integral antes de 1 ano: o padrão segue a SBP, que não o recomenda no
-          primeiro ano de vida. O esquema do Guia do MS, que o admite quando não há acesso à
-          fórmula, aparece como alternativa não indicada em condições gerais.
+          Leite de vaca integral antes de 1 ano: não indicado em condições gerais; sem leite
+          materno, usar fórmula infantil. O esquema para quando não há acesso à fórmula aparece como
+          alternativa.
         </p>
         <Src href={GUIA_MENORES_2.url}>{GUIA_MENORES_2.titulo}</Src>
         <Src href={SBP_MANUAL.url}>{SBP_MANUAL.titulo}</Src>

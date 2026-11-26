@@ -61,17 +61,28 @@ diferenças em relação à SBC:
 - Divergências internas da SBD resolvidas pelos quadros, sem aparecer na tela: mulher de 56 anos
   é alto (Quadro 1 e SBC); meta de não-HDL no risco alto é < 100 (Quadro 5; o texto de R4 diz
   < 80); LDL > 190 é EAR (Quadro 2; a R9 fala em muito alto só com HF confirmada); grade renal
-  segue o Quadro 3 (TFGe 30 e 45 exatos ficam em "alto").
-- Em diálise (TFGe < 15), a tela acrescenta uma linha: a SBD não recomenda iniciar estatina em
-  diálise sem doença arterial clínica (R10). Insuficiência cardíaca (R11) não tem campo.
+  segue o Quadro 3 (TFGe < 30 é muito alto; com TFGe 30–44 ou 45–59, albuminúria < 30 dá alto e
+  30–299 dá muito alto no G3b e alto no G3a; o Quadro 4 diverge nos pontos exatos 30 e 45).
+- Com TFGe < 15, a tela acrescenta uma linha condicional ("Se estiver em diálise e sem doença
+  arterial clínica: não iniciar estatina; se já usava, manter", R10). O app não tem campo de
+  diálise e não infere diálise pela TFGe. Insuficiência cardíaca (R11) não tem campo.
+- iPCSK9 (R3, IIb A): a tela traz "decisão com análise de custo-benefício".
+- Mulher com menos de 50 anos: linha "Não se aplica a gestantes" nas metas da SBC e da SBD
+  (SBD, nota importante 7: "Estatinas estão contra indicadas em gestantes"; SBC: suspensão
+  imediata da estatina na gestação).
 - Muito alto: "estatina de alta potência; se a meta não for atingida na dose máxima tolerada,
   considerar ezetimiba (R2, IIa) e depois, se ainda não atingida, iPCSK9 (R3, IIb)".
 
 ### PCDT DM2 2026 (item 5.5)
 
 - **40 a 74 anos:** o DM2 já é alto risco; com DAC, AVC ou DAP passa a muito alto.
-- **≤ 39 anos:** avaliação individualizada; nefropatia ou retinopatia dão alto risco.
-- **≥ 75 anos ou DM1:** avaliação individualizada.
+- **≤ 39 anos:** avaliação individualizada; nefropatia ou retinopatia dão alto risco. O PCDT não
+  define nefropatia; o app considera nefropatia a caixa marcada à mão **ou** TFGe < 60 **ou**
+  albuminúria ≥ 30 mg/g já informadas (mesma grade da SBC Tab. 4.7; o PCDT manda avaliar
+  nefropatia por creatinina e albuminúria). A caixa vale só até 39 anos.
+- **≥ 75 anos ou DM1:** avaliação individualizada (≥ 75 traz a mesma frase de autocuidado dos
+  ≤ 39 anos, do PCDT p. 12).
+- Sem diabetes, a tela diz apenas "O PCDT DM2 é para pessoas com DM2" (sem remeter a outra escala).
 - Idade em anos completos (a tela usa o piso); < 18 anos: fora do escopo.
 - O PCDT afirma que a estratificação "não altera a conduta para o DM2" e remete ao PCDT de
   Dislipidemia (2019), que não foi lido.
@@ -89,12 +100,18 @@ diferenças em relação à SBC:
   dicotômicas consecutivas" (doença cardiovascular estabelecida, doença renal crônica, diabetes).
   No código do aplicativo: diabetes ou doença renal = "Paciente de Alto Risco"; só doença
   cardiovascular = "Paciente de Risco Muito Alto". Sem percentual em nenhum caso.
-- **Na tela:** doença cardiovascular estabelecida mostra "Muito alto" (a mesma classificação do
-  PCDT para DM2 com DCV) e doença renal crônica (TFGe < 60, a mesma definição da SBC Tab. 4.2)
-  mostra "Alto", sem percentual, na aba e na comparação. DM2 de 40 a 74 anos também mostra "Alto"
-  (PCDT). Em DM1 ou fora dessa idade, a calculadora segue com o diabetes como variável e a tela
-  lembra que o PCDT pede avaliação individualizada. A tela não discute a divergência entre a
-  SBC (PREVENT) e o PCDT (HEARTS), nem coloca na tela qual escala é a principal.
+- **Na tela:** doença cardiovascular estabelecida mostra "Muito alto" e doença renal crônica
+  (TFGe < 60, a mesma definição da SBC Tab. 4.2) ou **qualquer diabetes** (DM1 ou DM2, qualquer
+  idade) mostram "Alto", sem percentual, na aba e na comparação, como no fluxo oficial do
+  aplicativo OPAS (a pergunta "Tem diabetes mellitus?" não tem restrição de tipo nem de idade).
+  Escolha registrada aqui, sem aparecer na tela: o PCDT manda individualizar o DM1 e as idades
+  ≤ 39 e ≥ 75, mas a aba OMS segue o fluxo HEARTS. A tela não discute a divergência entre a SBC
+  (PREVENT) e o PCDT (HEARTS), nem coloca na tela qual escala é a principal.
+- **Cortes de colesterol (mg/dL):** 155/193/232/270, comparados direto em mg/dL como no aplicativo
+  (a conversão por 38,67 errava nas bordas 193, 232 e 270). A conversão só vale no valor
+  contínuo. Testes de borda em `who2019.test.ts`.
+- **Faixas aceitas pelo aplicativo OPAS:** PA sistólica 90–200 mmHg e colesterol total 140–300
+  mg/dL (idade 40–75 no aplicativo; o app usa 40–74). Fora delas a tela não calcula e avisa.
 - **Idade:** < 18 anos fora do escopo.
 
 ### PREVENT
@@ -109,7 +126,15 @@ diferenças em relação à SBC:
 - **Quem não entra:** doença cardiovascular estabelecida e insuficiência cardíaca (artigo: "without
   known ASCVD or HF"). A tela diz que as equações foram desenvolvidas nos EUA.
 - **Não verificado:** os coeficientes contra o suplemento oficial (S12) e a calculadora da AHA.
-  Os dois estavam bloqueados para download automático.
+  Os dois estavam bloqueados para download automático. Os 40 vetores vêm dos testes do próprio
+  pacote `preventr` (mesma origem dos coeficientes) e todos têm diabetes = sim; não há fonte
+  independente para o ramo sem diabetes. **Valores com HbA1c sem diabetes (termo `hba1c_no_dm`,
+  o da errata de 14/10/2026) ainda não foram conferidos** contra a calculadora oficial; os modelos
+  básico e com albuminúria não são afetados pela errata. Os testes do ramo sem diabetes só
+  protegem a coerência (risco válido e crescente com a HbA1c).
+- **Arredondamento:** o ASCVD em 10 anos é arredondado a 0,1% antes de comparar com 5% e 20%, para
+  o número mostrado e a categoria coincidirem. A aba PREVENT não mostra faixas de categoria
+  (a categoria final depende de agravantes e LDL e fica na SBC).
 
 ## Diabetes como fator
 
@@ -119,6 +144,13 @@ A caixa "Considerar diabetes" vem marcada para quem tem DM. Desmarcada, a tela m
 - a SBC segue o ramo sem diabetes (PREVENT e agravantes);
 - a SBD e o PCDT deixam de se aplicar;
 - o PREVENT e a OMS laboratorial calculam com diabetes = não.
+
+## Entradas fora da faixa
+
+Valores implausíveis (PA sistólica 60–260, colesterol total 80–800, HDL 10–200, LDL 20–600,
+TFGe 2–150, albuminúria 0–30.000, IMC 12–70, Lp(a) até 600 mg/dL ou 1.500 nmol/L) não entram em
+nenhuma escala: a tela avisa "confira a unidade". A aba OMS e o PREVENT têm faixas próprias, mais
+estreitas. Com creatinina digitada, a TFGe vem dela e o campo "ou TFGe" (oculto) não vale.
 
 ## Comparação entre as escalas
 
@@ -140,6 +172,15 @@ categorias não equivalem entre si. Metas de LDL aparecem só para SBC e SBD.
 - CKD-EPI 2021 sem raça (Inker, NEJM 2021); o PCDT (Quadro 5) traz a fórmula de 2009. Creatinina
   fora de 0,3 a 15 mg/dL não calcula a TFGe (provável erro de unidade).
 - Idade em anos completos; < 18 anos fora do escopo em todas as escalas.
+
+## Escolhas de rótulo e borda (3ª rodada)
+
+- Placa carotídea: a SBC diz EIMC "≥ 1,5 mm" (4.5.2) e a SBD "> 1,5 mm" (Quadro 2); o app usa ≥.
+- "DM2 há mais de 10 anos" segue as tabelas (SBC Tab. 4.6; SBD Quadro 2); o texto da SBC diz
+  "≥ 10 anos".
+- NT-proBNP: a SBC não o recomenda para estratificação (4.4.4); só a SBD o usa (a tela diz).
+- Doença renal da OMS = TFGe < 60 isolada (escolha de interface; DRC exige ≥ 3 meses).
+- Risco baixo: a SBC indica fármaco com LDL-c acima de 145 mg/dL apesar do estilo de vida.
 
 ## Ajustes da 2ª rodada da revisão (25/11/2026)
 

@@ -72,7 +72,8 @@ export function PrenatalNaIg(props: { dum: Dia; data: Dia }) {
 
       <Results>
         <Result label="Consultas agora" value={freq.texto}>
-          {freq.faixa} · próxima por volta de {fmtData(proxima)} ({diaDaSemana(proxima)})
+          {freq.faixa} (frequência mínima) · sugestão para a próxima: {fmtData(proxima)} (
+          {diaDaSemana(proxima)})
         </Result>
         <Result label="Mínimo na gestação" value={`${MINIMO_CONSULTAS} consultas`}>
           intercaladas entre médico e enfermeiro, mais 1 consulta odontológica; a 1ª, de preferência
@@ -83,7 +84,14 @@ export function PrenatalNaIg(props: { dum: Dia; data: Dia }) {
       <div className="grid2">
         <div>
           <h4 className="list-title">Solicitar agora</h4>
-          {agoraExames.length ? <Lista itens={agoraExames} /> : <p className="empty">Nenhum.</p>}
+          {agoraExames.length ? (
+            <>
+              <Lista itens={agoraExames} />
+              <p className="hint-inline">Peça só os que ainda não foram feitos.</p>
+            </>
+          ) : (
+            <p className="empty">Nenhum.</p>
+          )}
           {agoraVacinas.length ? (
             <>
               <h4 className="list-title">Vacinas: verificar e aplicar</h4>
@@ -128,7 +136,7 @@ export function PrenatalNaIg(props: { dum: Dia; data: Dia }) {
   )
 }
 
-const PERIODOS: Periodo[] = ['t1', 't2', 't3', 'parto']
+const PERIODOS: Periodo[] = ['t1', 't2', 't3']
 
 function ColunaExames({ itens }: { itens: Item[] }) {
   if (!itens.length) return <p className="empty">Nenhum.</p>

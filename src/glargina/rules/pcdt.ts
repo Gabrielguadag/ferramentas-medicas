@@ -53,11 +53,11 @@ export interface FlowResult {
 }
 
 const NOTE_KEEP_METFORMIN =
-  'Manter a metformina (e outros orais, a critério médico), salvo contraindicação (nota h da Figura 2; item 8.3.1).'
+  'Manter a metformina, salvo contraindicação (nota h da Figura 2; item 8.3.1). Com esquema basal/bolus não se recomenda manter sulfonilureia (Figura 3, nota b).'
 const NOTE_METFORMIN_RENAL =
-  'Metformina: no máximo 1 g/dia com TFG de 30 a 45 mL/min/1,73 m²; suspender se TFG < 30 (item 8.3.1).'
+  'Metformina: no máximo 1 g/dia com TFG de 30 a 45 mL/min/1,73 m²; suspender se TFG < 30 (item 8.3.1). Demais contraindicações: item 8.9.'
 const NOTE_SU_SAFETY =
-  'Sulfonilureia: contraindicada com TFG < 30 mL/min/1,73 m² (item 8.9). Glibenclamida não é recomendada a partir de 60 anos; nessa idade, preferir gliclazida (item 8.9 e nota f).'
+  'Sulfonilureia: contraindicada com TFG < 30 mL/min/1,73 m² (item 8.9). Glibenclamida não é recomendada a partir de 60 anos; nessa idade, preferir gliclazida (item 8.9 e nota f). Demais contraindicações: item 8.9.'
 
 /** Fluxograma da Figura 2 (adulto com DM2), com as notas de segurança do PCDT. */
 export function pcdtFlow(i: FlowInput): FlowResult {
@@ -137,7 +137,7 @@ function flowCore(i: FlowInput): FlowResult {
           branch,
           next: 'avaliar-dapagliflozina',
           conduct:
-            'Meta não atingida: verificar critérios de dapagliflozina; sem critérios, iniciar insulinoterapia.',
+            'Meta não atingida: complete os critérios de dapagliflozina no cartão abaixo (idade, sexo, doença cardiovascular, HAS/dislipidemia/tabagismo) para definir a conduta.',
           notes,
         }
       }
@@ -167,23 +167,39 @@ function flowCore(i: FlowInput): FlowResult {
 
 export interface DapaInput {
   age: number | null
-  sex: 'M' | 'F'
-  establishedCvd: boolean
-  highRiskFactor: boolean
+  /** null = não informado. */
+  sex: 'M' | 'F' | null
+  /** null = não respondido. */
+  establishedCvd: boolean | null
+  /** null = não respondido. */
+  highRiskFactor: boolean | null
 }
 
 export interface DapaResult {
+  /** null = faltam respostas para concluir. */
   eligible: boolean | null
+}
+
+type Tri = boolean | null
+
+function and3(a: Tri, b: Tri): Tri {
+  if (a === false || b === false) return false
+  if (a === null || b === null) return null
+  return true
 }
 
 /**
  * Critérios da dapagliflozina (item 6 e 8.3.3 do PCDT: homens ≥ 55 anos, mulheres ≥ 60).
  * Escolha registrada em docs/glargina-regras.md (a nota "g" da Figura 2 traz outra idade para homens).
+ * Resposta em branco não vira "não": sem resposta que decida, o resultado é null.
  */
 export function dapagliflozinCriteria(i: DapaInput): DapaResult {
   if (i.age === null) return { eligible: null }
-  if (i.age >= 40 && i.establishedCvd) return { eligible: true }
-  if (!i.highRiskFactor) return { eligible: false }
-  if (i.sex === 'F') return { eligible: i.age >= 60 }
-  return { eligible: i.age >= 55 }
+  const byCvd: Tri = i.age < 40 ? false : i.establishedCvd
+  const ageSex: Tri =
+    i.age < 55 ? false : i.age >= 60 ? true : i.sex === null ? null : i.sex === 'M'
+  const byRisk = and3(i.highRiskFactor, ageSex)
+  if (byCvd === true || byRisk === true) return { eligible: true }
+  if (byCvd === false && byRisk === false) return { eligible: false }
+  return { eligible: null }
 }

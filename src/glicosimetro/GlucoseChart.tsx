@@ -111,16 +111,24 @@ export function GlucoseChart(props: { readings: readonly Reading[]; target: Targ
       xTicks.push({ pos: M.left + (h / 24) * innerW, label: `${h}h` })
   } else {
     const nDays = (dayEnd - dayStart) / 1440
-    const every = nDays <= 10 ? 1 : nDays <= 31 ? 7 : 14
+    // Passo adaptativo (sem rótulos sobrepostos); com mais de 1 ano, o rótulo inclui o ano.
+    const withYear = nDays > 365
+    const maxLabels = Math.max(2, Math.floor(innerW / (withYear ? 80 : 56)))
+    const every =
+      [1, 2, 7, 14, 30, 60, 90, 180, 365, 730].find((e) => nDays / e + 1 <= maxLabels) ?? 730
     for (let d = 0; d <= nDays; d += every) {
       const date = new Date((dayStart + d * 1440) * 60_000)
+      const dm = `${String(date.getUTCDate()).padStart(2, '0')}/${String(date.getUTCMonth() + 1).padStart(2, '0')}`
       xTicks.push({
         pos: M.left + (d / nDays) * innerW,
-        label: `${String(date.getUTCDate()).padStart(2, '0')}/${String(date.getUTCMonth() + 1).padStart(2, '0')}`,
+        label: withYear ? `${dm}/${String(date.getUTCFullYear()).slice(2)}` : dm,
       })
     }
   }
 
+  const undatedHidden = props.readings.filter(
+    (r) => !r.isControl && r.minutes === null && (r.mgdl !== null || r.flag),
+  ).length
   const counts = { low: 0, in: 0, high: 0 }
   for (const r of points) counts[zoneOf(r, props.target)]++
 
@@ -267,6 +275,15 @@ export function GlucoseChart(props: { readings: readonly Reading[]; target: Targ
           </span>
         ))}
         <span>HI/LO aparecem na borda superior/inferior.</span>
+        {undatedHidden > 0 ? (
+          <span>
+            {undatedHidden}{' '}
+            {undatedHidden === 1
+              ? 'medição sem data não aparece'
+              : 'medições sem data não aparecem'}{' '}
+            no gráfico (estão no resumo e na tabela).
+          </span>
+        ) : null}
       </div>
     </div>
   )

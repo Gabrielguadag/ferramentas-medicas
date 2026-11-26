@@ -48,21 +48,37 @@ Ficam de fora:
   Care 2019;42(8):1593–1603 (doi 10.2337/dci19-0028). São metas de CGM, aplicadas aqui por
   convenção às glicemias capilares; a tela diz isso e que, com poucas medições, os percentuais
   são só indicativos.
-- A meta é guardada em mg/dL inteiro: o valor digitado em mmol/L é convertido e arredondado
-  (3,9 → 70; 10,0 → 180), então trocar a unidade não muda a classificação (70 fica "no alvo").
+- O alvo é canônico em mg/dL: trocar a unidade só muda a exibição, nunca o valor guardado (100 mg/dL
+  continua 100 depois de ir a mmol/L e voltar). Digitado em mmol/L, é convertido e arredondado
+  (3,9 → 70; 10,0 → 180). O alvo só é aceito entre 54 e 250 mg/dL (os limiares fixos <54 e >250 da
+  fonte) e com mínimo < máximo; fora disso a tela avisa e usa 70–180. Campo vazio também avisa e
+  usa o padrão. A fonte na tela mostra o alvo em uso e os limiares da fonte. 70–180 vale para
+  adultos em geral; gestação e outros grupos usam alvos diferentes (linha curta na tela, sem regra).
 - Percentuais nunca aparecem como "0%" se houve ocorrência ("<1%"), e vêm com a contagem (n de N).
 - Média, desvio padrão, menor e maior não incluem HI/LO; o menor/maior mostra "LO"/"HI" quando há.
-- O filtro "Últimos N dias" conta a partir da última medição, não de hoje. A tela avisa quantas
-  medições sem data ficaram fora do período, medições com data posterior a hoje (relógio do
-  computador) e relógio do aparelho a mais de 1 dia do computador.
+- O filtro "Últimos N dias" conta a partir da última medição que não seja futura (relógio do
+  computador), não de hoje. Medições com data posterior a hoje não deslocam a janela: ficam fora dos
+  períodos de 7 a 90 dias (a tela avisa) e só "Toda a memória" as inclui. A tela também avisa
+  medições sem data e relógio do aparelho a mais de 1 dia do computador.
 - Medições repetidas (mesma data/hora, mesmo valor ou HI/LO e mesmo tipo controle/paciente, vindas de
   segmentos diferentes) são contadas uma vez; vale a primeira lida. A tela diz quantas foram ignoradas.
   Mesmo horário com valor diferente não é duplicata; medição sem data nunca é removida.
-- O resumo mostra "N de M dias do período": N dias com medição de paciente; M = dias do filtro
-  (7/14/30/90) ou, em "todas", do primeiro ao último dia com medição.
+- O resumo mostra "Mediu em N de M dias": N = dias com medição de paciente; M = do primeiro ao último
+  dia com medição dentro do período (no máximo N do filtro), para não sugerir dias sem teste antes
+  do começo da memória. "Medições por dia" divide só pelos dias com medição.
+- Plausibilidade: valores fora de 10–600 mg/dL (faixa típica de medidores capilares; critério do
+  app, não de fonte clínica) são tratados como registro inválido e avisados. Se todos os valores
+  numéricos forem menores que 30 (típico de mmol/L lido como mg/dL), o resumo, o gráfico e a
+  exportação são bloqueados com aviso. Unidade não declarada pelo aparelho também gera aviso.
+- Datas do aparelho inválidas (dia inexistente no mês, como 30/02, ou ano fora de 2000–2099) viram
+  "sem data".
+- Deduplicação: usa data, hora com segundos, valor e tipo. Não se sabe se o Accu-Chek envia
+  segundos diferentes de 00; revisar após o teste com aparelho físico (GLI2-13, pendente).
 - CSV: 1ª linha é o cabeçalho das colunas (abre direto em planilha), sem linhas "#" e sem
   metadados (paciente, aparelho, data): a opção mais simples e que não quebra a importação.
-  O nome do arquivo já traz a data da exportação.
+  O CSV leva só o período escolhido na tela; o nome do arquivo traz o período e a data da
+  exportação, e a coluna "Ordem de leitura" é a ordem após a leitura e a remoção de repetidas (não é
+  a posição física na memória).
 - Privacidade: a página não envia nem guarda nada; ficam no computador só os arquivos exportados
   (CSV, PDF, diagnóstico), que contêm dado de saúde.
 - Aviso fixo na leitura de aparelho real: leitura ainda não validada com aparelho físico.
