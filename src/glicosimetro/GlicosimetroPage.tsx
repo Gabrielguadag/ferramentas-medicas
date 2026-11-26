@@ -10,6 +10,8 @@ import {
   computeStats,
   countFuture,
   countUndated,
+  dedupeReadings,
+  periodDayCount,
   dayDiffFromToday,
   filterPeriod,
   formatGlucose,
@@ -29,7 +31,14 @@ import { UsbError, requestMeter, usbSupport } from './usbTransport'
 type State =
   | { kind: 'idle' }
   | { kind: 'reading'; progress: Progress | null }
-  | { kind: 'loaded'; result: DownloadResult; readings: Reading[]; demo: boolean; at: string }
+  | {
+      kind: 'loaded'
+      result: DownloadResult
+      readings: Reading[]
+      duplicates: number
+      demo: boolean
+      at: string
+    }
   | { kind: 'error'; message: string; code: string }
 
 const STEP_LABEL: Record<Progress['step'], string> = {
@@ -88,10 +97,12 @@ export function GlicosimetroPage(props: { onDataChange?: (hasData: boolean) => v
         onProgress: (p) => setState({ kind: 'reading', progress: p }),
         associationTimeoutMs: demo ? 2_000 : 12_000,
       })
+      const unique = dedupeReadings(toReadings(result.readings))
       setState({
         kind: 'loaded',
         result,
-        readings: toReadings(result.readings),
+        readings: unique.readings,
+        duplicates: unique.duplicates,
         demo,
         at: nowStamp().human,
       })
@@ -259,7 +270,7 @@ function Report(props: {
   setPatientLabel: (v: string) => void
   onClear: () => void
 }) {
-  const { result, readings, demo, at } = props.state
+  const { result, readings, duplicates, demo, at } = props.state
   const toMgdl = (v: number | null) =>
     v === null ? null : props.unit === 'mmol/L' ? mmolToMgdl(v) : v
   const lowMg = toMgdl(props.low) ?? DEFAULT_TARGET.low
@@ -294,15 +305,7 @@ function Report(props: {
 
   function exportCsv() {
     const stamp = nowStamp()
-    downloadText(
-      `glicemias-${stamp.file}.csv`,
-      toCsv(shown, props.unit, {
-        deviceLabel,
-        serialNumber: d.serialNumber,
-        exportedAt: stamp.human,
-      }),
-      'text/csv;charset=utf-8',
-    )
+    downloadText(`glicemias-${stamp.file}.csv`, toCsv(shown, props.unit), 'text/csv;charset=utf-8')
   }
 
   function exportTraffic() {
@@ -360,6 +363,13 @@ function Report(props: {
               Relógio do aparelho:{' '}
               {d.clock ? formatDeviceDateTime(d.clock).slice(0, 16) : 'não informado'}
             </div>
+            {duplicates > 0 ? (
+              <p className="note" style={{ fontSize: 13 }}>
+                {duplicates}{' '}
+                {duplicates === 1 ? 'medição repetida ignorada' : 'medições repetidas ignoradas'}{' '}
+                (mesma data, hora e valor).
+              </p>
+            ) : null}
             <p className="note" style={{ fontSize: 13 }}>
               Data e hora são as do relógio do glicosímetro. Se o relógio estiver errado, as datas
               também estarão.
@@ -467,7 +477,7 @@ function Report(props: {
           <Tile
             label="Média de medições por dia"
             value={stats.perDay === null ? '—' : stats.perDay.toFixed(1).replace('.', ',')}
-            sub={`nos ${stats.days} dias com medição`}
+            sub={`${stats.days} de ${periodDayCount(shown, days)} dias do período`}
           />
           <Tile
             label={`Abaixo de ${g(54)} ${props.unit}`}

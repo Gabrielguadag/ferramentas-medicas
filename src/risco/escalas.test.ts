@@ -97,11 +97,32 @@ describe('PCDT DM2 2026', () => {
 })
 
 describe('correções da revisão (RCV)', () => {
+  it('insuficiência cardíaca: nota da SBD R11 só para quem tem diabetes', () => {
+    expect(sbd2026(base({})).notes.join(' ')).toContain('SBD R11')
+    // nota da SBD só na escala da SBD
+    expect(sbc2025(base({}), null).notes.join(' ')).not.toContain('SBD R11')
+  })
+
   it('revascularização isolada não conta duas vezes: muito alto, não extremo', () => {
     expect(sbc2025(base({ revascularization: true }), null).category).toBe('muito-alto')
+    // sem evento maior (Tab. 4.2), não há risco extremo
     expect(
       sbc2025(base({ revascularization: true, revascOutsideEvent: true }), null).category,
-    ).toBe('extremo')
+    ).toBe('muito-alto')
+    // IAM (evento maior) + DM + revascularização fora do evento = 2 condições → extremo
+    expect(sbc2025(base({ priorMi: true, revascOutsideEvent: true }), null).category).toBe(
+      'extremo',
+    )
+  })
+  it('SBC: angina estável e AIT não são eventos maiores (Tab. 4.2): muito alto, nunca extremo', () => {
+    const cond = { hypertension: true, smoker: true, age: 70 }
+    expect(sbc2025(base({ stableAngina: true, ...cond }), null).category).toBe('muito-alto')
+    expect(sbc2025(base({ tia: true, ...cond }), null).category).toBe('muito-alto')
+    expect(sbc2025(base({ priorMi: true, ...cond }), null).category).toBe('extremo')
+    expect(sbc2025(base({ ischemicStroke: true, ...cond }), null).category).toBe('extremo')
+    // continuam sendo DCV estabelecida nas outras escalas
+    expect(sbd2026(base({ stableAngina: true })).category).toBe('muito-alto')
+    expect(pcdt2026(base({ age: 50, tia: true })).category).toBe('muito-alto')
   })
   it('anti-hipertensivo conta como hipertensão', () => {
     expect(sbc2025(base({ age: 30, onBpMeds: true }), null).category).toBe('alto')

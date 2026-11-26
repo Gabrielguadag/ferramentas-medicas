@@ -5,6 +5,11 @@ export const NT_169 = {
   url: 'https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/notas-tecnicas/2026/nota-tecnica-conjunta-no-169-2026-dafsctie-deprossaps-daetsaes-ms.pdf',
 }
 
+export const GUIA_GLARGINA = {
+  short: 'Guia “Os benefícios da insulina glargina” (MS, 2026)',
+  url: 'https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/guias-e-manuais/2026/guia-os-beneficios-da-insulina-glargina.pdf',
+}
+
 export const PCDT_DM2 = {
   short: 'PCDT DM2 2026 (Portaria SCTIE/MS nº 13/2026)',
   url: 'https://www.gov.br/conitec/pt-br/midias/protocolos/2026/pcdt-diabete-melito-tipo-2',

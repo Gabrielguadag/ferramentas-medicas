@@ -9,6 +9,8 @@ import {
   mmolToMgdl,
   statsByDayPeriod,
   toCsv,
+  dedupeReadings,
+  periodDayCount,
   toReadings,
 } from './analysis'
 import type { RawReading } from './phdc/segments'
@@ -88,19 +90,49 @@ describe('análise das medições', () => {
     expect(formatGlucose(99.6, 'mg/dL')).toBe('100')
   })
 
-  it('CSV no padrão do Excel PT-BR', () => {
-    const csv = toCsv(readings, 'mg/dL', {
-      deviceLabel: 'Accu-Chek Guide',
-      serialNumber: '123',
-      exportedAt: '24/11/2026 10:00',
-    })
-    expect(csv.startsWith('﻿# Glicosímetro: Accu-Chek Guide (série 123)')).toBe(true)
-    const lines = csv.trim().split('\r\n')
-    expect(lines[2]).toBe(
+  it('CSV no padrão do Excel PT-BR: cabeçalho na 1ª linha, sem comentários', () => {
+    const csv = toCsv(readings, 'mg/dL')
+    expect(csv.startsWith('﻿Data;Hora;')).toBe(true)
+    expect(csv).not.toContain('#')
+    const lines = csv.slice(1).trim().split('\r\n')
+    expect(lines[0]).toBe(
       'Data;Hora;Glicemia (mg/dL);Fora da faixa do aparelho;Solução de controle;Status bruto do aparelho;Posição na memória',
     )
-    expect(lines[3]).toBe('24/11/2026;13:00;;acima (HI);;0x0000;4')
-    expect(lines[4]).toBe('24/11/2026;09:00;120;;sim;0x0000;6')
+    expect(lines[1]).toBe('24/11/2026;13:00;;acima (HI);;0x0000;4')
+    expect(lines[2]).toBe('24/11/2026;09:00;120;;sim;0x0000;6')
+  })
+})
+
+describe('duplicatas e dias do período', () => {
+  it('remove repetidas (mesmo horário, valor e tipo) e mantém a primeira lida', () => {
+    const rs = toReadings([raw(1, 8, 100), raw(1, 8, 100), raw(1, 8, 100, null), raw(2, 8, 150)])
+    const d = dedupeReadings(rs)
+    expect(d.duplicates).toBe(2)
+    expect(d.readings.map((r) => r.index).sort()).toEqual([0, 3])
+    expect(computeStats(d.readings).numeric).toBe(2)
+  })
+
+  it('não remove mesmo horário com valor, flag ou tipo diferentes', () => {
+    const rs = toReadings([
+      raw(1, 8, 100),
+      raw(1, 8, 101),
+      raw(1, 8, null, 'HI'),
+      raw(1, 8, null, 'LO'),
+    ])
+    expect(dedupeReadings(rs).duplicates).toBe(0)
+  })
+
+  it('controle e paciente com mesmo valor e horário não são duplicata', () => {
+    const rs = toReadings([raw(1, 8, 100), raw(1, 8, 100, null, true)])
+    expect(dedupeReadings(rs).duplicates).toBe(0)
+  })
+
+  it('conta dias do período: N para filtro; primeiro ao último dia para "todas"', () => {
+    const rs = toReadings([raw(1, 8, 100), raw(5, 8, 110), raw(10, 8, 120)])
+    expect(periodDayCount(filterPeriod(rs, 7), 7)).toBe(7)
+    expect(periodDayCount(rs, 'all')).toBe(10)
+    expect(periodDayCount([], 'all')).toBe(0)
+    expect(computeStats(rs).days).toBe(3)
   })
 })
 

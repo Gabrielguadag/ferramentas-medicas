@@ -171,9 +171,15 @@ export function RiscoSection() {
     pcdt: pcdt2026(i),
   }
   const renal = renalGrid(i.egfr, i.uacr)
-  const eventCount = [i.recentAcs, i.priorMi, i.ischemicStroke, i.revascularization, i.pad].filter(
-    Boolean,
-  ).length
+  const eventCount = [
+    i.recentAcs,
+    i.priorMi,
+    i.stableAngina,
+    i.ischemicStroke,
+    i.tia,
+    i.revascularization,
+    i.pad,
+  ].filter(Boolean).length
   const dmCount = [
     i.prematureCadFamily,
     i.metabolicSyndrome,
@@ -365,6 +371,7 @@ export function RiscoSection() {
                 unit="pg/mL"
                 value={i.ntProBnp}
                 onChange={(v) => set('ntProBnp', v)}
+                hint="Corte: ≥ 125; ≥ 190 a partir de 60 anos (idosos)"
               />
               <NumberField
                 label="Escore de cálcio (CAC)"
@@ -389,14 +396,24 @@ export function RiscoSection() {
               onChange={(v) => set('recentAcs', v)}
             />
             <Check
-              label="IAM prévio ou angina estável"
+              label="Infarto do miocárdio prévio"
               checked={i.priorMi}
               onChange={(v) => set('priorMi', v)}
             />
             <Check
-              label="AVC isquêmico ou AIT"
+              label="Angina estável"
+              checked={i.stableAngina}
+              onChange={(v) => set('stableAngina', v)}
+            />
+            <Check
+              label="AVC isquêmico prévio"
               checked={i.ischemicStroke}
               onChange={(v) => set('ischemicStroke', v)}
+            />
+            <Check
+              label="Ataque isquêmico transitório (AIT)"
+              checked={i.tia}
+              onChange={(v) => set('tia', v)}
             />
             <Check
               label="Revascularização (coronária, carotídea, renal ou periférica)"
@@ -411,7 +428,7 @@ export function RiscoSection() {
             {eventCount ? (
               <>
                 <Check
-                  label="Múltiplos eventos ateroscleróticos maiores"
+                  label="Múltiplos eventos maiores (SCA, infarto, AVC isquêmico ou DAP sintomática)"
                   checked={i.multipleEvents}
                   onChange={(v) => set('multipleEvents', v)}
                 />

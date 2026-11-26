@@ -20,9 +20,12 @@ A fonte é a Diretriz Brasileira de Dislipidemias e Prevenção da Aterosclerose
 a 4.8, Fig. 4.1 e Tab. 5.1.
 
 - **Ordem do fluxo (Fig. 4.1):**
-  1. Evento aterosclerótico prévio: extremo, se houver múltiplos eventos ou ≥ 2 condições da
-     Tab. 4.2; senão, muito alto. A revascularização só conta como condição se for "fora do
-     evento maior" (campo próprio; Tab. 4.2). Idade < 18 anos: fora do escopo.
+  1. Evento aterosclerótico prévio: extremo só se houver **evento maior** da Tab. 4.2 (SCA nos
+     últimos 12 meses, infarto prévio, AVC isquêmico prévio ou DAP sintomática) e, além dele,
+     múltiplos eventos maiores ou ≥ 2 condições de alto risco; senão, muito alto. Angina estável,
+     AIT e revascularização isolada são DCV estabelecida (muito alto), com campos próprios na
+     tela. A revascularização só conta como condição se for "fora do evento maior" (campo
+     próprio; Tab. 4.2). Idade < 18 anos: fora do escopo.
   2. Obstrução ≥ 50% ou CAC > 300: muito alto.
   3. Diabetes: EMAR ou ≥ 3 EAR dá muito alto; 1 a 2 EAR dão alto; sem estratificadores, homem
      ≥ 50 ou mulher ≥ 56 anos é alto, abaixo disso é intermediário.
@@ -137,3 +140,16 @@ categorias não equivalem entre si. Metas de LDL aparecem só para SBC e SBD.
 - CKD-EPI 2021 sem raça (Inker, NEJM 2021); o PCDT (Quadro 5) traz a fórmula de 2009. Creatinina
   fora de 0,3 a 15 mg/dL não calcula a TFGe (provável erro de unidade).
 - Idade em anos completos; < 18 anos fora do escopo em todas as escalas.
+
+## Ajustes da 2ª rodada da revisão (25/11/2026)
+
+- **SBC, risco extremo:** só com evento maior da Tab. 4.2 (SCA nos últimos 12 meses, infarto
+  prévio, AVC isquêmico prévio ou DAP sintomática). Angina estável e AIT ganharam campos
+  próprios e, como a revascularização isolada, dão muito alto. Nas outras escalas, continuam
+  contando como DCV estabelecida.
+- **Notas da SBD:** aparecem só no resultado da escala SBD, para quem tem diabetes.
+  - R10: diálise (TFGe < 15).
+  - R11: insuficiência cardíaca NYHA II a IV com LDL-c < 130 mg/dL. Como não há campo de
+    insuficiência cardíaca, a nota é fixa.
+- **NT-proBNP:** a SBD usa 190 pg/mL para "idosos" sem dizer a idade. O app usa 60 anos, idade em
+  que o PCDT DM2 considera a pessoa idosa, e mostra o corte no campo.

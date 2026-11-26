@@ -3,8 +3,8 @@
 // Fontes (Ministério da Saúde):
 // - Caderneta Brasileira da Gestante (2026, Rede Alyne): 4.1.2 (início até a 12ª semana),
 //   4.1.4 (mínimo de 7 consultas; programação mínima: mensal até 28 semanas, quinzenal de 28 a
-//   36, semanal a partir de 36; ao menos 2 consultas puerperais, a 1ª na primeira semana após a saída da maternidade e a 2ª em torno de 30
-//   dias após o parto), 4.2.1 (exames de rotina por trimestre, no parto e com indicação
+//   36, semanal a partir de 36; ao menos 2 consultas puerperais, a 1ª na primeira semana após a
+//   saída da maternidade e a 2ª em torno de 30 dias após o parto), 4.2.1 (exames de rotina por trimestre, no parto e com indicação
 //   clínica) e 4.3 (vacinas).
 // - Nota metodológica C3 — Cuidado na gestação e puerpério (SAPS/MS): 1ª consulta até a 12ª
 //   semana; ≥ 7 consultas; dTpa a partir da 20ª semana; testes para sífilis, HIV e hepatites B
@@ -171,8 +171,9 @@ export const ITENS_MS: readonly Item[] = [
     tipo: 'vacina',
     periodo: 'qualquer',
     nome: 'dT',
-    condicao: 'se só 1 dose anterior',
-    quando: '1 dose de dT, além da dTpa a partir da 20ª semana',
+    condicao: 'se menos de 2 doses anteriores de vacina com tétano',
+    quando:
+      'nenhuma dose anterior: 2 doses de dT + 1 de dTpa; 1 dose anterior: 1 de dT + 1 de dTpa. Intervalo de 60 dias (mínimo 30); a dTpa a partir da 20ª semana (se ela chega com 20 semanas ou mais, a dTpa é a 1ª dose)',
   },
   {
     id: 'v-flu',
@@ -304,7 +305,6 @@ export interface Frequencia {
   faixa: string
 }
 
-/** Programação mínima de consultas (Caderneta 2026, 4.1.4). */
 /**
  * IG sugerida para a próxima consulta: o intervalo da frequência atual, sem passar da mudança de
  * frequência (28 e 36 semanas) e com no mínimo 1 semana. Escolha da interface, não da fonte.
@@ -318,6 +318,7 @@ export function proximaConsulta(totalDias: number): number {
   return Math.max(alvo, totalDias + 7)
 }
 
+/** Programação mínima de consultas (Caderneta 2026, 4.1.4). */
 export function frequencia(totalDias: number): Frequencia {
   if (totalDias < igDias(28, 0))
     return { texto: 'mensal', intervaloDias: 28, faixa: 'até 28 semanas' }

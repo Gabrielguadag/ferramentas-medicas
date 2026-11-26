@@ -78,6 +78,38 @@ export function toReadings(raw: readonly RawReading[]): Reading[] {
     .sort((a, b) => (a.timeKey < b.timeKey ? 1 : a.timeKey > b.timeKey ? -1 : b.index - a.index))
 }
 
+/**
+ * Remove medições repetidas (vindas de segmentos diferentes da memória): mesma data/hora, mesmo
+ * valor/flag e mesmo tipo (controle ou paciente). Mantém a primeira lida (menor posição).
+ * Medições sem data nunca são tratadas como duplicata (não há como saber).
+ */
+export function dedupeReadings(readings: readonly Reading[]): {
+  readings: Reading[]
+  duplicates: number
+} {
+  const seen = new Set<string>()
+  const kept = new Set<number>()
+  for (const r of [...readings].sort((a, b) => a.index - b.index)) {
+    if (!r.timeKey) {
+      kept.add(r.index)
+      continue
+    }
+    const key = [r.timeKey, r.mgdl ?? '', r.flag ?? '', r.isControl ? 'c' : 'p'].join('|')
+    if (seen.has(key)) continue
+    seen.add(key)
+    kept.add(r.index)
+  }
+  const out = readings.filter((r) => kept.has(r.index))
+  return { readings: out, duplicates: readings.length - out.length }
+}
+
+/** Dias do período: N para "últimos N dias"; para "todas", do primeiro ao último dia com medição. */
+export function periodDayCount(shown: readonly Reading[], days: PeriodDays): number {
+  if (days !== 'all') return days
+  const d = shown.flatMap((r) => (r.minutes === null ? [] : [Math.floor(r.minutes / 1440)]))
+  return d.length ? Math.max(...d) - Math.min(...d) + 1 : 0
+}
+
 export type PeriodDays = 7 | 14 | 30 | 90 | 'all'
 
 /** Filtra pelos últimos N dias contados a partir da medição mais recente (não do relógio do PC). */
@@ -221,13 +253,8 @@ function csvCell(v: string): string {
   return /[";\n\r]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v
 }
 
-export interface CsvMeta {
-  deviceLabel: string
-  serialNumber: string | null
-  exportedAt: string
-}
-
-export function toCsv(readings: readonly Reading[], unit: Unit, meta: CsvMeta): string {
+/** CSV só com cabeçalho de colunas na 1ª linha (abre direto em planilha); sem metadados. */
+export function toCsv(readings: readonly Reading[], unit: Unit): string {
   const header = [
     'Data',
     'Hora',
@@ -238,8 +265,6 @@ export function toCsv(readings: readonly Reading[], unit: Unit, meta: CsvMeta): 
     'Posição na memória',
   ]
   const lines = [
-    `# Glicosímetro: ${meta.deviceLabel}${meta.serialNumber ? ` (série ${meta.serialNumber})` : ''}`,
-    `# Exportado em: ${meta.exportedAt}. Data e hora são as do relógio do aparelho.`,
     header.join(';'),
     ...readings.map((r) =>
       [

@@ -5,6 +5,12 @@ const st = (dias: number, primeira = false) =>
   Object.fromEntries(situacaoItens(dias, primeira).map((x) => [x.item.id, x.status]))
 
 describe('pré-natal (Caderneta Brasileira da Gestante 2026)', () => {
+  it('dT: esquema conforme as doses anteriores (MS, página da dTpa)', () => {
+    const dt = ITENS.find((i) => i.id === 'v-dt')
+    expect(dt?.condicao).toBe('se menos de 2 doses anteriores de vacina com tétano')
+    expect(dt?.quando).toContain('nenhuma dose anterior: 2 doses de dT + 1 de dTpa')
+  })
+
   it('ids únicos', () => {
     expect(new Set(ITENS.map((i) => i.id)).size).toBe(ITENS.length)
   })

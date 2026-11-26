@@ -28,7 +28,7 @@ import {
   pcdtFlow,
 } from './rules/pcdt'
 import { titrate } from './rules/titulacao'
-import { ELIGIBILITY_LITERAL, NT_169, PCDT_DM2, eligibility } from './sources'
+import { ELIGIBILITY_LITERAL, GUIA_GLARGINA, NT_169, PCDT_DM2, eligibility } from './sources'
 import { Alert, Card, Check, Details, Result, Results, Src, fmt } from '../shared/ui'
 
 function ScopeNote() {
@@ -174,12 +174,16 @@ export function MigracaoSection() {
           <ul>
             <li>Tubete de 3 mL com 100 UI/mL = 300 UI.</li>
             <li>Teste de escorva (fluxo) antes de cada aplicação.</li>
-            <li>Fechado: geladeira (2 a 8 °C). Aberto: até 30 °C por no máximo 28 dias.</li>
+            <li>Fechado: geladeira (2 a 8 °C), fora da porta e longe do congelador.</li>
+            <li>
+              Aberto, em uso: em local arejado se a temperatura do local fica abaixo de 30 °C; acima
+              de 30 °C, na geladeira (2 a 8 °C), tirando 30 minutos antes da aplicação. Em ambos, no
+              máximo 28 dias depois de aberto.
+            </li>
             <li>Caneta reutilizável: 3 anos ou 5.000 aplicações.</li>
           </ul>
-          <Src href={NT_169.url}>
-            {NT_169.short}, Anexo; guia “Os benefícios da insulina glargina” (MS, 2026).
-          </Src>
+          <Src href={NT_169.url}>{NT_169.short}, Anexo.</Src>
+          <Src href={GUIA_GLARGINA.url}>{GUIA_GLARGINA.short}, armazenamento.</Src>
         </Details>
       </Card>
     </>
@@ -371,14 +375,18 @@ export function PrandialSection() {
   // Limite superior pré-preenchido com o teto de jejum/pré-prandial do perfil (NT 169, Quadro 5).
   const upper = upperInput === undefined ? goalOf(patient.profile).fasting[1] : upperInput
   const factor = factorKind === '50' ? 50 : dtdi && dtdi > 0 ? factorFromDtdi(dtdi) : null
+  // Com glicemia < 70 no modo "fator de correção", o Quadro 7 não se aplica (só corrige acima do
+  // alvo): a tela pede para tratar a hipoglicemia e não calcula dose.
+  const hypoInFactorMode = mode === 'fator' && glucose !== null && glucose < 70
   const correction =
-    glucose === null
+    glucose === null || hypoInFactorMode
       ? null
-      : mode === 'algoritmo' || glucose < 70
+      : mode === 'algoritmo'
         ? correctionByAlgorithm(glucose)
         : upper !== null && factor
           ? correctionByFactor(glucose, upper, factor)
           : null
+  const goalUpper = goalOf(patient.profile).fasting[1]
   const r =
     prandial !== null && correction !== null && glucose !== null
       ? bolusDose(prandial, correction, glucose)
@@ -386,7 +394,10 @@ export function PrandialSection() {
   if (outOfScope(patient.age, patient.type, patient.profile)) return <ScopeNote />
   return (
     <>
-      <Card title="Início do bolus" subtitle="HbA1c fora da meta, jejum adequado e NPH 2x/dia.">
+      <Card
+        title="Início do bolus"
+        subtitle="HbA1c fora da meta com jejum adequado, em uso de basal (NPH 2x/dia ou glargina)."
+      >
         <ol className="steps">
           <li>
             Medir 6 glicemias no dia (antes e 2 h depois de café, almoço e jantar) e achar a maior
@@ -458,6 +469,24 @@ export function PrandialSection() {
             </>
           ) : null}
         </div>
+        {hypoInFactorMode ? (
+          <Alert tone="danger" title="Glicemia abaixo de 70 mg/dL.">
+            Tratar a hipoglicemia. O fator de correção só se aplica acima do alvo; não calcular
+            correção por ele.
+          </Alert>
+        ) : null}
+        {r?.hypo ? (
+          <Alert tone="danger" title="Glicemia abaixo de 70 mg/dL.">
+            Tratar a hipoglicemia primeiro. O algoritmo reduz 1 U (&lt; 70) ou 2 U (&lt; 50) do
+            bolus prandial.
+          </Alert>
+        ) : null}
+        {mode === 'algoritmo' && goalUpper !== 130 ? (
+          <p className="hint-inline">
+            O Quadro 8 corrige a partir de 130 mg/dL. Com a meta pré-prandial deste perfil (até{' '}
+            {goalUpper} mg/dL), use o fator de correção, que já vem com esse limite.
+          </p>
+        ) : null}
         {r ? (
           <Results>
             <Result
@@ -475,15 +504,9 @@ export function PrandialSection() {
               unit="U"
             />
           </Results>
-        ) : (
+        ) : hypoInFactorMode ? null : (
           <p className="empty">Informe a dose prandial e a glicemia antes da refeição.</p>
         )}
-        {r?.hypo ? (
-          <Alert tone="danger" title="Glicemia abaixo de 70 mg/dL.">
-            Tratar a hipoglicemia. O algoritmo reduz 1 U (&lt; 70) ou 2 U (&lt; 50) do bolus
-            prandial.
-          </Alert>
-        ) : null}
         <Details>
           <table className="compact">
             <caption>Quadro 8. Algoritmo de correção</caption>

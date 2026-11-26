@@ -55,6 +55,14 @@ Ficam de fora:
 - O filtro "Últimos N dias" conta a partir da última medição, não de hoje. A tela avisa quantas
   medições sem data ficaram fora do período, medições com data posterior a hoje (relógio do
   computador) e relógio do aparelho a mais de 1 dia do computador.
+- Medições repetidas (mesma data/hora, mesmo valor ou HI/LO e mesmo tipo controle/paciente, vindas de
+  segmentos diferentes) são contadas uma vez; vale a primeira lida. A tela diz quantas foram ignoradas.
+  Mesmo horário com valor diferente não é duplicata; medição sem data nunca é removida.
+- O resumo mostra "N de M dias do período": N dias com medição de paciente; M = dias do filtro
+  (7/14/30/90) ou, em "todas", do primeiro ao último dia com medição.
+- CSV: 1ª linha é o cabeçalho das colunas (abre direto em planilha), sem linhas "#" e sem
+  metadados (paciente, aparelho, data): a opção mais simples e que não quebra a importação.
+  O nome do arquivo já traz a data da exportação.
 - Privacidade: a página não envia nem guarda nada; ficam no computador só os arquivos exportados
   (CSV, PDF, diagnóstico), que contêm dado de saúde.
 - Aviso fixo na leitura de aparelho real: leitura ainda não validada com aparelho físico.

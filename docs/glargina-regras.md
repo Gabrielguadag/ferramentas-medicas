@@ -88,3 +88,26 @@ rápida não muda). Exemplo: NPH 30 + rápida 20 = 50; glargina 24; DTDI nova 44
   de padrão e o aviso "confira no manual da caneta".
 - **Como combinar vários jejuns:** o PCDT fala em ajustar a cada 3 dias até a meta, sem regra de
   média. A tela usa a média dos jejuns informados.
+
+## Ajustes da 2ª rodada da revisão (25/11/2026)
+
+- **Insulina prandial:**
+  - Subtítulo do início do bolus: "em uso de basal (NPH 2x/dia ou glargina)". Na Figura 3 do
+    PCDT, o bolus vem depois da basal, com NPH em 2 doses ou substituída pela AIAP.
+  - Glicemia < 70 mg/dL no modo "fator de correção": a tela não calcula dose e pede para tratar
+    a hipoglicemia. O Quadro 7 só corrige acima do alvo.
+  - No modo "algoritmo" (Quadro 8), o alerta de hipoglicemia vem antes da dose.
+  - Se a meta pré-prandial do perfil passa de 130 mg/dL, a tela avisa que o Quadro 8 corrige a
+    partir de 130 e sugere o fator de correção, que já usa o limite do perfil.
+  - O total é arredondado para unidade inteira (meia unidade para cima). A conta exata aparece
+    ao lado.
+- **Armazenamento da glargina** (guia "Os benefícios da insulina glargina", MS, 2026, pág. 9):
+  - fechada: na geladeira (2 a 8 °C);
+  - aberta em uso, em local abaixo de 30 °C: em local arejado;
+  - aberta em uso, acima de 30 °C: na geladeira, tirando 30 minutos antes da aplicação;
+  - em ambos os casos, no máximo 28 dias depois de aberta.
+- **Fator de risco "obesidade (IMC ≥ 30 kg/m²)":** o rótulo segue o ponto de corte da nota a da
+  Figura 2. O texto da fonte diz "sobrepeso ou obesidade", mas dá só esse limite.
+- **Dados do paciente:** idade, peso e altura fora da faixa plausível não entram nos cálculos, e
+  a tela avisa quais campos ficaram de fora. Faixas: idade de 0 a 120 anos (anos completos), peso
+  de 2 a 300 kg, altura de 40 a 250 cm.

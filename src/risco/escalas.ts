@@ -5,7 +5,14 @@
 //     dislipidemia" (Quadros 1–6);
 //   PCDT DM2 2026 — item 5.5.
 
-import { type RiskInputs, hasAscvdEvent, hasCkd, hasHypertension, renalGrid } from './inputs'
+import {
+  type RiskInputs,
+  hasAscvdEvent,
+  hasCkd,
+  hasHypertension,
+  hasMajorEvent,
+  renalGrid,
+} from './inputs'
 import { type PreventResult } from './prevent'
 
 export type Category =
@@ -132,8 +139,10 @@ function sbdDiabetesStrat(i: RiskInputs): Strat {
 function eventReasons(i: RiskInputs): string[] {
   const r: string[] = []
   if (i.recentAcs) r.push('Síndrome coronária aguda nos últimos 12 meses')
-  if (i.priorMi) r.push('IAM prévio ou angina estável')
-  if (i.ischemicStroke) r.push('AVC isquêmico ou AIT')
+  if (i.priorMi) r.push('Infarto do miocárdio prévio')
+  if (i.stableAngina) r.push('Angina estável')
+  if (i.ischemicStroke) r.push('AVC isquêmico prévio')
+  if (i.tia) r.push('Ataque isquêmico transitório (AIT)')
   if (i.revascularization) r.push('Revascularização arterial')
   if (i.pad) r.push('Doença arterial periférica sintomática ou amputação')
   return r
@@ -200,8 +209,13 @@ function dm1NoStrat(i: RiskInputs, scale: 'sbc' | 'sbd'): ScaleResult | null {
   }
 }
 
-/** Diálise (TFGe < 15): SBD R10. */
-function dialysisNote(i: RiskInputs, r: ScaleResult): ScaleResult {
+/** Nota fixa para quem tem diabetes (SBD R11; não há campo de insuficiência cardíaca). */
+export const HF_NOTE =
+  'Com insuficiência cardíaca (NYHA II a IV) e LDL-c < 130 mg/dL: não iniciar estatina; manter se já usava (SBD R11).'
+
+/** Diálise (TFGe < 15): SBD R10. Insuficiência cardíaca: SBD R11 (nota fixa no diabetes). */
+function dialysisNote(i: RiskInputs, r0: ScaleResult): ScaleResult {
+  const r = r0.applicable && i.diabetes ? { ...r0, notes: [...r0.notes, HF_NOTE] } : r0
   if (!r.applicable || !i.diabetes || i.egfr === null || i.egfr >= 15) return r
   return {
     ...r,
@@ -266,6 +280,8 @@ function sbc2025Core(i: RiskInputs, prev: PreventResult | null): ScaleResult {
   if (hasAscvdEvent(i)) {
     const cond = extremeConditions(i)
     const ev = eventReasons(i)
+    // Risco extremo só com evento maior (Tab. 4.2); sem ele, DCV estabelecida = muito alto.
+    if (!hasMajorEvent(i)) return sbcResult('muito-alto', ev)
     if (i.multipleEvents || cond.length >= 2) {
       return sbcResult('extremo', [
         ...ev,
@@ -367,7 +383,7 @@ function sbc2025Core(i: RiskInputs, prev: PreventResult | null): ScaleResult {
 
 export function sbc2025(i: RiskInputs, prev: PreventResult | null): ScaleResult {
   if (isMinor(i)) return na(OUT_OF_SCOPE_AGE)
-  return dialysisNote(i, sbc2025Core(i, prev))
+  return sbc2025Core(i, prev)
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -484,7 +500,7 @@ export function pcdt2026(i: RiskInputs): ScaleResult {
     }
   }
   if (i.age === null) return { ...na('Informe a idade.'), applicable: true }
-  const dcv = i.priorMi || i.recentAcs || i.ischemicStroke || i.pad || i.revascularization
+  const dcv = hasAscvdEvent(i)
   if (Math.floor(i.age) <= 39) {
     if (i.nephropathy || i.retinopathy !== 'nenhuma') {
       return {

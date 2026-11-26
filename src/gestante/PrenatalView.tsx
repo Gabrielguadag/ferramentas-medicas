@@ -16,7 +16,7 @@ import {
   proximaConsulta,
   situacaoItens,
 } from './prenatal'
-import { C3, CADERNETA } from './sources'
+import { C3, CADERNETA, MS_DTPA } from './sources'
 
 function ItemTexto({ item }: { item: Item }) {
   return (
@@ -255,6 +255,7 @@ export function ConsultasExamesSection() {
         </p>
         <Src href={CADERNETA.url}>{CADERNETA.titulo}</Src>
         <Src href={C3.url}>{C3.titulo}</Src>
+        <Src href={MS_DTPA.url}>{MS_DTPA.titulo} (esquema da dT conforme as doses anteriores)</Src>
       </Details>
     </>
   )

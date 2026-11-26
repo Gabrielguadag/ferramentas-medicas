@@ -15,7 +15,7 @@ export const STAGE_LABEL: Record<Stage, string> = {
 
 /** Nota "a" da Figura 2: fatores de risco que levam ao ramo da metformina desde o início. */
 export const PCDT_RISK_FACTORS = [
-  'Sobrepeso ou obesidade (IMC ≥ 30 kg/m²)',
+  'Obesidade (IMC ≥ 30 kg/m²)',
   'Sedentarismo',
   'Familiar de primeiro grau com diabetes',
   'Gestação prévia com feto ≥ 4 kg ou diabetes gestacional',

@@ -38,8 +38,10 @@ export interface RiskInputs {
 
   // Doença aterosclerótica estabelecida (eventos)
   recentAcs: boolean // SCA nos últimos 12 meses
-  priorMi: boolean // IAM prévio ou angina estável
-  ischemicStroke: boolean // AVC isquêmico/aterotrombótico ou AIT
+  priorMi: boolean // IAM prévio (evento maior, SBC Tab. 4.2)
+  stableAngina: boolean // angina estável (DCV sintomática, não é evento maior)
+  ischemicStroke: boolean // AVC isquêmico prévio (evento maior, SBC Tab. 4.2)
+  tia: boolean // AIT (DCV sintomática, não é evento maior)
   revascularization: boolean // revascularização coronária, carotídea, renal ou periférica
   revascOutsideEvent: boolean // revascularização/ICP em momento diferente do evento maior (SBC Tab. 4.2)
   pad: boolean // DAP sintomática, insuficiência vascular periférica ou amputação
@@ -93,7 +95,9 @@ export function emptyInputs(): RiskInputs {
     cacAbove75thPercentile: false,
     recentAcs: false,
     priorMi: false,
+    stableAngina: false,
     ischemicStroke: false,
+    tia: false,
     revascularization: false,
     revascOutsideEvent: false,
     pad: false,
@@ -116,7 +120,16 @@ export function emptyInputs(): RiskInputs {
 }
 
 export function hasAscvdEvent(i: RiskInputs): boolean {
-  return i.recentAcs || i.priorMi || i.ischemicStroke || i.revascularization || i.pad
+  return hasMajorEvent(i) || i.stableAngina || i.tia || i.revascularization
+}
+
+/**
+ * Eventos cardiovasculares ateroscleróticos maiores (SBC 2025, Tab. 4.2): SCA nos últimos 12 meses,
+ * IAM prévio, AVC isquêmico prévio e DAP sintomática. Só eles abrem a avaliação de risco extremo;
+ * angina estável, AIT e revascularização isolada são DCV estabelecida (muito alto).
+ */
+export function hasMajorEvent(i: RiskInputs): boolean {
+  return i.recentAcs || i.priorMi || i.ischemicStroke || i.pad
 }
 
 /** Hipertensão arterial "tratada ou não" (SBC Tab. 4.6; SBD Quadro 2): quem usa anti-hipertensivo conta. */

@@ -23,3 +23,9 @@ export const C3 = {
     'Ministério da Saúde/SAPS. Nota metodológica C3 — Cuidado na gestação e puerpério (boas práticas A a K)',
   url: 'https://www.gov.br/saude/pt-br/composicao/saps/publicacoes/fichas-tecnicas/equipe-de-atencao-primaria-e-saude-da-familia/nota-metodologica-c3-cuidado-na-gestacao-e-puerperio',
 }
+
+export const MS_DTPA = {
+  titulo:
+    'Ministério da Saúde. dTpa: particularidades da vacinação em gestantes e puérperas (gov.br, Saúde de A a Z)',
+  url: 'https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/d/dtpa',
+}

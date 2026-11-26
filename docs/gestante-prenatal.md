@@ -148,9 +148,18 @@ interpretação da interface e não está escrito na fonte.
   negativo no 1º trimestre). Sem mudança de regra.
 - **Estreptococo do grupo B:** janela de 35s 0d a 37s 0d, com o fim inclusivo (com 37s 1d já
   aparece em "já deveria ter sido feito"). É protocolo do município.
-- **dT:** a Caderneta 2026 (4.3, p.40) só traz o caso "apenas 1 dose anterior: 1 dT e 1 dTpa a
-  partir da 20ª semana". O esquema para quem não tem nenhuma dose não está nessa fonte e não foi
-  incluído; a dTpa vale para toda gestante.
+- **dT:** a Caderneta 2026 (4.3, p.40) só traz o caso de "apenas 1 dose anterior". O esquema
+  completo vem da página oficial da dTpa do Ministério da Saúde
+  (<https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/d/dtpa>), que diz:
+  - gestante "NÃO vacinada previamente": "três doses [...] com intervalo de 60 dias entre as
+    doses, mínimo de 30 dias, sendo duas doses de dT em qualquer momento da gestação e uma dose
+    de dTpa, a partir da 20ª semana". Se ela chega com 20 semanas ou mais, a dTpa é a 1ª dose;
+  - com 1 dose de dT: 1 dT e 1 dTpa;
+  - com 2 ou 3 doses: só a dTpa;
+  - em toda gestação, 1 dose de dTpa.
+
+  A tela mostra isso no item dT ("se menos de 2 doses anteriores de vacina com tétano").
+
 - **VSR:** segue o MS (a partir da 28ª semana, sem limite superior).
 - **Frequência de consultas:** a Caderneta 2026 diz semanal a partir da 36ª semana (o Caderno 32
   dizia semanal no termo). "28ª" e "36ª semana" são lidas como 28s 0d e 36s 0d.
