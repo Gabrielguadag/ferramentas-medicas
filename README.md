@@ -3,7 +3,7 @@
 Página estática, sem cadastro, sem servidor e sem armazenamento. Tudo fica na memória da aba.
 
 - **Consulta de diabetes:** migração para glargina (elegibilidade, dose, alerta de basal e
-  tubetes), início da NPH, titulação, insulina prandial, metas, fluxograma do PCDT e risco
+  tubetes), início da NPH, início da glargina (sem insulina prévia), titulação, insulina prandial, metas, fluxograma do PCDT e risco
   cardiovascular (SBC 2025, SBD 2026, PCDT 2026, OMS/HEARTS e PREVENT).
 - **Glicosímetro (USB)**: leitura dos Accu-Chek em mg/dL com micro-USB (modelos previstos: Guide,
   Guide Me, Instant, Instant S, Performa Connect, Aviva Connect e ReliOn Platinum; ainda não validada com aparelho físico), pelo Chrome ou Edge, com resumo, gráfico, tabela, exportação em CSV e impressão ou PDF.

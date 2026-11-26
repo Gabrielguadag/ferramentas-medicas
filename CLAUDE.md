@@ -7,8 +7,8 @@ separadas (sem estado compartilhado): **Diabetes**, **Canetas GLP-1**, **Gestant
 Área Diabetes:
 
 1. **Consulta de diabetes**: ferramentas para o médico usar na consulta, com regras da NT
-   Conjunta 169/2026 (glargina) e do PCDT DM2 2026. São 7 seções: migração para glargina, início da
-   NPH, titulação, insulina prandial, metas, tratamento do DM2 e risco cardiovascular. O risco CV
+   Conjunta 169/2026 (glargina) e do PCDT DM2 2026. São 8 seções: migração para glargina, início da
+   NPH, início da glargina, titulação, insulina prandial, metas, tratamento do DM2 e risco cardiovascular. O risco CV
    tem cinco escalas selecionáveis: SBC 2025, SBD 2026, PCDT 2026, OMS/HEARTS e PREVENT. Os
    detalhes estão em `docs/glargina-regras.md` e `docs/risco-cv.md`.
 2. **Glicosímetro**: leitura da memória dos Accu-Chek com micro-USB (Guide, Guide Me, Instant, Instant S, Performa Connect,

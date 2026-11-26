@@ -23,7 +23,8 @@ describe('App', () => {
     const panel = screen.getByRole('tabpanel', { name: 'Consulta de diabetes' })
     await user.type(within(panel).getByLabelText('Idade (anos)'), '72')
     await user.type(within(panel).getByLabelText('Peso (kg)'), '70')
-    expect(within(panel).getByText(/Elegível à glargina/)).toBeInTheDocument()
+    const mig = within(panel).getByRole('region', { name: 'Migração para glargina' })
+    expect(within(mig).getByText(/Elegível à glargina/)).toBeInTheDocument()
     await user.type(within(panel).getByLabelText('Dose total diária de NPH (UI/dia)'), '50')
     expect(within(panel).getByText('Glargina, 1 vez ao dia').parentElement).toHaveTextContent(
       '40 UI',
@@ -195,5 +196,22 @@ describe('App', () => {
       within(panel).getByText('Aplicações por caneta', { selector: 'span' }).parentElement,
     ).toHaveTextContent('8')
     expect(within(panel).getByText('Uso fora de bula (off-label).')).toBeInTheDocument()
+  })
+
+  it('início da glargina: 75 anos, 60 kg → elegível, 10 U ou 6–12 U, 2 tubetes para 30 dias', async () => {
+    render(<App />)
+    const user = userEvent.setup()
+    const panel = screen.getByRole('tabpanel', { name: 'Consulta de diabetes' })
+    await user.type(within(panel).getByLabelText('Idade (anos)'), '75')
+    await user.type(within(panel).getByLabelText('Peso (kg)'), '60')
+    await user.click(within(panel).getByRole('button', { name: /Início da glargina/ }))
+    const sec = within(panel).getByRole('region', { name: 'Início da glargina' })
+    expect(within(sec).getByText(/Elegível à glargina/)).toBeInTheDocument()
+    expect(within(sec).getByText('Ou por peso (0,1 a 0,2 U/kg)').parentElement).toHaveTextContent(
+      '6–12',
+    )
+    expect(within(sec).getByText('Tubetes de 3 mL para 30 dias').parentElement).toHaveTextContent(
+      '2',
+    )
   })
 })

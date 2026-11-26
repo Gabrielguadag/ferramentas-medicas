@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { RiscoSection } from '../risco/RiscoSection'
 import { PatientBar, PatientProvider } from './patient'
 import {
+  InicioGlarginaSection,
   InicioNphSection,
   MetasSection,
   MigracaoSection,
@@ -22,6 +23,12 @@ const SECTIONS = [
     label: 'Início da NPH',
     hint: 'Dose inicial e 2ª dose',
     Component: InicioNphSection,
+  },
+  {
+    id: 'glargina',
+    label: 'Início da glargina',
+    hint: 'Sem insulina prévia',
+    Component: InicioGlarginaSection,
   },
   {
     id: 'titulacao',

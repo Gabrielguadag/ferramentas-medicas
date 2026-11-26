@@ -42,27 +42,10 @@ function ScopeNote() {
   return <Alert tone="info">{OUT_OF_SCOPE_TEXT}</Alert>
 }
 
-// ---------------------------------------------------------------------------------------------
-export function MigracaoSection() {
+/** Elegibilidade à glargina pela NT 169/2026 (idade e tipo de diabetes do painel). */
+function GlargineEligibility() {
   const { patient } = usePatient()
-  const [nph, setNph] = useState<number | null>(null)
-  const [apps, setApps] = useState<'1' | '2'>('2')
-  const [dtdi, setDtdi] = useState<number | null>(null)
-  const [days, setDays] = useState<number | null>(30)
-  const [priming, setPriming] = useState<number | null>(2)
-
-  const conv = nph !== null && nph > 0 ? convertNphToGlargine(nph, apps === '1' ? 1 : 2) : null
-  const perKg = conv ? uiPerKg(conv.glargine, patient.weight) : null
-  const dtdiBelowNph = dtdi !== null && nph !== null && dtdi < nph
-  const dtdiNew = conv && !dtdiBelowNph ? dtdiAfterSwitch(dtdi, nph ?? 0, conv.glargine) : null
-  const alert = conv
-    ? basalAlert(patient.type, conv.glargine, patient.weight, dtdiNew, patient.age)
-    : null
-  // O critério "basal > 50% da DTDI" é da NT para crianças e adolescentes com DM1.
-  const askDtdi = patient.type === 'DM1' && (patient.age === null || patient.age < 18)
-  const tub = conv && days ? tubetesFor(conv.glargine, days, priming ?? 0) : null
   const elig = eligibility(patient.age, patient.type)
-
   return (
     <>
       {elig.kind !== 'unknown' ? (
@@ -84,6 +67,82 @@ export function MigracaoSection() {
           Informe a idade no painel do paciente para conferir a elegibilidade.
         </Alert>
       )}
+    </>
+  )
+}
+
+/** Tubetes e agulhas para a receita de glargina, a partir da dose diária. */
+function QuantidadeReceita(props: { dose: number | null; emptyText?: string }) {
+  const [days, setDays] = useState<number | null>(30)
+  const [priming, setPriming] = useState<number | null>(2)
+  const tub =
+    props.dose !== null && props.dose > 0 && days
+      ? tubetesFor(props.dose, days, priming ?? 0)
+      : null
+  return (
+    <Card title="Quantidade para a receita">
+      <div className="fields">
+        <NumberField label="Dias de tratamento" value={days} onChange={setDays} step={1} />
+        <NumberField
+          label="Escorva por aplicação"
+          unit="UI"
+          value={priming}
+          onChange={setPriming}
+          hint="Teste de segurança da caneta; confira no manual da caneta."
+        />
+      </div>
+      {tub ? (
+        <Results>
+          <Result label={`Tubetes de 3 mL para ${days} dias`} value={tub.tubetes} tone="info">
+            {tub.byExpiry > tub.byVolume
+              ? `Pelo volume bastariam ${tub.byVolume}, mas cada tubete aberto dura no máximo 28 dias.`
+              : `${fmt(tub.uiPerDay)} UI/dia (dose + escorva) × ${days} dias ÷ 300 UI por tubete.`}
+          </Result>
+          <Result label="Agulhas 4 mm" value={days ?? 0}>
+            Uma agulha por dia, por tipo de insulina.
+          </Result>
+        </Results>
+      ) : (
+        <p className="empty">{props.emptyText ?? 'Calcula depois da conversão acima.'}</p>
+      )}
+      <Details>
+        <ul>
+          <li>Tubete de 3 mL com 100 UI/mL = 300 UI.</li>
+          <li>Teste de escorva (fluxo) antes de cada aplicação.</li>
+          <li>Fechado: geladeira (2 a 8 °C), fora da porta e longe do congelador.</li>
+          <li>
+            Aberto, em uso: em local arejado se a temperatura do local fica abaixo de 30 °C; acima
+            de 30 °C, na geladeira (2 a 8 °C), tirando 30 minutos antes da aplicação. Em ambos, no
+            máximo 28 dias depois de aberto.
+          </li>
+          <li>Caneta reutilizável: 3 anos ou 5.000 aplicações.</li>
+        </ul>
+        <Src href={NT_169.url}>{NT_169.short}, Anexo.</Src>
+        <Src href={GUIA_GLARGINA.url}>{GUIA_GLARGINA.short}, armazenamento.</Src>
+      </Details>
+    </Card>
+  )
+}
+
+// ---------------------------------------------------------------------------------------------
+export function MigracaoSection() {
+  const { patient } = usePatient()
+  const [nph, setNph] = useState<number | null>(null)
+  const [apps, setApps] = useState<'1' | '2'>('2')
+  const [dtdi, setDtdi] = useState<number | null>(null)
+
+  const conv = nph !== null && nph > 0 ? convertNphToGlargine(nph, apps === '1' ? 1 : 2) : null
+  const perKg = conv ? uiPerKg(conv.glargine, patient.weight) : null
+  const dtdiBelowNph = dtdi !== null && nph !== null && dtdi < nph
+  const dtdiNew = conv && !dtdiBelowNph ? dtdiAfterSwitch(dtdi, nph ?? 0, conv.glargine) : null
+  const alert = conv
+    ? basalAlert(patient.type, conv.glargine, patient.weight, dtdiNew, patient.age)
+    : null
+  // O critério "basal > 50% da DTDI" é da NT para crianças e adolescentes com DM1.
+  const askDtdi = patient.type === 'DM1' && (patient.age === null || patient.age < 18)
+  return (
+    <>
+      <GlargineEligibility />
 
       <Card title="Dose atual de NPH">
         <div className="fields">
@@ -162,47 +221,7 @@ export function MigracaoSection() {
         </Details>
       </Card>
 
-      <Card title="Quantidade para a receita">
-        <div className="fields">
-          <NumberField label="Dias de tratamento" value={days} onChange={setDays} step={1} />
-          <NumberField
-            label="Escorva por aplicação"
-            unit="UI"
-            value={priming}
-            onChange={setPriming}
-            hint="Teste de segurança da caneta; confira no manual da caneta."
-          />
-        </div>
-        {tub ? (
-          <Results>
-            <Result label={`Tubetes de 3 mL para ${days} dias`} value={tub.tubetes} tone="info">
-              {tub.byExpiry > tub.byVolume
-                ? `Pelo volume bastariam ${tub.byVolume}, mas cada tubete aberto dura no máximo 28 dias.`
-                : `${fmt(tub.uiPerDay)} UI/dia (dose + escorva) × ${days} dias ÷ 300 UI por tubete.`}
-            </Result>
-            <Result label="Agulhas 4 mm" value={days ?? 0}>
-              Uma agulha por dia, por tipo de insulina.
-            </Result>
-          </Results>
-        ) : (
-          <p className="empty">Calcula depois da conversão acima.</p>
-        )}
-        <Details>
-          <ul>
-            <li>Tubete de 3 mL com 100 UI/mL = 300 UI.</li>
-            <li>Teste de escorva (fluxo) antes de cada aplicação.</li>
-            <li>Fechado: geladeira (2 a 8 °C), fora da porta e longe do congelador.</li>
-            <li>
-              Aberto, em uso: em local arejado se a temperatura do local fica abaixo de 30 °C; acima
-              de 30 °C, na geladeira (2 a 8 °C), tirando 30 minutos antes da aplicação. Em ambos, no
-              máximo 28 dias depois de aberto.
-            </li>
-            <li>Caneta reutilizável: 3 anos ou 5.000 aplicações.</li>
-          </ul>
-          <Src href={NT_169.url}>{NT_169.short}, Anexo.</Src>
-          <Src href={GUIA_GLARGINA.url}>{GUIA_GLARGINA.short}, armazenamento.</Src>
-        </Details>
-      </Card>
+      <QuantidadeReceita dose={conv ? conv.glargine : null} />
     </>
   )
 }
@@ -254,7 +273,8 @@ export function InicioNphSection() {
         </p>
         <p className="lead">
           Pessoa com 70 anos ou mais, ou com hipoglicemia noturna ou grave: a glargina pode ser a
-          basal (elegibilidade e conversão na seção <strong>Migração para glargina</strong>).
+          basal: seção <strong>Início da glargina</strong> (sem insulina prévia) ou{' '}
+          <strong>Migração para glargina</strong> (quem já usa NPH).
         </p>
         <Details>
           <Src href={PCDT_DM2.url}>
@@ -293,6 +313,78 @@ export function InicioNphSection() {
           <Src href={PCDT_DM2.url}>{PCDT_DM2.short}, item 8.3.4.1.</Src>
         </Details>
       </Card>
+    </>
+  )
+}
+
+// ---------------------------------------------------------------------------------------------
+// Início da glargina sem insulina prévia: PCDT 8.3.4.2, "Sugere-se iniciar e titular os AIAP da
+// mesma forma da insulina humana NPH"; dose 1 vez ao dia em horário constante (8.3.4, Figura 3);
+// elegibilidade da NT 169, item 3.1 ("incluindo novos diagnósticos").
+export function InicioGlarginaSection() {
+  const { patient } = usePatient()
+  const [dose, setDose] = useState<number | null>(10)
+  const start = nphStart(patient.weight)
+  const ceiling = basalCeiling(patient.weight)
+  if (outOfScope(patient.age, patient.type, patient.profile)) return <ScopeNote />
+  return (
+    <>
+      <GlargineEligibility />
+      <Card
+        title="Dose inicial de glargina"
+        subtitle="Sem insulina prévia: iniciar e titular da mesma forma que a NPH."
+      >
+        <Results>
+          <Result label="Dose fixa" value={start.fixed} unit="U" tone="info">
+            1 vez ao dia, em horário fixo (manhã ou noite).
+            {fixedAboveRange(patient.weight) ? ' Neste peso, 10 U passa de 0,2 U/kg.' : ''}
+          </Result>
+          <Result
+            label="Ou por peso (0,1 a 0,2 U/kg)"
+            value={start.range ? `${start.range[0]}–${start.range[1]}` : '—'}
+            unit={start.range ? 'U' : undefined}
+          >
+            {start.range ? null : 'Informe o peso no painel do paciente.'}
+          </Result>
+          <Result
+            label="Teto de basal"
+            value={ceiling !== null ? `< ${fmt(ceiling, Number.isInteger(ceiling) ? 0 : 1)}` : '—'}
+            unit={ceiling ? 'U/dia' : undefined}
+          >
+            {ceiling !== null
+              ? 'Basal abaixo de 0,5 U/kg/dia; acima disso, reavaliar o esquema (NT 169, Quadro 4).'
+              : null}
+          </Result>
+        </Results>
+        <p className="lead">
+          Titular pela glicemia de jejum a cada 3 dias até a meta, como a NPH: use a seção{' '}
+          <strong>Titulação</strong> com os jejuns do paciente. Em geral não é preciso segunda dose
+          de glargina no DM2; com jejum na meta e HbA1c fora, ver a seção{' '}
+          <strong>Insulina prandial</strong>.
+        </p>
+        <p className="lead">
+          Neste momento, reforçar a educação: técnica de aplicação, automonitorização e como
+          identificar e tratar hipoglicemia, mais frequente ao iniciar e intensificar a insulina.
+        </p>
+        <Details>
+          <Src href={PCDT_DM2.url}>
+            {PCDT_DM2.short}, itens 8.3.4, 8.3.4.1 e 8.3.4.2 e Figura 3.
+          </Src>
+          <Src href={NT_169.url}>{NT_169.short}, item 3.1 e Quadro 4.</Src>
+        </Details>
+      </Card>
+      <Card title="Dose para a receita">
+        <div className="fields">
+          <NumberField
+            label="Dose diária de glargina"
+            unit="U"
+            value={dose}
+            onChange={setDose}
+            hint="A dose inicial escolhida acima."
+          />
+        </div>
+      </Card>
+      <QuantidadeReceita dose={dose} emptyText="Informe a dose diária de glargina." />
     </>
   )
 }

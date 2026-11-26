@@ -2,6 +2,7 @@
 
 ## Não lançado
 
+- Consulta de diabetes: nova seção **Início da glargina** (sem insulina prévia). Usa a dose da NPH (PCDT 8.3.4.2), 1 vez ao dia em horário fixo, e mostra a elegibilidade da NT 169 e os tubetes da receita. A elegibilidade e a quantidade para a receita viraram componentes comuns com a migração.
 - Nova área **Canetas GLP-1** (`docs/canetas-glp1.md`):
   - cliques por dose nas canetas de semaglutida;
   - aplicações por caneta, limitadas pelo conteúdo e pela validade depois de aberta;
