@@ -2,6 +2,10 @@
 
 ## Não lançado
 
+- Nova área **Canetas GLP-1** (`docs/canetas-glp1.md`):
+  - cliques por dose nas canetas de semaglutida;
+  - aplicações por caneta, limitadas pelo conteúdo e pela validade depois de aberta;
+  - esquema de início da bula com datas.
 - Correções da 2ª revisão clínica (`docs/revisao-2-2026-11-25.md`):
   - Insulinas:
     - o perfil criança fica fora de todas as seções do PCDT DM2 adulto;

@@ -1,8 +1,8 @@
 # ferramentas-diabetes
 
 Projeto paralelo ao Smedic, que será absorvido por ele no futuro (`smedic/apps/web`). É uma
-página **100% frontend**, sem cadastro, sem backend e sem armazenamento, com três áreas
-separadas (sem estado compartilhado): **Diabetes**, **Gestante** e **Criança**.
+página **100% frontend**, sem cadastro, sem backend e sem armazenamento, com quatro áreas
+separadas (sem estado compartilhado): **Diabetes**, **Canetas GLP-1**, **Gestante** e **Criança**.
 
 Área Diabetes:
 
@@ -15,6 +15,11 @@ separadas (sem estado compartilhado): **Diabetes**, **Gestante** e **Criança**.
    Aviva Connect e ReliOn Platinum)
    via WebUSB e protocolo IEEE 11073-20601 próprio. A tela exibe as medições, exporta CSV e
    imprime ou gera PDF. O detalhe está em `docs/accu-chek.md`.
+
+Área Canetas GLP-1 (caneta escolhida em comum; um módulo por item da barra lateral): semaglutida
+(Ozempic, Extensior, Ozivy, Semavy, Semaclique, Wegovy, Poviztra). **Cliques por dose** (conta
+proporcional à marca da caneta; referências da FDA e decisões do usuário) e **Início e aumento**
+(esquema da bula com datas). Detalhes em `docs/canetas-glp1.md`.
 
 Área Gestante (um módulo por item da barra lateral):
 
@@ -70,6 +75,8 @@ Gráfico, CSV, PDF (impressão do navegador) e protocolo USB são código própr
 - `src/crianca/`: `idade.ts`, `alimentacao.ts` e `marcos.ts` (regras puras + testes),
   `CriancaPage.tsx` (dados da criança + barra de módulos), `AlimentacaoView.tsx` e
   `MarcosView.tsx`.
+- `src/canetas/`: `canetas.ts` (dados das canetas e regras puras + testes), `CanetasPage.tsx`
+  e `sources.ts`.
 - `src/shared/`: campos de formulário (número, data), componentes de resultado (`ui.tsx`),
   `datas.ts` (datas de calendário como número de dias, sem fuso) e download.
 

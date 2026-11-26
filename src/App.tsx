@@ -1,14 +1,16 @@
 import { type KeyboardEvent, useCallback, useEffect, useState } from 'react'
+import { CanetasPage } from './canetas/CanetasPage'
 import { CriancaPage } from './crianca/CriancaPage'
 import { GestantePage } from './gestante/GestantePage'
 import { ConsultaPage } from './glargina/ConsultaPage'
 import { GlicosimetroPage } from './glicosimetro/GlicosimetroPage'
 
-type Area = 'diabetes' | 'gestante' | 'crianca'
+type Area = 'diabetes' | 'canetas' | 'gestante' | 'crianca'
 type Tool = 'consulta' | 'glicosimetro'
 
 const AREAS: { id: Area; label: string }[] = [
   { id: 'diabetes', label: 'Diabetes' },
+  { id: 'canetas', label: 'Canetas GLP-1' },
   { id: 'gestante', label: 'Gestante' },
   { id: 'crianca', label: 'Criança' },
 ]
@@ -155,6 +157,14 @@ export function App() {
             >
               <GlicosimetroPage onDataChange={onMeterData} />
             </section>
+          </div>
+          <div
+            id="area-panel-canetas"
+            role="tabpanel"
+            aria-labelledby="area-canetas"
+            hidden={area !== 'canetas'}
+          >
+            <CanetasPage />
           </div>
           <div
             id="area-panel-gestante"

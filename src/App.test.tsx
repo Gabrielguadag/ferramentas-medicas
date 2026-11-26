@@ -180,4 +180,19 @@ describe('App', () => {
     expect(within(marcos).getByText('Alerta para o desenvolvimento')).toBeInTheDocument()
     expect(within(marcos).getByText('Marcar consulta de retorno em 30 dias.')).toBeInTheDocument()
   })
+
+  it('canetas: 0,25 mg na caneta de 1 mg do Ozivy = 18 ou 19 cliques, 8 aplicações', async () => {
+    render(<App />)
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('tab', { name: 'Canetas GLP-1' }))
+    const panel = screen.getByRole('tabpanel', { name: 'Canetas GLP-1' })
+    await user.selectOptions(within(panel).getByLabelText('Marca'), 'ozivy')
+    await user.type(within(panel).getByLabelText('Dose semanal (mg)'), '0.25')
+    expect(within(panel).getByText('0,25 mg nesta caneta').parentElement).toHaveTextContent(
+      '18 ou 19 cliques',
+    )
+    expect(
+      within(panel).getByText('Aplicações por caneta', { selector: 'span' }).parentElement,
+    ).toHaveTextContent('8')
+  })
 })
