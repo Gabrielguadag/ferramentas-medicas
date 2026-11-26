@@ -60,23 +60,24 @@ injecting between doses".
 
 ### Similares (Ozivy, Semavy, Semaclique, genérico EMS)
 
-- **Ozivy 1 mg: 72 cliques até 1 mg**, contados pelo usuário na caneta física (26/11/2026).
+- **Decisão do usuário (26/11/2026): Ozivy, Semavy e Semaclique usam 74 cliques até 1 mg**, igual
+  à caneta da Novo (FDA). Isso substitui a contagem de 72 no Ozivy registrada antes.
 - Relatos em vídeo de médicos brasileiros, compilados na calculadora de rodrigonahum.com.br
   (revisão de 22/11/2026). Os vídeos não foram assistidos por mim:
-  - Ozivy 1 mg com 19/37/75 (Dr. Mário Toscano Filho, 07/2026), em divergência com a contagem
-    física;
+  - Ozivy 1 mg com 19/37/75 (Dr. Mário Toscano Filho, 07/2026);
   - Semavy com 18 para 0,25 e 36 para 0,5 (Dra. Sheyla Alonso, 09/2026);
   - Semavy 1 mg com 74 (Dr. Mateus).
 - O passo do clique pode diferir entre fabricantes. No Canadá, a caneta da Dr. Reddy's tem 24
-  cliques por mg, contra 72 a 74 da Novo [Relato].
+  cliques por mg, contra 72 a 74 da Novo [Relato]. Por isso, cada marca nova precisa de um valor
+  próprio, sem herdar o da Novo automaticamente.
 
 Conta proporcional: cliques = dose ÷ dose da marca × cliques até a marca.
 
-| Dose desejada (caneta de 1 mg) |              Novo (74 até 1 mg) | Ozivy (72 até 1 mg) |
-| -----------------------------: | ------------------------------: | ------------------: |
-|                        0,25 mg | 18,5 (FDA: 19 na marca de 0,25) |                  18 |
-|                         0,5 mg |                              37 |                  36 |
-|                        0,75 mg |                    55,5 (55-56) |                  54 |
+| Dose desejada (caneta de 1 mg, 74 cliques até 1 mg: Ozempic, Extensior, Ozivy, Semavy, Semaclique) |                         Cliques |
+| -------------------------------------------------------------------------------------------------: | ------------------------------: |
+|                                                                                            0,25 mg | 18,5 (FDA: 19 na marca de 0,25) |
+|                                                                                             0,5 mg |                              37 |
+|                                                                                            0,75 mg |                    55,5 (55-56) |
 
 Na caneta de 1,5 mL da Novo, as marcas de 0,25 e 0,5 ficam em 19 e 37 cliques (FDA).
 
@@ -156,7 +157,7 @@ canetas brasileiras têm as mesmas concentrações e volumes da Wegovy FlexTouch
 - A FDA registra, para a caneta da Novo, que nada impede discar e injetar entre as doses. Os
   relatos brasileiros e canadenses fazem a contagem nas canetas de Wegovy.
 - O documento de Rodrigo Nahum usa 74 para as canetas de 1,7 e 2,4 mg. O volume da dose (0,75 mL)
-  e os relatos dão 75.
+  e os relatos dão 75. Decisão do usuário (26/11/2026): 75.
 
 ## Contexto oficial (uma vez, para registro)
 
@@ -177,8 +178,12 @@ canetas brasileiras têm as mesmas concentrações e volumes da Wegovy FlexTouch
    - o médico escolhe a caneta e a dose desejada;
    - a tela mostra os cliques (conta proporcional), quantas doses a caneta rende pela validade e
      quantas canetas serão necessárias até o próximo aumento.
-2. **Valor de referência por marca:** cliques do 0 até a marca da caneta. Para Ozivy e Semavy, a
-   tela pede para conferir contando na caneta, porque o dispositivo pode ser outro.
+2. **Valor de referência por caneta** (cliques do 0 até a dose marcada ou cheia), por decisão do
+   usuário em 26/11/2026:
+   - 3 mL a 1,34 mg/mL (Ozempic, Extensior, Ozivy, Semavy, Semaclique; Wegovy 1 mg): 74 até 1 mg;
+   - 1,5 mL a 1,34 mg/mL: 19 até 0,25 e 37 até 0,5 (FDA);
+   - Wegovy 0,25 mg (0,68 mg/mL): 37 até 0,25;
+   - Wegovy 1,7 e 2,4 mg: 75 até a dose cheia.
 3. **Combinações com insulina:** conversão de unidades em GLP-1 (Xultophy e Soliqua), sem cliques.
 4. **Plano de início e escalonamento** pela bula (tabela em `research_notes/canetas-glp1/
 clinico-regulatorio.md`), com a caneta e o número de cliques de cada etapa.
@@ -186,13 +191,14 @@ clinico-regulatorio.md`), com a caneta e o número de cliques de cada etapa.
 
 ## Decisões pendentes
 
-1. **Semavy, Semaclique e genérico EMS:** os relatos divergem entre 72 e 74 até 1 mg. Falta a
-   contagem física. Ozivy já tem: 72 até 1 mg, contados pelo usuário.
-2. **Wegovy 1,7 e 2,4 mg:** usar 75 cliques até a dose cheia (volume de 0,75 mL e relatos) ou 74
-   (documento de Rodrigo Nahum)?
-3. **Escopo:** só DM2 ou também obesidade? Ozempic, Ozivy e Semavy são para DM2; Wegovy e Saxenda
+Decididas em 26/11/2026: 74 cliques até 1 mg para Ozivy, Semavy e Semaclique; 75 até a dose cheia
+para Wegovy 1,7 e 2,4 mg.
+
+1. **Genérico de semaglutida EMS e demais similares** (Owozy, Seemasun, Zempneo, Orsema,
+   Loryvia): usar 74 também?
+2. **Escopo:** só DM2 ou também obesidade? Ozempic, Ozivy e Semavy são para DM2; Wegovy e Saxenda
    são para obesidade.
-4. **Nome da aba.** Sugestão: "AR GLP-1 e GIP/GLP-1".
+3. **Nome da aba.** Sugestão: "AR GLP-1 e GIP/GLP-1".
 
 ## Limites
 
