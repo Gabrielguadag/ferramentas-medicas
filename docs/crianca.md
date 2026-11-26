@@ -91,9 +91,10 @@ quantidade é só referência e não deve ser seguida de forma rígida.
   - açúcar, mel e adoçantes até 2 anos;
   - ultraprocessados;
   - sucos: nenhum antes de 1 ano; de 1 a 3 anos, no máximo cerca de 120 mL;
-  - cafeína, leite desnatado e compostos lácteos;
+  - cafeína e leite desnatado;
+  - composto lácteo, com o que é e como reconhecer no rótulo (pág. 144);
   - pipoca;
-  - leite de vaca como refeição antes de 9 meses;
+  - leite de vaca integral antes de 1 ano (não indicado em condições gerais, SBP);
   - engasgo: castanhas, uva e acerola;
   - carnes e ovos bem cozidos;
   - sal e temperos prontos;

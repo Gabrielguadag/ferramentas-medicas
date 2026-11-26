@@ -2,6 +2,10 @@
 
 ## Não lançado
 
+- Criança: o aviso sobre composto lácteo explica o que ele é (leite misturado com outros
+  ingredientes, em geral com açúcar e aditivos), por que não serve para menores de 2 anos e como
+  reconhecê-lo no rótulo, com um exemplo.
+
 - Criança, leite de vaca antes de 1 ano:
   - o padrão segue a SBP (Manual de alimentação, 5ª ed., 2024): sem leite materno, fórmula
     infantil até 1 ano;

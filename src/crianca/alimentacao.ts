@@ -25,6 +25,10 @@ export function leiteVacaNaoIndicado(meses: number): boolean {
   return meses < 12
 }
 
+/** Composto lácteo (Guia, pág. 144: "Parece fórmula infantil ou leite de vaca integral, mas não é"). */
+export const COMPOSTO_LACTEO =
+  'Composto lácteo não é fórmula infantil nem leite: é uma mistura de leite (no mínimo 51%) com outros ingredientes, que costuma ter açúcar e aditivos. Não serve para menores de 2 anos (a embalagem fala em 1 ano, mas o açúcar e os aditivos não são indicados antes dos 2) e não substitui o leite materno nem a fórmula. Exemplo: uma lata parecida com a da fórmula, na mesma prateleira e mais barata, mas com "composto lácteo" escrito na frente ou no verso e a frase obrigatória "composto lácteo não é leite em pó" (ou "este produto não é leite em pó").'
+
 export interface Refeicao {
   nome: string
   oferta: string
@@ -183,7 +187,7 @@ function planoFormula(meses: number): Plano {
         'A criança que recebe só fórmula infantil, bem preparada, não precisa de água.',
         'Novos alimentos, inclusive a água, a partir dos 6 meses.',
         'Preparo: água tratada fervida por 5 minutos; misturar o pó em até 15 minutos depois da fervura, nunca com a água fervendo; não aquecer no micro-ondas.',
-        'Compostos lácteos não são fórmula infantil nem leite: não servem para menores de 2 anos.',
+        COMPOSTO_LACTEO,
       ],
     }
   }
@@ -471,9 +475,10 @@ export function cuidados(meses: number): Cuidado[] {
       },
       {
         texto:
-          'Leite desnatado ou semidesnatado e compostos lácteos: não servem para menores de 2 anos.',
-        pagina: 'pág. 143 e 144',
+          'Leite desnatado ou semidesnatado: não serve para menores de 2 anos (tem pouca gordura, importante para o desenvolvimento neurológico).',
+        pagina: 'pág. 143',
       },
+      { texto: COMPOSTO_LACTEO, pagina: 'pág. 144' },
       {
         texto: 'Pipoca: não oferecer antes de 2 anos (risco de engasgo e sufocamento).',
         pagina: 'pág. 78',
