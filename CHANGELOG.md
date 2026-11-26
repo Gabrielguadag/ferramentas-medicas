@@ -2,6 +2,11 @@
 
 ## Não lançado
 
+- Criança, leite de vaca: antes dos 6 meses aparece como "não recomendado; só quando não há
+  outra opção" (o Guia do MS indica a fórmula como primeira alternativa e só orienta o uso
+  quando não há outra opção). "Alternativa do MS, não indicada em condições gerais" vale só de 6
+  a 11 meses.
+
 - Criança: o aviso sobre composto lácteo diz, em uma frase, que ele não é leite em pó nem
   fórmula infantil, e sim uma mistura de leite com outros ingredientes, muitas vezes com açúcar.
 

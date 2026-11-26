@@ -108,7 +108,8 @@ quantidade é só referência e não deve ser seguida de forma rígida.
 ### Leite de vaca antes de 1 ano: padrão SBP, alternativa do MS
 
 Decisão do usuário (2026-11-25): **o padrão é a SBP**, e o esquema do MS aparece como
-**alternativa não indicada em condições gerais**.
+**alternativa não indicada em condições gerais** a partir dos 6 meses. Antes dos 6 meses o
+leite de vaca não é recomendado: o Guia só orienta como usá-lo quando não há outra opção.
 
 - **SBP**, Manual de alimentação, 5ª ed. (2024):
   - "O leite de vaca integral não deve ser consumido no primeiro ano de vida" (pág. 24);
@@ -123,7 +124,12 @@ Decisão do usuário (2026-11-25): **o padrão é a SBP**, e o esquema do MS apa
 
 Como isso aparece na tela:
 
-- **Escolha "Leite de vaca integral" antes de 12 meses:**
+- **Escolha "Leite de vaca integral" antes de 6 meses:**
+  - a opção leva o rótulo "(não recomendado; só quando não há outra opção)";
+  - o aviso explica que o Guia do MS indica a fórmula como primeira alternativa (pág. 142) e só
+    orienta como usar o leite de vaca quando não há outra opção;
+  - as orientações do Guia para essa situação aparecem logo abaixo.
+- **Escolha "Leite de vaca integral" de 6 a 11 meses:**
   - a opção leva o rótulo "(alternativa do MS, não indicada em condições gerais)";
   - um aviso mostra o padrão da SBP;
   - o esquema do MS aparece logo abaixo, para quando a família não tem acesso à fórmula.

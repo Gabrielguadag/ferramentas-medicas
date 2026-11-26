@@ -1,4 +1,4 @@
-import { colheres, cuidados, etapa, plano } from './alimentacao'
+import { avisoLeiteVaca, colheres, cuidados, etapa, plano } from './alimentacao'
 
 const nomes = (leite: Parameters<typeof plano>[0], m: number) =>
   plano(leite, m).refeicoes.map((r) => r.nome)
@@ -51,6 +51,20 @@ describe('introdução alimentar (Guia alimentar para menores de 2 anos)', () =>
     expect(plano('vaca', 10).refeicoes.find((r) => r.nome === 'Almoço')?.oferta).toContain(
       '4 a 5 colheres',
     )
+  })
+
+  it('leite de vaca: não recomendado antes de 6 meses; alternativa do MS não indicada de 6 a 11', () => {
+    expect(avisoLeiteVaca(5)?.rotulo).toBe('não recomendado; só quando não há outra opção')
+    expect(avisoLeiteVaca(6)?.rotulo).toBe('alternativa do MS, não indicada em condições gerais')
+    expect(avisoLeiteVaca(11)?.rotulo).toBe('alternativa do MS, não indicada em condições gerais')
+    expect(avisoLeiteVaca(12)).toBeNull()
+    const t = (m: number) =>
+      cuidados(m)
+        .map((c) => c.texto)
+        .join(' ')
+    expect(t(3)).toContain('não recomendado antes dos 6 meses')
+    expect(t(3)).not.toContain('não indicado em condições gerais')
+    expect(t(6)).toContain('não indicado em condições gerais')
   })
 
   it('a partir de 2 anos: Guia para a População Brasileira', () => {

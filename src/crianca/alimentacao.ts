@@ -11,18 +11,34 @@ export const LEITES: { value: Leite; label: string }[] = [
 ]
 
 /**
- * Leite de vaca integral antes de 12 meses (decisão do usuário, 2026-11-25): o padrão é a SBP,
- * que não recomenda leite de vaca integral no primeiro ano (sem leite materno, fórmula infantil).
- * O esquema do Guia do MS, que o admite quando não há acesso à fórmula (e no lugar da fórmula a
- * partir de 9 meses), aparece como alternativa não indicada em condições gerais.
+ * Leite de vaca integral antes de 12 meses (decisão do usuário, 2026-11-25):
+ * - antes de 6 meses não é recomendado: o Guia do MS indica a fórmula como primeira alternativa
+ *   (pág. 142) e só orienta como usar o leite de vaca quando não há outra opção;
+ * - de 6 a 11 meses é a alternativa do MS, não indicada em condições gerais: o padrão é a SBP,
+ *   que não recomenda leite de vaca integral no primeiro ano (sem leite materno, fórmula).
  */
-export const ROTULO_ALTERNATIVA_MS = 'alternativa do MS, não indicada em condições gerais'
+export interface AvisoLeiteVaca {
+  /** Complemento do rótulo da opção "Leite de vaca integral". */
+  rotulo: string
+  aviso: string
+}
 
-export const LEITE_VACA_NAO_INDICADO =
-  'Alternativa do MS, não indicada em condições gerais. Padrão (SBP): o leite de vaca integral (líquido ou em pó) não deve ser consumido no primeiro ano de vida; sem leite materno, usar fórmula infantil até 1 ano.'
-
-export function leiteVacaNaoIndicado(meses: number): boolean {
-  return meses < 12
+export function avisoLeiteVaca(meses: number): AvisoLeiteVaca | null {
+  if (meses < 6) {
+    return {
+      rotulo: 'não recomendado; só quando não há outra opção',
+      aviso:
+        'Não recomendado antes dos 6 meses: sem leite materno, usar fórmula infantil. O Guia do MS indica a fórmula como primeira alternativa e só orienta como usar o leite de vaca quando não há outra opção; a SBP não o recomenda no primeiro ano de vida. As orientações abaixo são as do Guia para essa situação.',
+    }
+  }
+  if (meses < 12) {
+    return {
+      rotulo: 'alternativa do MS, não indicada em condições gerais',
+      aviso:
+        'Alternativa do MS, não indicada em condições gerais. Padrão (SBP): o leite de vaca integral (líquido ou em pó) não deve ser consumido no primeiro ano de vida; sem leite materno, usar fórmula infantil até 1 ano. O esquema abaixo é o do Guia do MS para quando a família não tem acesso à fórmula.',
+    }
+  }
+  return null
 }
 
 /** Composto lácteo (Guia, pág. 144: "Parece fórmula infantil ou leite de vaca integral, mas não é"). */
@@ -485,7 +501,13 @@ export function cuidados(meses: number): Cuidado[] {
       },
     )
   }
-  if (leiteVacaNaoIndicado(meses)) {
+  if (meses < 6) {
+    c.push({
+      texto:
+        'Leite de vaca integral (líquido ou em pó): não recomendado antes dos 6 meses. Sem leite materno, a primeira alternativa é a fórmula infantil.',
+      pagina: 'Guia, pág. 142; SBP, pág. 24',
+    })
+  } else if (meses < 12) {
     c.push({
       texto:
         'Leite de vaca integral (líquido ou em pó) como bebida ou refeição antes de 1 ano: não indicado em condições gerais (SBP). O Guia do MS o admite como alternativa quando não há acesso à fórmula. Leite e derivados podem entrar como ingredientes de receitas caseiras a partir dos 6 meses.',

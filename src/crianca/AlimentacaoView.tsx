@@ -5,12 +5,10 @@ import type { DadosCrianca } from './CriancaPage'
 import {
   DOZE_PASSOS,
   LEITES,
-  LEITE_VACA_NAO_INDICADO,
-  ROTULO_ALTERNATIVA_MS,
   type Leite,
+  avisoLeiteVaca,
   cuidados,
   etapa,
-  leiteVacaNaoIndicado,
   plano,
 } from './alimentacao'
 import { GUIA_MENORES_2, SBP_MANUAL } from './sources'
@@ -21,6 +19,7 @@ export function AlimentacaoSection(props: { dados: DadosCrianca }) {
   const meses = idade?.meses ?? null
   const p = meses !== null ? plano(leite, meses) : null
   const e = meses !== null ? etapa(meses) : null
+  const avisoVaca = meses !== null ? avisoLeiteVaca(meses) : null
   const prematura = igNascDias !== null && igNascDias < 37 * 7
 
   return (
@@ -30,8 +29,8 @@ export function AlimentacaoSection(props: { dados: DadosCrianca }) {
           legend="Leite principal"
           value={leite}
           options={LEITES.map((o) =>
-            o.value === 'vaca' && (meses === null || leiteVacaNaoIndicado(meses))
-              ? { ...o, label: `${o.label} (${ROTULO_ALTERNATIVA_MS})` }
+            o.value === 'vaca' && avisoVaca
+              ? { ...o, label: `${o.label} (${avisoVaca.rotulo})` }
               : o,
           )}
           onChange={setLeite}
@@ -47,12 +46,7 @@ export function AlimentacaoSection(props: { dados: DadosCrianca }) {
         <p className="empty">Preencha a data de nascimento para ver a orientação da idade.</p>
       ) : (
         <>
-          {leite === 'vaca' && meses !== null && leiteVacaNaoIndicado(meses) ? (
-            <Alert tone="warn">
-              {LEITE_VACA_NAO_INDICADO} O esquema abaixo é o do Guia do MS para quando a família não
-              tem acesso à fórmula.
-            </Alert>
-          ) : null}
+          {leite === 'vaca' && avisoVaca ? <Alert tone="warn">{avisoVaca.aviso}</Alert> : null}
           {prematura && meses !== null && meses < 12 ? (
             <Alert tone="warn" title="Prematuro:">
               o momento de começar outros alimentos é indicado pelo profissional de saúde. Depois,
