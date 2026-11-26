@@ -27,15 +27,7 @@ import {
   dapagliflozinCriteria,
   pcdtFlow,
 } from './rules/pcdt'
-import {
-  type FaseDm1,
-  QUADRO_1,
-  QUADRO_2,
-  type SituacaoDm1Adulto,
-  caminhoGlargina,
-  fmtFaixa,
-  porPeso,
-} from './rules/inicioGlargina'
+import { type FaseDm1, QUADRO_1, caminhoGlargina, fmtFaixa, porPeso } from './rules/inicioGlargina'
 import { titrate } from './rules/titulacao'
 import { ELIGIBILITY_LITERAL, GUIA_GLARGINA, NT_169, PCDT_DM2, eligibility } from './sources'
 import { Alert, Card, Check, Details, Result, Results, Src, fmt } from '../shared/ui'
@@ -338,8 +330,9 @@ export function InicioGlarginaSection() {
     <>
       <GlargineEligibility />
       {caminho === 'dm2' ? <InicioGlarginaDm2 /> : null}
-      {caminho === 'dm1-crianca' || caminho === 'dm1-adulto' ? (
-        <InicioGlarginaDm1 crianca={caminho === 'dm1-crianca'} />
+      {caminho === 'dm1-crianca' ? <InicioGlarginaDm1 /> : null}
+      {caminho === 'dm1-adulto' ? (
+        <Alert tone="info">Fora do escopo: início da glargina no DM1 adulto.</Alert>
       ) : null}
     </>
   )
@@ -400,57 +393,37 @@ function InicioGlarginaDm2() {
   )
 }
 
-/** DM1 elegível à NT 169: dose estimada pelos Quadros 1 (2 a 17 anos) e 2 (70 anos ou mais). */
-function InicioGlarginaDm1({ crianca }: { crianca: boolean }) {
+/** DM1 de 2 a 17 anos (elegível à NT 169): dose estimada pelo Quadro 1. */
+function InicioGlarginaDm1() {
   const { patient } = usePatient()
   const [fase, setFase] = useState<FaseDm1 | ''>('')
-  const [situacao, setSituacao] = useState<SituacaoDm1Adulto | ''>('')
   const [dose, setDose] = useState<number | null>(null)
-  const linha = crianca ? (fase ? QUADRO_1[fase] : null) : situacao ? QUADRO_2[situacao] : null
+  const linha = fase ? QUADRO_1[fase] : null
   const dtdi = linha ? porPeso(linha.dtdi, patient.weight) : null
   const basal = linha ? porPeso(linha.basal, patient.weight) : null
   return (
     <>
       <Card
         title="Dose inicial de glargina no DM1"
-        subtitle={
-          crianca
-            ? 'Crianças e adolescentes: dose total diária (DTDI) e basal por kg, pela fase.'
-            : 'Adultos: dose total diária (DTDI) e basal por kg, pela situação clínica.'
-        }
+        subtitle="Crianças e adolescentes: dose total diária (DTDI) e basal por kg, pela fase."
       >
         <div className="fields">
-          {crianca ? (
-            <RadioGroup
-              legend="Fase"
-              value={fase}
-              options={[
-                { value: 'pre-pubere', label: 'Pré-púbere' },
-                { value: 'pubere', label: 'Púbere' },
-              ]}
-              onChange={setFase}
-            />
-          ) : (
-            <RadioGroup
-              legend="Situação clínica"
-              value={situacao}
-              column
-              options={[
-                { value: 'recente', label: QUADRO_2.recente.rotulo },
-                { value: 'apos-cad', label: QUADRO_2['apos-cad'].rotulo },
-              ]}
-              onChange={setSituacao}
-            />
-          )}
+          <RadioGroup
+            legend="Fase"
+            value={fase}
+            options={[
+              { value: 'pre-pubere', label: 'Pré-púbere' },
+              { value: 'pubere', label: 'Púbere' },
+            ]}
+            onChange={setFase}
+          />
         </div>
         {!linha ? (
-          <p className="empty">
-            {crianca ? 'Escolha a fase (pré-púbere ou púbere).' : 'Escolha a situação clínica.'}
-          </p>
+          <p className="empty">Escolha a fase (pré-púbere ou púbere).</p>
         ) : (
           <Results>
             <Result
-              label={`Glargina (basal ${fmtFaixa(linha.basal, linha.basal.max < 1 ? 2 : 1)} UI/kg/dia)`}
+              label={`Glargina (basal ${fmtFaixa(linha.basal, 1)} UI/kg/dia)`}
               value={basal ? fmtFaixa(basal) : '—'}
               unit={basal ? 'UI/dia' : undefined}
               tone="info"
@@ -472,24 +445,20 @@ function InicioGlarginaDm1({ crianca }: { crianca: boolean }) {
         )}
         <ul className="checklist">
           <li>
-            Em geral, a basal fica entre 30% e 50% da DTDI
-            {crianca ? '; em adolescentes, pode chegar a 50% a 55%' : ''}.
+            Em geral, a basal fica entre 30% e 50% da DTDI; em adolescentes, pode chegar a 50% a
+            55%.
           </li>
           <li>Em geral, não há necessidade de segunda dose diária de glargina.</li>
           <li>
             Ajustar a dose de forma individualizada pela glicemia de jejum, em intervalos de até 3
             dias; monitorar com mais frequência nas semanas iniciais.
           </li>
-          {crianca ? (
-            <li>
-              Basal acima de 50% da DTDI: possível excesso de basal; reavaliar o esquema (Quadro 4).
-            </li>
-          ) : null}
+          <li>
+            Basal acima de 50% da DTDI: possível excesso de basal; reavaliar o esquema (Quadro 4).
+          </li>
         </ul>
         <Details>
-          <Src href={NT_169.url}>
-            {NT_169.short}, {crianca ? 'Quadro 1' : 'Quadro 2'}, texto seguinte e Quadros 3 e 4.
-          </Src>
+          <Src href={NT_169.url}>{NT_169.short}, Quadro 1, texto seguinte e Quadros 3 e 4.</Src>
         </Details>
       </Card>
       <DoseReceita dose={dose} onChange={setDose} />
