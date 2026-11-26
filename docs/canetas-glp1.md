@@ -58,6 +58,26 @@ preventing users from dialing and injecting between doses".
   - girar só para frente desde o 0 e, se passar, voltar ao 0;
   - se a caneta tiver menos que a dose, o seletor para antes.
 
+## Aviso fixo e agulhas
+
+- **Aviso fixo no topo da área:**
+  - a contagem de cliques é uso fora de bula (off-label), e as bulas orientam selecionar só as
+    doses marcadas;
+  - o cálculo usa informações obtidas de documento regulatório da FDA e de relatos clínicos;
+  - ao fracionar, é preciso comprar agulhas. O aviso mostra o tipo de agulha da marca escolhida.
+- **Agulhas na caixa e tipo, pela bula:**
+
+| Marca              | Agulhas na caixa                    | Tipo (bula)                                                    |
+| ------------------ | ----------------------------------- | -------------------------------------------------------------- |
+| Ozempic, Extensior | 6 na caneta de 1,5 mL; 4 na de 3 mL | NovoFine® ou NovoFine® Plus; até 8 mm                          |
+| Wegovy, Poviztra   | 4                                   | NovoFine® Plus (na caixa) ou NovoFine®; até 8 mm               |
+| Ozivy, Semaclique  | 4                                   | Ultra-Fine 0,23 mm (32G) × 4 mm 5B UTW; a bula aceita até 8 mm |
+| Semavy             | 4                                   | BD Ultra-Fine™; a bula aceita até 8 mm                         |
+
+- **Agulhas a comprar:** aplicações por caneta − agulhas da caixa, com uma agulha nova a cada
+  aplicação ("Sempre use uma agulha nova em cada injeção", bula Wegovy). O número aparece no
+  resultado, na tabela de cliques e no esquema.
+
 ## Esquema da bula (módulo "Início e aumento")
 
 | Linha | Etapas                                                                                                                                | Bula                                                             |

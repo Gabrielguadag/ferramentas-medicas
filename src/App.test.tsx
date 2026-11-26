@@ -194,5 +194,6 @@ describe('App', () => {
     expect(
       within(panel).getByText('Aplicações por caneta', { selector: 'span' }).parentElement,
     ).toHaveTextContent('8')
+    expect(within(panel).getByText('Uso fora de bula (off-label).')).toBeInTheDocument()
   })
 })

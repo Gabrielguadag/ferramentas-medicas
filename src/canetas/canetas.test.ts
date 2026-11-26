@@ -1,5 +1,6 @@
 import {
   type Apresentacao,
+  agulhasAComprar,
   ESQUEMA,
   PRODUTOS,
   cliquesNominais,
@@ -124,6 +125,27 @@ describe('rendimento', () => {
     const r = rendimento(produto('wegovy')!, ap('wegovy', '24'), 75)
     expect(r.aplicacoes).toBe(4)
     expect(r.limite).toBe('conteudo')
+  })
+})
+
+describe('agulhas', () => {
+  it('agulhas na caixa (bula): 6 na caneta de 1,5 mL do Ozempic, 4 nas demais', () => {
+    expect(ap('ozempic', '025-05').agulhasNaCaixa).toBe(6)
+    expect(ap('ozempic', '1').agulhasNaCaixa).toBe(4)
+    expect(ap('ozivy', '1').agulhasNaCaixa).toBe(4)
+    expect(ap('wegovy', '24').agulhasNaCaixa).toBe(4)
+  })
+
+  it('comprar = aplicações além das agulhas da caixa', () => {
+    expect(agulhasAComprar(ap('ozivy', '1'), 8)).toBe(4)
+    expect(agulhasAComprar(ap('ozempic', '1'), 6)).toBe(2)
+    expect(agulhasAComprar(ap('ozempic', '1'), 4)).toBe(0)
+  })
+
+  it('cada marca tem o tipo de agulha da bula', () => {
+    expect(produto('ozivy')?.agulha).toMatch(/Ultra-Fine 0,23 mm \(32G\) × 4 mm/)
+    expect(produto('semavy')?.agulha).toMatch(/BD Ultra-Fine/)
+    expect(produto('wegovy')?.agulha).toMatch(/NovoFine/)
   })
 })
 

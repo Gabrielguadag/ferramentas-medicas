@@ -13,6 +13,7 @@ import {
   doseMaxima,
   dosesTabela,
   fmtMg,
+  agulhasAComprar,
   mgPorClique,
   rendimento,
 } from './canetas'
@@ -59,6 +60,13 @@ export function CanetasPage() {
         ))}
       </nav>
       <div>
+        <Alert tone="warn" title="Uso fora de bula (off-label).">
+          As bulas orientam selecionar só as doses marcadas no contador; a contagem de cliques não
+          foi validada pelos fabricantes. O cálculo é feito com informações obtidas de documento
+          regulatório da FDA (caneta da Novo Nordisk) e de relatos clínicos. Ao fracionar, a caneta
+          rende mais aplicações que as agulhas da caixa: é preciso comprar agulhas para caneta (
+          {prod.nome}: {prod.agulha}), uma nova a cada aplicação.
+        </Alert>
         <Card title="Caneta de semaglutida" subtitle="Vale para os dois módulos.">
           <div className="fields">
             <SelectField
@@ -100,6 +108,10 @@ function ResumoCaneta({ prod, ap }: { prod: Produto; ap: Apresentacao }) {
       <li>
         {fmtMg(ap.mgPorMl)} mg/mL, {fmtMg(ap.volumeMl)} mL ({fmtMg(ap.mgTotal)} mg). Marcas do
         contador: {marcas}. Cada clique ≈ {fmtMg(mgPorClique(ap), 4)} mg.
+      </li>
+      <li>
+        Agulhas: {ap.agulhasNaCaixa} na caixa. Tipo: {prod.agulha}. Uma agulha nova a cada
+        aplicação.
       </li>
       <li>
         Depois da primeira aplicação, vale {prod.validadeDias / 7} semanas ({prod.validadeDias}{' '}
@@ -152,6 +164,9 @@ function CliquesView({ prod, ap }: { prod: Produto; ap: Apresentacao }) {
               <th scope="col" className="num">
                 Aplicações por caneta
               </th>
+              <th scope="col" className="num">
+                Agulhas a comprar
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -167,6 +182,7 @@ function CliquesView({ prod, ap }: { prod: Produto; ap: Apresentacao }) {
                   </th>
                   <td className="num">{r.opcoes.map((o) => o.cliques).join(' ou ')}</td>
                   <td className="num">{rend.aplicacoes}</td>
+                  <td className="num">{agulhasAComprar(ap, rend.aplicacoes)}</td>
                 </tr>
               )
             })}
@@ -227,6 +243,13 @@ function ResultadoCliques(props: {
             ? `Limitada pela validade de ${prod.validadeDias / 7} semanas depois de aberta (o conteúdo daria ${rend.peloConteudo}).`
             : `Limitada pelo conteúdo da caneta.`}
         </Result>
+        <Result
+          label="Agulhas a comprar"
+          value={agulhasAComprar(ap, rend.aplicacoes)}
+          tone={agulhasAComprar(ap, rend.aplicacoes) > 0 ? 'warn' : 'neutral'}
+        >
+          A caixa traz {ap.agulhasNaCaixa}; uma agulha nova a cada aplicação. Tipo: {prod.agulha}.
+        </Result>
       </Results>
       {c.marcada ? null : (
         <ul className="checklist">
@@ -286,11 +309,19 @@ function EsquemaView({ prod, ap }: { prod: Produto; ap: Apresentacao }) {
                     ? '—'
                     : c.marcada
                       ? 'marca do contador'
-                      : `${c.opcoes.map((o) => o.cliques).join(' ou ')} cliques (${plural(
-                          rendimento(prod, ap, c.opcoes[c.opcoes.length - 1]!.cliques).aplicacoes,
-                          'aplicação',
-                          'aplicações',
-                        )} por caneta)`
+                      : (() => {
+                          const n = rendimento(
+                            prod,
+                            ap,
+                            c.opcoes[c.opcoes.length - 1]!.cliques,
+                          ).aplicacoes
+                          const ag = agulhasAComprar(ap, n)
+                          return `${c.opcoes.map((o) => o.cliques).join(' ou ')} cliques (${plural(
+                            n,
+                            'aplicação',
+                            'aplicações',
+                          )} por caneta${ag > 0 ? `; comprar ${plural(ag, 'agulha', 'agulhas')}` : ''})`
+                        })()
               return (
                 <tr key={e.semanaInicio}>
                   <th scope="row">

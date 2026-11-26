@@ -27,6 +27,8 @@ export interface Apresentacao {
   marcas: readonly Marca[]
   /** Quantidade nominal de semaglutida da caneta (mg). */
   mgTotal: number
+  /** Agulhas que vêm na caixa (bula). */
+  agulhasNaCaixa: number
 }
 
 export interface Produto {
@@ -37,6 +39,8 @@ export interface Produto {
   /** Validade depois da primeira aplicação, em dias (bula). */
   validadeDias: number
   bula: BulaId
+  /** Agulha indicada na bula para a caneta. */
+  agulha: string
   apresentacoes: readonly Apresentacao[]
 }
 
@@ -51,6 +55,7 @@ const NOVO_DM2: readonly Apresentacao[] = [
       { mg: 0.5, cliques: 37 },
     ],
     mgTotal: 2,
+    agulhasNaCaixa: 6,
   },
   {
     id: '1',
@@ -59,6 +64,7 @@ const NOVO_DM2: readonly Apresentacao[] = [
     volumeMl: 3,
     marcas: [{ mg: 1, cliques: 74 }],
     mgTotal: 4,
+    agulhasNaCaixa: 4,
   },
 ]
 
@@ -70,6 +76,7 @@ const SIMILAR_1MG: readonly Apresentacao[] = [
     volumeMl: 3,
     marcas: [{ mg: 1, cliques: 74 }],
     mgTotal: 4,
+    agulhasNaCaixa: 4,
   },
 ]
 
@@ -81,6 +88,7 @@ const WEGOVY: readonly Apresentacao[] = [
     volumeMl: 1.5,
     marcas: [{ mg: 0.25, cliques: 37 }],
     mgTotal: 1,
+    agulhasNaCaixa: 4,
   },
   {
     id: '05',
@@ -89,6 +97,7 @@ const WEGOVY: readonly Apresentacao[] = [
     volumeMl: 1.5,
     marcas: [{ mg: 0.5, cliques: 37 }],
     mgTotal: 2,
+    agulhasNaCaixa: 4,
   },
   {
     id: '1',
@@ -97,6 +106,7 @@ const WEGOVY: readonly Apresentacao[] = [
     volumeMl: 3,
     marcas: [{ mg: 1, cliques: 74 }],
     mgTotal: 4,
+    agulhasNaCaixa: 4,
   },
   {
     id: '17',
@@ -105,6 +115,7 @@ const WEGOVY: readonly Apresentacao[] = [
     volumeMl: 3,
     marcas: [{ mg: 1.7, cliques: 75 }],
     mgTotal: 6.8,
+    agulhasNaCaixa: 4,
   },
   {
     id: '24',
@@ -113,6 +124,7 @@ const WEGOVY: readonly Apresentacao[] = [
     volumeMl: 3,
     marcas: [{ mg: 2.4, cliques: 75 }],
     mgTotal: 9.6,
+    agulhasNaCaixa: 4,
   },
 ]
 
@@ -124,6 +136,7 @@ export const PRODUTOS: readonly Produto[] = [
     linha: 'dm2',
     validadeDias: 42,
     bula: 'ozempic',
+    agulha: 'NovoFine® ou NovoFine® Plus (o tipo que vem na caixa), de até 8 mm',
     apresentacoes: NOVO_DM2,
   },
   {
@@ -133,6 +146,7 @@ export const PRODUTOS: readonly Produto[] = [
     linha: 'dm2',
     validadeDias: 42,
     bula: 'extensior',
+    agulha: 'NovoFine® ou NovoFine® Plus (o tipo que vem na caixa), de até 8 mm',
     apresentacoes: NOVO_DM2,
   },
   {
@@ -142,6 +156,7 @@ export const PRODUTOS: readonly Produto[] = [
     linha: 'dm2',
     validadeDias: 56,
     bula: 'ozivy',
+    agulha: 'Ultra-Fine 0,23 mm (32G) × 4 mm (a que vem na caixa); a bula aceita até 8 mm',
     apresentacoes: SIMILAR_1MG,
   },
   {
@@ -151,6 +166,7 @@ export const PRODUTOS: readonly Produto[] = [
     linha: 'dm2',
     validadeDias: 42,
     bula: 'semavy',
+    agulha: 'BD Ultra-Fine™ (a que vem na caixa); a bula aceita até 8 mm',
     apresentacoes: SIMILAR_1MG,
   },
   {
@@ -160,6 +176,7 @@ export const PRODUTOS: readonly Produto[] = [
     linha: 'dm2',
     validadeDias: 56,
     bula: 'semaclique',
+    agulha: 'Ultra-Fine 0,23 mm (32G) × 4 mm (a que vem na caixa); a bula aceita até 8 mm',
     apresentacoes: SIMILAR_1MG,
   },
   {
@@ -169,6 +186,7 @@ export const PRODUTOS: readonly Produto[] = [
     linha: 'peso',
     validadeDias: 42,
     bula: 'wegovy',
+    agulha: 'NovoFine® ou NovoFine® Plus (o tipo que vem na caixa), de até 8 mm',
     apresentacoes: WEGOVY,
   },
   {
@@ -178,6 +196,7 @@ export const PRODUTOS: readonly Produto[] = [
     linha: 'peso',
     validadeDias: 42,
     bula: 'poviztra',
+    agulha: 'NovoFine® ou NovoFine® Plus (o tipo que vem na caixa), de até 8 mm',
     apresentacoes: WEGOVY,
   },
 ]
@@ -286,6 +305,10 @@ export function rendimento(p: Produto, a: Apresentacao, cliques: number): Rendim
     limite: pelaValidade < peloConteudo ? 'validade' : 'conteudo',
   }
 }
+
+/** Agulhas a comprar além das da caixa, para usar a caneta inteira (uma agulha nova por aplicação). */
+export const agulhasAComprar = (a: Apresentacao, aplicacoes: number) =>
+  Math.max(0, aplicacoes - a.agulhasNaCaixa)
 
 /** Doses de referência para a tabela de cliques da caneta. */
 export function dosesTabela(a: Apresentacao): number[] {
