@@ -791,3 +791,92 @@ tr.past td {
 .fields + .fields {
   margin-top: 12px;
 }
+
+/* ---------- celular e tela estreita ---------- */
+@media (max-width: 800px) {
+  /* A barra de módulos vira uma fileira de botões acima do conteúdo (sem a dica e sem ficar fixa,
+     para não cobrir o conteúdo ao rolar). */
+  .side {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .side button {
+    border: 1px solid var(--axis);
+    border-radius: 999px;
+    padding: 6px 12px;
+    background: var(--surface);
+    white-space: nowrap;
+  }
+  .side button[aria-current='page'] {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+  .side-hint {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  header.app .inner,
+  main .inner {
+    padding: 0 12px;
+  }
+  header.app h1 {
+    font-size: 1.1rem;
+    padding-top: 10px;
+  }
+  .privacy {
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+  }
+  nav.areas {
+    flex-wrap: wrap;
+  }
+  nav.areas {
+    gap: 4px;
+  }
+  nav.areas button {
+    padding: 5px 9px;
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+  nav.tabs button {
+    padding: 8px 10px;
+  }
+  main {
+    padding-top: 12px;
+  }
+  .layout {
+    gap: 12px;
+  }
+  .card {
+    padding: 12px 12px;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: 1.15rem;
+  }
+  /* Em coluna única, o botão de ação não precisa alinhar com o rótulo dos campos ao lado. */
+  .field-action {
+    padding-top: 0;
+  }
+  /* Alvos de toque maiores nas opções. */
+  .choices {
+    gap: 2px 14px;
+  }
+  .choices label {
+    min-height: 36px;
+  }
+  .check {
+    min-height: 36px;
+  }
+  /* Tabelas largas rolam dentro do cartão em vez de alargar a página. */
+  .card table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}

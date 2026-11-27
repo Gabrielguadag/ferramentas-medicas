@@ -2,6 +2,11 @@
 
 ## Não lançado
 
+- Celular (telas até 800 px):
+  - a barra de módulos vira uma fileira de botões acima do conteúdo e deixa de ficar fixa, porque cobria o conteúdo ao rolar;
+  - as abas do topo não passam mais da largura da tela;
+  - margens menores e alvos de toque maiores nas opções;
+  - tabelas largas rolam dentro do cartão.
 - Consulta de diabetes: nova seção **Início da glargina** (sem insulina prévia). Inclui o DM1 de 2 a 17 anos: doses do Quadro 1 da NT 169, pela fase; DM1 adulto fica fora. Usa a dose da NPH (PCDT 8.3.4.2), 1 vez ao dia em horário fixo, e mostra a elegibilidade da NT 169 e os tubetes da receita. A elegibilidade e a quantidade para a receita viraram componentes comuns com a migração.
 - Nova área **Canetas GLP-1** (`docs/canetas-glp1.md`):
   - cliques por dose nas canetas de semaglutida;
