@@ -2,6 +2,10 @@
 
 ## Não lançado
 
+- Gestante: módulos **Pré-eclâmpsia** e **Eclâmpsia e sulfato** (RBEHG 2023, `docs/gestante-preeclampsia.md`):
+  - fatores de risco com indicação de AAS e cálcio, e o momento do AAS pela IG;
+  - classificação da PA, anti-hipertensivos de manutenção e da crise hipertensiva;
+  - sulfato de magnésio: indicação, Zuspan e Pritchard, metade da manutenção com creatinina ≥ 1,0, monitorização, recorrência, duração e antídoto.
 - Celular (telas até 800 px):
   - a barra de módulos vira uma fileira de botões acima do conteúdo e deixa de ficar fixa, porque cobria o conteúdo ao rolar;
   - as abas do topo não passam mais da largura da tela;

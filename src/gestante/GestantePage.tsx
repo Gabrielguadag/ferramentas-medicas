@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { EclampsiaSection } from './EclampsiaView'
 import { IdadeGestacionalSection } from './IdadeGestacional'
+import { PreeclampsiaSection } from './PreeclampsiaView'
 import { ConsultasExamesSection } from './PrenatalView'
 
 const MODULOS = [
@@ -14,6 +16,18 @@ const MODULOS = [
     label: 'Consultas e exames',
     hint: 'Calendário, exames e vacinas',
     Component: ConsultasExamesSection,
+  },
+  {
+    id: 'preeclampsia',
+    label: 'Pré-eclâmpsia',
+    hint: 'Risco, AAS e cálcio, anti-hipertensivos',
+    Component: PreeclampsiaSection,
+  },
+  {
+    id: 'eclampsia',
+    label: 'Eclâmpsia e sulfato',
+    hint: 'Sulfato de magnésio, doses e antídoto',
+    Component: EclampsiaSection,
   },
 ] as const
 

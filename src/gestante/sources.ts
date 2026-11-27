@@ -29,3 +29,14 @@ export const MS_DTPA = {
     'Ministério da Saúde. dTpa: particularidades da vacinação em gestantes e puérperas (gov.br, Saúde de A a Z)',
   url: 'https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/d/dtpa',
 }
+
+export const RBEHG_2023 = {
+  titulo:
+    'Rede Brasileira de Estudos sobre Hipertensão na Gravidez (RBEHG). Pré-eclâmpsia — Protocolo 03, 2023 (Peraçoli JC et al.)',
+  url: 'https://cofen.gov.br/wp-content/uploads/2025/02/PROTOCOLO-2023-FINAL.pdf',
+}
+
+export const MS_ALTO_RISCO = {
+  titulo: 'Ministério da Saúde. Manual de Gestação de Alto Risco (2022), Quadro 7',
+  url: 'https://bvsms.saude.gov.br/bvs/publicacoes/manual_gestacao_alto_risco.pdf',
+}

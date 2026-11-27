@@ -16,6 +16,10 @@ Página estática, sem cadastro, sem servidor e sem armazenamento. Tudo fica na 
   sido feito e o que vem a seguir.
 - **Gestante → Consultas e exames:** calendário de consultas, exames por trimestre e vacinas
   (Caderneta Brasileira da Gestante 2026).
+- **Gestante → Pré-eclâmpsia:** fatores de risco e indicação de AAS e cálcio, classificação da
+  PA e anti-hipertensivos (RBEHG 2023).
+- **Gestante → Eclâmpsia e sulfato:** sulfato de magnésio (Zuspan ou Pritchard, ajuste renal),
+  monitorização e antídoto (RBEHG 2023).
 - **Criança → Introdução alimentar:** pela idade e pelo leite (materno, fórmula ou leite de
   vaca), o plano do dia, como oferecer, sinais de fome e saciedade e o que não oferecer (Guia
   alimentar para crianças menores de 2 anos, MS).
@@ -53,6 +57,7 @@ Ver `THIRD_PARTY_NOTICES.md` (dados de risco CV vindos dos pacotes `preventr` e
 - `docs/risco-cv.md`: escalas de risco cardiovascular, implementação e verificação.
 - `docs/gestante-ig.md`: idade gestacional, regras e fontes.
 - `docs/gestante-prenatal.md`: consultas, exames e vacinas do pré-natal.
+- `docs/gestante-preeclampsia.md`: pré-eclâmpsia, eclâmpsia e sulfato de magnésio.
 - `docs/crianca.md`: introdução alimentar e marcos do desenvolvimento.
 - `docs/canetas-glp1.md`: cliques, rendimento e esquema das canetas de semaglutida.
 - `docs/accu-chek.md`: o protocolo, os modelos e o que falta testar com um aparelho real.

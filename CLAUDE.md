@@ -31,6 +31,11 @@ proporcional à marca da caneta; referências da FDA e decisões do usuário) e 
 2. **Consultas e exames**: referência do calendário de consultas, dos exames por trimestre e
    das vacinas (Caderneta Brasileira da Gestante 2026 e nota C3 do MS), em
    `docs/gestante-prenatal.md`.
+3. **Pré-eclâmpsia**: fatores de risco com indicação de AAS e cálcio, classificação da PA,
+   anti-hipertensivos de manutenção e da crise (RBEHG 2023).
+4. **Eclâmpsia e sulfato**: indicação do sulfato de magnésio, esquemas de Zuspan e Pritchard
+   (com ajuste renal), monitorização, recorrência e antídoto (RBEHG 2023). Detalhes em
+   `docs/gestante-preeclampsia.md`.
 
 Área Criança (dados da criança em comum; um módulo por item da barra lateral):
 

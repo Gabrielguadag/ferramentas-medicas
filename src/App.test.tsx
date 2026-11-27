@@ -229,4 +229,41 @@ describe('App', () => {
     expect(within(sec).getByText(/^Glargina \(basal/).parentElement).toHaveTextContent('6–12')
     expect(within(sec).getByText(/^DTDI/).parentElement).toHaveTextContent('15–24')
   })
+
+  it('pré-eclâmpsia: um fator alto indica AAS e cálcio; PA 165/100 é grave', async () => {
+    render(<App />)
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('tab', { name: 'Gestante' }))
+    const area = screen.getByRole('tabpanel', { name: 'Gestante' })
+    await user.click(within(area).getByRole('button', { name: /^Pré-eclâmpsia/ }))
+    const sec = within(area).getByRole('region', { name: 'Pré-eclâmpsia' })
+    expect(within(sec).getByText('Prevenção com AAS e cálcio').parentElement).toHaveTextContent(
+      'Sem indicação',
+    )
+    await user.click(within(sec).getByLabelText('Hipertensão arterial crônica'))
+    expect(within(sec).getByText('Prevenção com AAS e cálcio').parentElement).toHaveTextContent(
+      'Indicada',
+    )
+    await user.type(within(sec).getByLabelText('PA sistólica (mmHg)'), '165')
+    await user.type(within(sec).getByLabelText('PA diastólica (mmHg)'), '100')
+    expect(within(sec).getByText('Classificação').parentElement).toHaveTextContent(
+      'Hipertensão grave',
+    )
+  })
+
+  it('eclâmpsia: creatinina 1,2 reduz o Zuspan a 0,5 g/h; FR 12 bloqueia a manutenção', async () => {
+    render(<App />)
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('tab', { name: 'Gestante' }))
+    const area = screen.getByRole('tabpanel', { name: 'Gestante' })
+    await user.click(within(area).getByRole('button', { name: /Eclâmpsia e sulfato/ }))
+    const sec = within(area).getByRole('region', { name: 'Eclâmpsia e sulfato' })
+    expect(within(sec).getByText('Manutenção').parentElement).toHaveTextContent('1 g/h')
+    await user.type(within(sec).getByLabelText('Creatinina (mg/dL)'), '1.2')
+    expect(within(sec).getByText('Manutenção').parentElement).toHaveTextContent('0,5 g/h')
+    await user.click(within(sec).getByLabelText('Presente'))
+    await user.type(within(sec).getByLabelText('Frequência respiratória (irpm)'), '12')
+    await user.type(within(sec).getByLabelText('Diurese (mL/h)'), '40')
+    expect(within(sec).getByRole('alert')).toHaveTextContent('frequência respiratória 12 irpm')
+  })
 })
