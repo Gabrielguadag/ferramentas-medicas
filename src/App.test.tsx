@@ -237,11 +237,11 @@ describe('App', () => {
     const area = screen.getByRole('tabpanel', { name: 'Gestante' })
     await user.click(within(area).getByRole('button', { name: /^Pré-eclâmpsia/ }))
     const sec = within(area).getByRole('region', { name: 'Pré-eclâmpsia' })
-    expect(within(sec).getByText('Prevenção com AAS e cálcio').parentElement).toHaveTextContent(
+    expect(within(sec).getByText('Indicação de AAS e cálcio').parentElement).toHaveTextContent(
       'Sem indicação',
     )
     await user.click(within(sec).getByLabelText('Hipertensão arterial crônica'))
-    expect(within(sec).getByText('Prevenção com AAS e cálcio').parentElement).toHaveTextContent(
+    expect(within(sec).getByText('Indicação de AAS e cálcio').parentElement).toHaveTextContent(
       'Indicada',
     )
     await user.type(within(sec).getByLabelText('PA sistólica (mmHg)'), '165')

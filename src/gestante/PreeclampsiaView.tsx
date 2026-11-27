@@ -13,11 +13,11 @@ import {
 import { RBEHG_2023 } from './sources'
 
 const MOMENTO_TEXTO: Record<MomentoAas, string> = {
-  'antes-12': 'Ainda antes de 12 semanas: iniciar o AAS a partir da 12ª semana.',
-  ideal: 'Iniciar agora (o ideal é começar antes da 16ª semana).',
-  'ainda-pode': 'Ainda pode iniciar: o AAS pode ser começado até a 20ª semana.',
-  'apos-20': 'Passou da 20ª semana: o protocolo indica iniciar o AAS até a 20ª semana.',
-  'suspender-36': 'A partir de 36 semanas o AAS não é mais usado (manter até a 36ª semana).',
+  'antes-12': 'Ainda não: o AAS começa com 12 semanas.',
+  ideal: 'Começar o AAS agora (melhor momento: antes de 16 semanas).',
+  'ainda-pode': 'Ainda dá tempo: o AAS pode começar até 20 semanas.',
+  'apos-20': 'Passou de 20 semanas: o protocolo não indica começar o AAS agora.',
+  'suspender-36': 'Com 36 semanas o AAS para.',
 }
 
 export function PreeclampsiaSection() {
@@ -71,7 +71,7 @@ function RiscoPrevencao() {
         </div>
         <Results>
           <Result
-            label="Prevenção com AAS e cálcio"
+            label="Indicação de AAS e cálcio"
             value={indica ? 'Indicada' : 'Sem indicação'}
             tone={indica ? 'warn' : 'neutral'}
           >
@@ -87,43 +87,68 @@ function RiscoPrevencao() {
         </Details>
       </Card>
 
-      <Card title="Prevenção" subtitle="Para gestantes com indicação pelos fatores de risco.">
-        <div className="fields">
-          <NumberField
-            label="Idade gestacional"
-            unit="semanas"
-            value={ig}
-            onChange={setIg}
-            step={1}
-            hint="Opcional: diz se é hora de iniciar o AAS"
-          />
-        </div>
-        {igOk ? (
-          <Alert
-            tone={momentoAas(ig) === 'ideal' || momentoAas(ig) === 'ainda-pode' ? 'ok' : 'info'}
-          >
-            {MOMENTO_TEXTO[momentoAas(ig)]}
-          </Alert>
+      <Card
+        title="Prevenção com AAS e cálcio"
+        subtitle={
+          indica
+            ? 'Indicada pelos fatores de risco acima.'
+            : 'Só para quem tem indicação: marque os fatores de risco acima.'
+        }
+      >
+        {indica ? (
+          <>
+            <Results>
+              <Result label="AAS" value="100 mg" unit="1 vez ao dia, à noite" tone="info">
+                <strong>Começar:</strong> com 12 semanas, de preferência antes de 16 (no máximo até
+                20).
+                <br />
+                <strong>Parar:</strong> com 36 semanas.
+              </Result>
+              <Result
+                label="Carbonato de cálcio"
+                value="1 a 2 g"
+                unit="por dia, em 2 ou 3 tomadas"
+                tone="info"
+              >
+                Nas refeições.
+                <br />
+                <strong>Começar:</strong> no 1º trimestre.
+                <br />
+                <strong>Parar:</strong> no fim da gestação.
+              </Result>
+            </Results>
+            <div className="fields">
+              <NumberField
+                label="Idade gestacional hoje"
+                unit="semanas"
+                value={ig}
+                onChange={setIg}
+                step={1}
+                hint="Opcional: diz se já é hora do AAS"
+              />
+            </div>
+            {igOk ? (
+              <Alert
+                tone={momentoAas(ig) === 'ideal' || momentoAas(ig) === 'ainda-pode' ? 'ok' : 'info'}
+              >
+                {MOMENTO_TEXTO[momentoAas(ig)]}
+              </Alert>
+            ) : null}
+            <ul className="checklist">
+              <li>Pré-eclâmpsia confirmada: suspender o AAS e o cálcio.</li>
+              <li>Alternativa ao carbonato: citrato de cálcio, 2 a 4 g por dia.</li>
+            </ul>
+          </>
         ) : null}
+        <p className="label">Para todas as gestantes</p>
         <ul className="checklist">
           <li>
-            <strong>AAS 100 mg/dia, à noite</strong> (dose disponível no SUS): a partir da 12ª
-            semana, de preferência antes da 16ª (pode ser iniciado até a 20ª), mantido até a 36ª
-            semana.
+            Atividade física moderada, pelo menos 140 minutos por semana, se não houver
+            contraindicação.
           </li>
           <li>
-            <strong>Carbonato de cálcio 1 a 2 g/dia</strong>, dividido em 2 ou 3 tomadas às
-            refeições (ou citrato de cálcio 2 a 4 g/dia): do primeiro trimestre até o fim da
-            gestação.
-          </li>
-          <li>Suspender o AAS e o cálcio se a pré-eclâmpsia for confirmada.</li>
-          <li>
-            Para todas as gestantes, sem contraindicação: atividade física moderada, pelo menos 140
-            minutos por semana.
-          </li>
-          <li>
-            Não reduzem o risco: repouso, restrição de sal, vitaminas C, E e D, ômega-3, ácido
-            fólico e enoxaparina.
+            Não previnem a pré-eclâmpsia: repouso, restrição de sal, vitaminas C, E e D, ômega-3,
+            ácido fólico e enoxaparina.
           </li>
         </ul>
         <Details summary="Fonte">
